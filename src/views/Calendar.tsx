@@ -94,6 +94,7 @@ export default function Calendar() {
 
     return (
       <TouchableOpacity
+        activeOpacity={0.7}
         key={key}
         style={shadowed ? styles.dayContainerEmpty : styles.dayContainer}
         onPress={() => handleDayPress(day)}
@@ -156,13 +157,13 @@ export default function Calendar() {
   return (
     <View style={styles.container}>
       <View style={styles.arrows}>
-        <TouchableOpacity onPress={prevMonth}>
+        <TouchableOpacity activeOpacity={0.7} onPress={prevMonth}>
           <BotonChico color={theme.colors.grisMedio} text='<'/>
         </TouchableOpacity>
 
         <Text style={styles.monthText}>{currentDay.toLocaleDateString('es-ES', { month: 'long' })}</Text>
         
-        <TouchableOpacity onPress={nextMonth}>
+        <TouchableOpacity activeOpacity={0.7} onPress={nextMonth}>
         <BotonChico color={theme.colors.grisMedio} text='>'/>
         </TouchableOpacity>
       </View>

@@ -19,13 +19,13 @@ export default function Empleador({padd}: {padd: number}) {
     return (
         <View style={dynamicStyles.empleador}>
             <View style={dynamicStyles.line}>
-            <Text style={styles.textLine}>Nombre:</Text>
-            <Text style={styles.textLine}>Nombre de empresa</Text>
+                <Text style={styles.textLine}>Nombre:</Text>
+                <Text style={styles.textLine}>Nombre de empresa</Text>
             </View>
 
             <View style={dynamicStyles.line}>
-            <Text style={styles.textLine}>Salario por hora:</Text>
-            <Text style={styles.textLine}>$ 10</Text>
+                <Text style={styles.textLine}>Salario por hora:</Text>
+                <Text style={styles.textLine}>$ 10</Text>
             </View>
 
             <View style={dynamicStyles.line}>

@@ -6,7 +6,7 @@ import { Link, useLocation } from 'react-router-native';
 
 const MenuItem = ({ children, to }: { children: any, to: string}) => {
     return (
-        <Link to={to} activeOpacity={0.5} underlayColor="none">
+        <Link to={to} activeOpacity={0.7} underlayColor="none">
             <View style={styles.menuItem}>
                 {children}
             </View>

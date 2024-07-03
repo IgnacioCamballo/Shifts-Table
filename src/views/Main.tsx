@@ -7,6 +7,7 @@ import Calendar from './Calendar'
 import Totals from './Totals'
 import Config from './Config'
 import NewEmployer from './NewEmployer'
+import DefaultConfig from './DefaultConfig'
 
 export default function Main() {
   return (
@@ -17,6 +18,7 @@ export default function Main() {
           <Route path='/totals' element={<Totals />}/>
           <Route path='/config' element={<Config />}/>
           <Route path='/config/newEmployer' element={<NewEmployer />}/>
+          <Route path='/config/default/:defaultType' element={<DefaultConfig />}/>
         </Routes>
         <LayoutFooter />
     </View>

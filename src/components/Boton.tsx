@@ -19,9 +19,9 @@ export default function Boton({text, color, to} : ButtonProps) {
 
     return (
         <Link to={to} activeOpacity={0.5} underlayColor="none">
-        <View style={customeStyle.boton}>
-            <Text style={styles.texto}>{text}</Text>
-        </View>
+            <View style={customeStyle.boton}>
+                <Text style={styles.texto}>{text}</Text>
+            </View>
         </Link>
     )
 }

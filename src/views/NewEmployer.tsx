@@ -9,17 +9,22 @@ import { Link } from 'react-router-native'
 export default function NewEmployer() {
   return (
     <View style={styles.container}>
-          <View style={styles.botonCerrar}>
-            <BotonChico to="/config" text='x' color={theme.colors.grisClaro}/>
-          </View>
+      <Link 
+        to={'/config'}
+        activeOpacity={0.7} 
+        style={styles.botonCerrar}
+        underlayColor="none"
+        >
+        <BotonChico text='x' color={theme.colors.grisClaro}/>
+      </Link>
 
-        <View>
-          <Text style={styles.textoConf}>Nuevo Empleador</Text>
-        </View>
+      <View>
+        <Text style={styles.textoConf}>Nuevo Empleador</Text>
+      </View>
 
-        <Empleador padd={3}/>
+      <Empleador padd={3}/>
 
-        <Boton to='' text="Registrar Empleado" color={theme.colors.verdeBoton}/>
+      <Boton to='' text="Registrar Empleado" color={theme.colors.verdeBoton}/>
     </View>
   )
 }

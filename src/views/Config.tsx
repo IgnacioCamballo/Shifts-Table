@@ -3,14 +3,13 @@ import { StyleSheet, Text, View } from 'react-native'
 import theme from '../theme'
 import Empleador from '../components/Empleador'
 import Boton from '../components/Boton'
-import { Link } from 'react-router-native'
 
 export default function Config() {
   return (
     <View style={styles.container}>
       <View style={styles.configGeneral}>
         <View style={styles.tituloConf}>
-          <Text style={styles.textoConf}>Configuracion General</Text>
+          <Text style={styles.textoConf}>Configuracion Predeterminada</Text>
         </View>
 
         <View>
@@ -25,7 +24,7 @@ export default function Config() {
           </View>
 
           <View style={styles.line}>
-            <Text style={styles.textLine}>Descanso:</Text>
+            <Text style={styles.textLine}>descanso:</Text>
             <Text style={styles.textLine}>0Hs</Text>
           </View>
         </View>
