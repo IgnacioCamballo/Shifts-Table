@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
 import { Modal, StyleSheet, Text, TouchableOpacity, View, Platform } from 'react-native'
+import CheckBox from '@react-native-community/checkbox';
+import DatePicker from 'react-native-date-picker'
 import Constants from "expo-constants"
 import useCalendar from '../hooks/useCalendar'
-import DatePicker from 'react-native-date-picker'
 import theme from '../theme'
 import Empleador from '../components/Empleador'
 import Boton from '../components/Boton'
@@ -19,15 +20,17 @@ export default function Config() {
   const [timeType, setTimeType] = useState("")
   const [date, setDate] = useState(new Date())
   const [modalOpen, setModalOpen] = useState(false)
+  const [toggleCheckBox, setToggleCheckBox] = useState(false)
 
   const selectedTime = () => {
-    const copy = {...configInfo}
     switch(timeType) {
       case "entrada": 
-        setDate(copy.entry ? copy.entry : new Date())
+        setDate(config.entry ? config.entry : new Date())
+        setToggleCheckBox(config.entry ? true : false)
         break
       case "salida":
-        setDate(copy.exit ? copy.exit : new Date())
+        setDate(config.exit ? config.exit : new Date())
+        setToggleCheckBox(config.exit ? true : false)
         break
       case "descanso":
         setDate(new Date(0))
@@ -37,7 +40,7 @@ export default function Config() {
   const changeConfigInfo = (newDate: Date) => {
     if(timeType === "entrada") {
       const configDateChanged = {
-        entry: newDate,
+        entry: toggleCheckBox ? newDate : null,
         exit: config.exit ? config.exit : null,
         break: config.break ? config.break : 0
       }
@@ -46,7 +49,7 @@ export default function Config() {
     if(timeType === "salida") {
       const configDateChanged = {
         entry: config.entry ? config.entry : null,
-        exit: newDate,
+        exit: toggleCheckBox ? newDate : null,
         break: config.break ? config.break : 0
       }
       setConfigInfo(configDateChanged)
@@ -59,6 +62,8 @@ export default function Config() {
       }
       setConfigInfo(configDateChanged)
     }
+    
+    setTimeType("")
   }
 
   return (
@@ -112,21 +117,33 @@ export default function Config() {
         >
         <View style={styles.modalContainer}>
           <View style={styles.modal}>
-            <Text style={styles.modalTitle}>{timeType === "descanso" ? "Descanso" : `Horario de ${timeType}`}</Text>
+            <View style={styles.modalTitleContainer}>
+              <Text style={styles.modalTitle}>{timeType === "descanso" ? "Descanso" : `Horario de ${timeType}`}</Text>
+              {timeType !== "descanso" && 
+                <CheckBox 
+                  style={styles.checkbox}
+                  disabled={false}
+                  value={toggleCheckBox}
+                  onValueChange={(newValue) => setToggleCheckBox(newValue)}
+                />
+              }
+            </View>
             
-            <DatePicker 
-              mode='time'
-              locale='es'
-              date={date}
-              onDateChange={setDate}
-              dividerColor={theme.colors.verdeBase}
-              is24hourSource={timeType === "descanso" ? "locale" : "device"}
+            {!toggleCheckBox ? <View style={styles.view}></View> : 
+              <DatePicker 
+                mode='time'
+                locale='es'
+                date={date}
+                onDateChange={setDate}
+                dividerColor={theme.colors.verdeBase}
+                is24hourSource={timeType === "descanso" ? "locale" : "device"}
               />
+            }
             <View style={styles.modalButtons}>
               <TouchableOpacity activeOpacity={0.7} onPress={() => {setModalOpen(false), setTimeType("")}}>
                 <Text style={styles.modalButton}>Cancelar</Text>
               </TouchableOpacity>
-              <TouchableOpacity activeOpacity={0.7} onPress={() => {setModalOpen(false), changeConfigInfo(date), setTimeType("")}}>
+              <TouchableOpacity activeOpacity={0.7} onPress={() => {setModalOpen(false), changeConfigInfo(date)}}>
                 <Text style={styles.modalButton}>Guardar</Text>
               </TouchableOpacity>
             </View>
@@ -194,9 +211,20 @@ const styles = StyleSheet.create ({
     padding: 40,
     borderRadius: 10
   },
+  modalTitleContainer: {
+    alignSelf: "flex-start",
+    flexDirection: "row",
+    gap: 12
+  },
   modalTitle: {
     fontSize: 24,
-    alignSelf: "flex-start"
+  },
+  checkbox: {
+    position: "relative",
+    top: 2
+  },
+  view: {
+    height: 180
   },
   modalButtons: {
     flexDirection: "row",
