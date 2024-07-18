@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { StyleSheet, Text, TextInput, TouchableOpacity, View, Modal, Platform } from 'react-native'
 import ColorPicker, { HueSlider, Panel1, Preview, returnedResults } from 'reanimated-color-picker'
-import { Link } from 'react-router-native'
+import { Link, useParams } from 'react-router-native'
 import Constants from "expo-constants"
 
 import { EmployerProps } from '../types'
@@ -10,17 +10,22 @@ import theme from '../theme'
 import Boton from '../components/Boton'
 import BotonChico from '../components/BotonChico'
 
-export default function NewEmployer() {
+export default function EditEmployer() {
   const { companysInfo, setCompanysInfo } = useCalendar()
 
-  const [inputName, setInputName] = useState("")
-  const [shortName, setShortName] = useState("")
-  const [salary, setSalary] = useState("")
-  const [defColor, setDefColor] = useState("#B4EF55")
+  const params = useParams()
+  const employerIndex = params.employer!
+  const employer = companysInfo[parseInt(employerIndex)]
+  const {name, short, color, wage} = employer
+
+  const [inputName, setInputName] = useState(name)
+  const [shortName, setShortName] = useState(short)
+  const [salary, setSalary] = useState(wage.toString())
+  const [defColor, setDefColor] = useState(color)
 
   const [repeatedName, setRepeatedName] = useState(false)
   const [modal, setModal] = useState(false)
-  const [tempColor, setTempColor] = useState("#B4EF55")
+  const [tempColor, setTempColor] = useState(color)
 
   const dynamicStyles = {
     color: {
@@ -31,8 +36,10 @@ export default function NewEmployer() {
 
   useEffect(() => {
     const repeated = companysInfo.find(employer => employer.name === inputName) !== undefined
-    setRepeatedName(repeated)
-  }, [inputName, companysInfo])
+    if (inputName !== name) {
+        setRepeatedName(repeated)
+    }
+  }, [inputName])
 
   //next two required for managing the color selector
   useEffect(() => {
@@ -51,7 +58,8 @@ export default function NewEmployer() {
       wage: parseInt(salary),
       color: defColor
     }
-    const updatedCompanys = [...companysInfo, newEmployer]
+    const updatedCompanys = [...companysInfo]
+    updatedCompanys.splice(parseInt(employerIndex), 1, newEmployer)
     setCompanysInfo(updatedCompanys)
   }
 
@@ -67,7 +75,7 @@ export default function NewEmployer() {
       </Link>
 
       <View>
-        <Text style={styles.textoConf}>Nuevo Empleador</Text>
+        <Text style={styles.textoConf}>Editar Empleador</Text>
       </View>
 
       <View style={styles.empleador}>
@@ -83,7 +91,7 @@ export default function NewEmployer() {
             placeholderTextColor={theme.colors.grisMedio}
           />
         </View>
-
+        
         <View style={styles.line}>
           <Text style={styles.textLine}>Siglas:</Text>
           
@@ -168,7 +176,7 @@ export default function NewEmployer() {
         press={() => handleSaveEmployer()}
         block={inputName === "" || salary === "" || repeatedName ? true : false}
         to='/config' 
-        text="Registrar Empleado" 
+        text="Guardar cambios" 
         color={theme.colors.verdeBoton}
       />
 

@@ -12,6 +12,8 @@ const CalendarProvider = ({children}: props) => {
     const [configInfo, setConfigInfo] = useState<ConfigInfo>({entry: null, exit: null, break: 0})
     const [companysInfo, setCompanysInfo] = useState<EmployerProps[]>([])
     const [shifts, setShifts] = useState<ShiftProps[]>([])
+    
+    const [editEmployer, setEditEmployer] = useState<EmployerProps | {}>({})
 
     const getConfigStorage = async () => {
         try {
@@ -33,8 +35,10 @@ const CalendarProvider = ({children}: props) => {
     const getCompanysStorage = async () => {
         try {
             const storagedCompanys = await AsyncStorage.getItem('companys')
-            const companys = storagedCompanys ? JSON.parse(storagedCompanys) : []
-            setCompanysInfo(companys)  
+            if (storagedCompanys !== null) {
+                const parsed = await JSON.parse(storagedCompanys)
+                setCompanysInfo(parsed)
+            }
         } catch (error) {
             console.log(error)
         }
@@ -44,7 +48,7 @@ const CalendarProvider = ({children}: props) => {
         try {
             const storagedShifts = await AsyncStorage?.getItem('shifts')
             const shifts = storagedShifts ? JSON.parse(storagedShifts) : []
-            setCompanysInfo(shifts)            
+            setShifts(shifts)            
         } catch (error) {
             console.log(error)
         }
@@ -54,11 +58,15 @@ const CalendarProvider = ({children}: props) => {
         getConfigStorage()
         getCompanysStorage()
         getShiftsStorage()
-    }, [])
+    },[])
 
     useEffect(()=> {
         AsyncStorage.setItem("config", JSON.stringify(configInfo))
     },[configInfo])
+
+    useEffect(() => {
+        AsyncStorage.setItem("companys", JSON.stringify(companysInfo))
+    },[companysInfo])
 
     return (
         <CalendarContext.Provider
@@ -66,9 +74,11 @@ const CalendarProvider = ({children}: props) => {
                 configInfo,
                 companysInfo,
                 shifts,
+                editEmployer,
                 setConfigInfo,
                 setCompanysInfo,
-                setShifts            
+                setShifts,
+                setEditEmployer
             }}
         >
             {children}

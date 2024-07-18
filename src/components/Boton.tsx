@@ -7,9 +7,11 @@ interface ButtonProps {
     text: string;
     color: ColorValue;
     to: string;
+    block: boolean;
+    press: () => void
   }
 
-export default function Boton({text, color, to} : ButtonProps) {
+export default function Boton({text, color, to, block, press} : ButtonProps) {
     let customeStyle = {
         boton: {
             ...styles.boton,
@@ -18,7 +20,7 @@ export default function Boton({text, color, to} : ButtonProps) {
     }
 
     return (
-        <Link to={to} activeOpacity={0.5} underlayColor="none">
+        <Link onPress={press} disabled={block} to={to} activeOpacity={0.5} underlayColor="none">
             <View style={customeStyle.boton}>
                 <Text style={styles.texto}>{text}</Text>
             </View>

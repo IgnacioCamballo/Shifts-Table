@@ -18,7 +18,8 @@ const theme = {
         grisMasClaro: "#e1e1e1",
         blanco: "fff",
         rojoBin: "#A30000",
-        rojo: "red"
+        rojo: "red",
+        rojoClaro: "#EA7E7E"
     },
     fontSizes: {
         F20: 20,

@@ -3,15 +3,18 @@ import { View, StyleSheet, Text } from 'react-native'
 import Constants from "expo-constants"
 import { Platform } from 'react-native';
 import theme from '../theme';
-import { useLocation } from 'react-router-native';
+import { useLocation, useParams } from 'react-router-native';
 
 function NombreLayout () {
   const {pathname} = useLocation()
+  const {employer, date} = useParams()
+
   if(pathname === "/") return "Calendario"
   if(pathname === "/totals") return "Totales"
   if(pathname === "/config") return "Configuración"
   if(pathname === "/config/newEmployer") return "Registrar Empleador"
-  
+  if(pathname.startsWith("/config/editEmployer/")) return "Editar Empleador"
+  if(pathname.startsWith("/calendar/shifts/")) return "Turnos"
 }
 
 export default function LayoutHeader() {

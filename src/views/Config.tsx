@@ -12,6 +12,7 @@ import { formattedMinutes } from '../utils'
 export default function Config() {
   const {
     configInfo,
+    companysInfo,
     setConfigInfo,
   } = useCalendar()
 
@@ -34,6 +35,7 @@ export default function Config() {
         break
       case "descanso":
         setDate(new Date(0))
+        setToggleCheckBox(true)
     }
   }
 
@@ -155,10 +157,14 @@ export default function Config() {
         <View>
           <Text style={styles.textoConf}>Empleadores</Text>
         </View>
-
-        <Empleador padd={1}/>
         
-          <Boton to='/config/newEmployer' text="Registrar Empleado" color={theme.colors.verdeBoton}/>
+        {companysInfo.length === 0 ? <Text style={styles.textNotEmployers}>Aún no hay empleadores</Text> : 
+          companysInfo.map(employer => (
+            <Empleador key={employer.name} employer={employer}/>
+          ))
+        }
+        
+        <Boton block={false} press={() => {}} to='/config/newEmployer' text="Registrar Empleado" color={theme.colors.verdeBoton}/>
       </View>
     </View>
   )
@@ -196,6 +202,13 @@ const styles = StyleSheet.create ({
   },
   empleadores: {
     marginTop: 30
+  },
+  textNotEmployers: {
+    textAlign: "center",
+    paddingTop: 20,
+    fontSize: theme.fontSizes.F16,
+    borderTopWidth: 2,
+    width: "100%",
   },
   modalContainer: {
     flex: 1,

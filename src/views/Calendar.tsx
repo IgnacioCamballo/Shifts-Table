@@ -8,14 +8,16 @@ import {
   FlatList, 
   Animated
 } from 'react-native';
+import { Navigate } from 'react-router-native';
+import useCalendar from '../hooks/useCalendar';
 import BotonChico from '../components/BotonChico';
 import theme from '../theme';
+import { firstLetterUpper } from '../utils';
 
 let screenWidth = Dimensions.get("window").width
 let lenguage = "es"
 
 type DayProps = {
-
     key: string, 
     day: number, 
     isCurrentDay: boolean,
@@ -26,6 +28,10 @@ export default function Calendar() {
   const [currentDay, setCurrentDay] = useState(new Date());
   const [monthdays, setMonthDays] = useState<DayProps[]>([])
   const [position, setPosition] = useState(new Animated.Value(0))
+  const [nav, setNav] = useState(false)
+  const [pressedDate, setPressedDate] = useState<Date>()
+
+  const {} = useCalendar()
 
   let currentDate = new Date()
   let actualyear = new Date().getFullYear()
@@ -91,24 +97,38 @@ export default function Calendar() {
 
   const renderItem = (item: DayProps) => {
     const {day, key, isCurrentDay, shadowed} = item
-
+    
     return (
       <TouchableOpacity
-        activeOpacity={0.7}
-        key={key}
-        style={shadowed ? styles.dayContainerEmpty : styles.dayContainer}
-        onPress={() => handleDayPress(day)}
+      activeOpacity={0.7}
+      key={key}
+      style={shadowed ? styles.dayContainerEmpty : styles.dayContainer}
+      onPress={() => handleDayPress(key)}
       >
+        {nav && <Navigate to={`/calendar/shifts/${pressedDate}`}/>}
+        
         <Text style={shadowed ? styles.emptyDayText : [styles.dayText, isCurrentDay && styles.selectedDayText]}>{day.toLocaleString()}</Text>
       </TouchableOpacity>
     )
   }
+  
+  const handleDayPress = (key: string) => {
+    const selected = monthdays.find(arrayDay => arrayDay.key === key)
 
-  const handleDayPress = (day: number) => {
-    
+    if (selected!.shadowed === false) {
+      const pressed = new Date(currentDay.getFullYear(), currentDay.getMonth(), selected?.day)
+      setPressedDate(pressed)
+    } else if (parseInt(selected!.key) < 0) {
+      const pressed = new Date(currentDay.getFullYear(), currentDay.getMonth()-1, selected?.day)
+      setPressedDate(pressed)
+    } else {
+      const pressed = new Date(currentDay.getFullYear(), currentDay.getMonth()+1, selected?.day)
+      setPressedDate(pressed)
+    }
+    setNav(true)
   };
 
-  const prevMonth = async () => {
+  const prevMonth = () => {
     const newDate = new Date(currentDay.getFullYear(), currentDay.getMonth() - 1);
 
     Animated.timing(position, {
@@ -161,7 +181,7 @@ export default function Calendar() {
           <BotonChico color={theme.colors.grisMedio} text='<'/>
         </TouchableOpacity>
 
-        <Text style={styles.monthText}>{currentDay.toLocaleDateString('es-ES', { month: 'long' })}</Text>
+        <Text style={styles.monthText}>{firstLetterUpper(currentDay.toLocaleDateString('es-ES', { month: 'long' }))}</Text>
         
         <TouchableOpacity activeOpacity={0.7} onPress={nextMonth}>
         <BotonChico color={theme.colors.grisMedio} text='>'/>
