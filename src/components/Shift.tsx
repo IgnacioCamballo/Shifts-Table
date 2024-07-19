@@ -2,14 +2,14 @@ import React from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import Icon from "react-native-vector-icons/AntDesign"
 import theme from '../theme'
-import { EmployerProps } from '../types'
+import { ShiftProps } from '../types'
 import useCalendar from '../hooks/useCalendar'
 import { Link } from 'react-router-native'
 
-export default function Empleador({employer}: {employer: EmployerProps}) {
+export default function Shift({shift}: {shift: ShiftProps}) {
     const {companysInfo, setCompanysInfo, setEditEmployer} = useCalendar()
 
-    const {name, wage, color} = employer
+    const {employer, shiftEntry, shiftExit, shiftBreak} = shift
 
     const dynamicStyles = {
         color: {

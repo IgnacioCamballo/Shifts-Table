@@ -44,7 +44,7 @@ export default function Config() {
       const configDateChanged = {
         entry: toggleCheckBox ? newDate : null,
         exit: config.exit ? config.exit : null,
-        break: config.break ? config.break : 0
+        configBreak: config.configBreak ? config.configBreak : 0
       }
       setConfigInfo(configDateChanged)
     }
@@ -52,7 +52,7 @@ export default function Config() {
       const configDateChanged = {
         entry: config.entry ? config.entry : null,
         exit: toggleCheckBox ? newDate : null,
-        break: config.break ? config.break : 0
+        configBreak: config.configBreak ? config.configBreak : 0
       }
       setConfigInfo(configDateChanged)
     }
@@ -60,7 +60,7 @@ export default function Config() {
       const configDateChanged = {
         entry: config.entry ? config.entry : null,
         exit: config.exit ? config.exit : null,
-        break: newDate.getHours() + newDate.getMinutes()/60
+        configBreak: newDate.getHours() + newDate.getMinutes()/60
       }
       setConfigInfo(configDateChanged)
     }
@@ -105,7 +105,7 @@ export default function Config() {
           >
             <Text style={styles.textLine}>Descanso:</Text>
             <View >
-              <Text style={styles.textLine}>{`${config.break?.toFixed(2)}Hs`}</Text>
+              <Text style={styles.textLine}>{`${config.configBreak?.toFixed(2)}Hs`}</Text>
             </View>
           </TouchableOpacity>
         </View>

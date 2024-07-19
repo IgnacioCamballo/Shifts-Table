@@ -7,16 +7,16 @@ export type EmployerProps = {
 }
 
 export type ShiftProps = {
-    entry: Date,
-    exit: Date,
-    break: number,
-    Employer: string
+    shiftEntry: Date,
+    shiftExit: Date,
+    shiftBreak: number,
+    employer: string
 }
 
 export type ConfigInfo = {
     entry: Date | null,
     exit: Date | null,
-    break: number
+    configBreak: number
 }
 
 export type CalendarContextProps = {   

@@ -22,10 +22,10 @@ export default function Shifts() {
   const [filter, setFilter] = useState()
 
   useEffect(() => {
-    const todayShifts = shifts.filter(shift => shift.entry === date)
+    const todayShifts = shifts.filter(shift => shift.shiftEntry === date)
     for (let i=0; i = todayShifts.length; i++) {
-      const name = todayShifts[i].Employer
-      if (todayShifts.find(shift => shift.Employer === name)) {
+      const name = todayShifts[i].employer
+      if (todayShifts.find(shift => shift.employer === name)) {
         return
       } else {
         setEmployersToday([...employersToday, name])
