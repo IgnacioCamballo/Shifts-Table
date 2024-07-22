@@ -10,17 +10,19 @@ export type ShiftProps = {
     shiftEntry: Date,
     shiftExit: Date,
     shiftBreak: number,
-    employer: string
+    employer: string,
+    workedHours: number,
+    workedMinutes: number
 }
 
 export type ConfigInfo = {
     entry: Date | null,
     exit: Date | null,
-    configBreak: number
+    configBreak: Date | null
 }
 
 export type CalendarContextProps = {   
-    configInfo: ConfigInfo | {},
+    configInfo: ConfigInfo,
     companysInfo: EmployerProps[],
     shifts: ShiftProps[],
     editEmployer: EmployerProps | {},

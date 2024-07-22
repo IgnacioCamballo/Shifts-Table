@@ -7,7 +7,6 @@ import { useLocation, useParams } from 'react-router-native';
 
 function NombreLayout () {
   const {pathname} = useLocation()
-  const {employer, date} = useParams()
 
   if(pathname === "/") return "Calendario"
   if(pathname === "/totals") return "Totales"

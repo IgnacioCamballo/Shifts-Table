@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Modal, StyleSheet, Text, TouchableOpacity, View, Platform } from 'react-native'
+import { Modal, StyleSheet, Text, TouchableOpacity, View, Platform, Alert } from 'react-native'
 import CheckBox from '@react-native-community/checkbox';
 import DatePicker from 'react-native-date-picker'
 import Constants from "expo-constants"
@@ -8,6 +8,7 @@ import theme from '../theme'
 import Empleador from '../components/Empleador'
 import Boton from '../components/Boton'
 import { formattedMinutes } from '../utils'
+import Icon from 'react-native-vector-icons/AntDesign';
 
 export default function Config() {
   const {
@@ -21,38 +22,38 @@ export default function Config() {
   const [timeType, setTimeType] = useState("")
   const [date, setDate] = useState(new Date())
   const [modalOpen, setModalOpen] = useState(false)
-  const [toggleCheckBox, setToggleCheckBox] = useState(false)
+  const [showDelete, setShowDelete] = useState(false)
 
   const selectedTime = () => {
     switch(timeType) {
       case "entrada": 
         setDate(config.entry ? config.entry : new Date())
-        setToggleCheckBox(config.entry ? true : false)
+        setShowDelete(config.entry ? true : false)
         break
       case "salida":
         setDate(config.exit ? config.exit : new Date())
-        setToggleCheckBox(config.exit ? true : false)
+        setShowDelete(config.exit ? true : false)
         break
       case "descanso":
-        setDate(new Date(0))
-        setToggleCheckBox(true)
+        setDate(config.configBreak ? config.configBreak : new Date(0))
+        setShowDelete(config.configBreak ? true : false)
     }
   }
 
-  const changeConfigInfo = (newDate: Date) => {
+  const changeConfigInfo = (newDate: Date | null) => {
     if(timeType === "entrada") {
       const configDateChanged = {
-        entry: toggleCheckBox ? newDate : null,
+        entry: newDate,
         exit: config.exit ? config.exit : null,
-        configBreak: config.configBreak ? config.configBreak : 0
+        configBreak: config.configBreak ? config.configBreak : null
       }
       setConfigInfo(configDateChanged)
     }
     if(timeType === "salida") {
       const configDateChanged = {
         entry: config.entry ? config.entry : null,
-        exit: toggleCheckBox ? newDate : null,
-        configBreak: config.configBreak ? config.configBreak : 0
+        exit: newDate,
+        configBreak: config.configBreak ? config.configBreak : null
       }
       setConfigInfo(configDateChanged)
     }
@@ -60,12 +61,32 @@ export default function Config() {
       const configDateChanged = {
         entry: config.entry ? config.entry : null,
         exit: config.exit ? config.exit : null,
-        configBreak: newDate.getHours() + newDate.getMinutes()/60
+        configBreak: newDate
       }
       setConfigInfo(configDateChanged)
-    }
-    
+    } 
     setTimeType("")
+  }
+
+  const showAlert = () => {
+    Alert.alert(
+      'Alerta',
+      `¿seguro deseas eliminar la hora de ${timeType}?`,
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel'
+        },
+        {
+          text: 'OK',
+          onPress: () => {setModalOpen(false), changeConfigInfo(null)},
+          style: 'cancel'
+        },
+      ],
+      {
+        cancelable: true
+      }
+    )
   }
 
   return (
@@ -105,7 +126,13 @@ export default function Config() {
           >
             <Text style={styles.textLine}>Descanso:</Text>
             <View >
-              <Text style={styles.textLine}>{`${config.configBreak?.toFixed(2)}Hs`}</Text>
+              <Text style={styles.textLine}>
+                {config.configBreak === null || 
+                  (config.configBreak.getHours() === 0 && config.configBreak.getMinutes() === 0) 
+                  ? "0" 
+                  : `${config.configBreak?.getHours()}:${formattedMinutes(config.configBreak)}`
+                }
+              </Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -121,26 +148,24 @@ export default function Config() {
           <View style={styles.modal}>
             <View style={styles.modalTitleContainer}>
               <Text style={styles.modalTitle}>{timeType === "descanso" ? "Descanso" : `Horario de ${timeType}`}</Text>
-              {timeType !== "descanso" && 
-                <CheckBox 
-                  style={styles.checkbox}
-                  disabled={false}
-                  value={toggleCheckBox}
-                  onValueChange={(newValue) => setToggleCheckBox(newValue)}
-                />
-              }
+              {showDelete && <Icon 
+                style={styles.delete}
+                name='delete' 
+                color={theme.colors.rojoBin} 
+                size={20}
+                onPress={() => {showAlert()}}
+              />}
             </View>
-            
-            {!toggleCheckBox ? <View style={styles.view}></View> : 
-              <DatePicker 
-                mode='time'
-                locale='es'
-                date={date}
-                onDateChange={setDate}
-                dividerColor={theme.colors.verdeBase}
-                is24hourSource={timeType === "descanso" ? "locale" : "device"}
-              />
-            }
+             
+            <DatePicker 
+              mode='time'
+              locale='es'
+              date={date}
+              onDateChange={setDate}
+              dividerColor={theme.colors.verdeBase}
+              is24hourSource={timeType === "descanso" ? "locale" : "device"}
+            />
+
             <View style={styles.modalButtons}>
               <TouchableOpacity activeOpacity={0.7} onPress={() => {setModalOpen(false), setTimeType("")}}>
                 <Text style={styles.modalButton}>Cancelar</Text>
@@ -227,14 +252,15 @@ const styles = StyleSheet.create ({
   modalTitleContainer: {
     alignSelf: "flex-start",
     flexDirection: "row",
-    gap: 12
+    justifyContent: "space-between",
+    width: "70%"
   },
   modalTitle: {
-    fontSize: 24,
+    fontSize: 24
   },
-  checkbox: {
+  delete: {
     position: "relative",
-    top: 2
+    top: 7
   },
   view: {
     height: 180

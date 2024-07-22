@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { Animated, Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { Picker } from '@react-native-picker/picker'
 import { useParams } from 'react-router-native'
 import { firstLetterUpper } from '../utils'
 import BotonChico from '../components/BotonChico'
 import theme from '../theme'
 import useCalendar from '../hooks/useCalendar'
+import Boton from '../components/Boton'
 
 export default function Shifts() {
   const params = useParams()
@@ -19,7 +19,6 @@ export default function Shifts() {
   const [position, setPosition] = useState(new Animated.Value(0))
   const [date, setDate] = useState(new Date(pressedDate))
   const [employersToday, setEmployersToday] = useState(["Todos"])
-  const [filter, setFilter] = useState()
 
   useEffect(() => {
     const todayShifts = shifts.filter(shift => shift.shiftEntry === date)
@@ -105,21 +104,7 @@ export default function Shifts() {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.selector}>
-        <Text style={styles.selectorText}>Mostar:</Text>
-        <View style={styles.selectorPickerCont}>
-
-        <Picker
-          selectedValue={filter}
-          onValueChange={(itemValue) => setFilter(itemValue)}
-          style={styles.selectorPicker}
-          > 
-          {employersToday.map(employer => 
-            <Picker.Item label={employer} value={employer} key={employer}/>
-          )}
-        </Picker> 
-          </View>
-      </View>
+      <Boton block={false} press={() => {}} to={`/calendar/shifts/${date}/newShift`} text="Registrar Turno" color={theme.colors.verdeBoton}/>
     </View>
   )
 }
@@ -138,25 +123,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: "space-between",
     paddingHorizontal: 48
-  },
-  selector: {
-    width: "100%",
-    alignItems: "center",
-    justifyContent: "space-between",
-    flexDirection: "row",
-    gap: 20,
-    padding: 12
-  },
-  selectorText: {
-    fontSize: theme.fontSizes.F16
-  },
-  selectorPickerCont: {
-    borderWidth: 1,
-    borderColor: theme.colors.gris,
-    flex: 1,
-    height: 32,
-    justifyContent: "center"
-  },
-  selectorPicker: {
   }
 })

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, View, StyleSheet } from 'react-native'
+import { View, StyleSheet } from 'react-native'
 import { Route, Routes } from 'react-router-native'
 import LayoutHeader from '../layout/LayoutHeader'
 import LayoutFooter from '../layout/LayoutFooter'
@@ -9,6 +9,7 @@ import Config from './Config'
 import NewEmployer from './NewEmployer'
 import EditEmployer from './EditEmployer'
 import Shifts from './Shifts'
+import NewShift from './NewShift'
 
 export default function Main() {
   return (
@@ -21,6 +22,7 @@ export default function Main() {
           <Route path='/config/newEmployer' element={<NewEmployer />}/>
           <Route path='/config/editEmployer/:employer' element={<EditEmployer />}/>
           <Route path='/calendar/shifts/:date' element={<Shifts />}/>
+          <Route path='/calendar/shifts/:date/newShift' element={<NewShift />}/>
         </Routes>
         <LayoutFooter />
     </View>

@@ -9,7 +9,7 @@ interface props {
 const CalendarContext = createContext<CalendarContextProps>({} as CalendarContextProps)
 
 const CalendarProvider = ({children}: props) => {
-    const [configInfo, setConfigInfo] = useState<ConfigInfo>({entry: null, exit: null, configBreak: 0})
+    const [configInfo, setConfigInfo] = useState<ConfigInfo>({entry: null, exit: null, configBreak: null})
     const [companysInfo, setCompanysInfo] = useState<EmployerProps[]>([])
     const [shifts, setShifts] = useState<ShiftProps[]>([])
     
@@ -23,7 +23,7 @@ const CalendarProvider = ({children}: props) => {
                 const config: ConfigInfo = {
                     entry: parsed.entry === null ? null : new Date(parsed.entry),
                     exit: parsed.exit === null ? null : new Date(parsed.exit),
-                    configBreak: parsed.break
+                    configBreak: parsed.configBreak === null ? null : new Date(parsed.configBreak)
                 }
                 setConfigInfo(config)
             }
