@@ -8,14 +8,16 @@ interface ButtonProps {
     color: ColorValue;
     to: string;
     block: boolean;
-    press: () => void
+    press: () => void,
+    margintop: number
   }
 
-export default function Boton({text, color, to, block, press} : ButtonProps) {
+export default function Boton({text, color, to, block, press, margintop} : ButtonProps) {
     let customeStyle = {
         boton: {
             ...styles.boton,
-            backgroundColor: color
+            backgroundColor: color,
+            marginTop: margintop
         }
     }
 
@@ -32,7 +34,6 @@ const styles = StyleSheet.create({
     boton: {
         paddingVertical: 8,
         paddingHorizontal: 16,
-        marginTop: 30,
         width: "auto",
         borderRadius: 10,
         alignSelf: "center"

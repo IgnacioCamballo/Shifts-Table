@@ -81,12 +81,13 @@ export default function Shifts() {
         </TouchableOpacity>
       </View>
 
-      <Boton block={false} press={() => {}} to={`/calendar/shifts/${date}/newShift`} text="Registrar Turno" color={theme.colors.verdeBoton}/>
+      <Boton margintop={12} block={false} press={() => {}} to={`/calendar/shifts/${date}/newShift`} text="Registrar Turno" color={theme.colors.verdeBoton}/>
 
-      <ScrollView>
-        {shifts.length === 0 || shifts === undefined ? <View></View> : 
-          shifts.filter((shift: ShiftProps) => new Date(shift.shiftEntry.getFullYear(), shift.shiftEntry.getMonth(), shift.shiftEntry.getDate(), 0, 0) === new Date(date.getFullYear(), date.getMonth(), date.getDay(), 0, 0)).map(
-            (mapedShift: ShiftProps) => <Shift shift={mapedShift} />
+      <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
+        {shifts.length === 0 ? <View></View> : 
+          shifts.filter(shift => shift.shiftEntry.getFullYear() === date.getFullYear() && shift.shiftEntry.getMonth() === date.getMonth() && shift.shiftEntry.getDate() === date.getDate())
+          .map(
+            (mapedShift: ShiftProps) => <Shift shift={mapedShift} key={mapedShift.key}/>
           )
         }
       </ScrollView>
@@ -108,5 +109,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: "space-between",
     paddingHorizontal: 48
+  },
+  scrollView: {
+    marginTop: 16
   }
 })

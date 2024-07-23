@@ -12,6 +12,7 @@ import { firstLetterUpper, formattedMinutes, formattedMinutesNumber, textDay } f
 import Icon from 'react-native-vector-icons/AntDesign'
 import { Picker } from '@react-native-picker/picker'
 import { ShiftProps } from '../types'
+import Slider from '../components/Slider'
 
 export default function NewShift() {
   const params = useParams()
@@ -30,9 +31,7 @@ export default function NewShift() {
   const [note, setNote] = useState("")
 
   const [missing, setMissing] = useState("")
-
-  const animatedValue = useRef(new Animated.Value(paid ? 1 : 0)).current
-  const animatedValue2 = useRef(new Animated.Value(paid ? 1 : 0)).current
+  const [blockSubmit, setBlockSubmit] = useState(true)
 
   const [timeType, setTimeType] = useState("")
   const [date, setDate] = useState<Date | null>(pressedDate)
@@ -72,7 +71,7 @@ export default function NewShift() {
     }
     setTimeType("")
   }
-
+  
   useEffect (() => {
     if(shiftEntry !== null && shiftExit !== null) {
       const difMonth = shiftExit!.getMonth() !== shiftEntry!.getMonth()
@@ -147,42 +146,9 @@ export default function NewShift() {
     )
   }
 
-  const handlePress = () => {
-    Animated.parallel([
-      Animated.timing(animatedValue, {
-        toValue: paid ? 0 : 1,
-        duration: 150,
-        useNativeDriver: true,
-      }),
-      Animated.timing(animatedValue2, {
-        toValue: paid ? 0 : 1,
-        duration: 150,
-        useNativeDriver: true,
-      })
-    ]).start();
-    setPaid(!paid);
-  }
-
-  const animatedStyles = {
-    backgroundColor: animatedValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: [theme.colors.grisClaro, theme.colors.verdeMedio]
-    })
-  }
-
-  const animatedStyles2 = {
-    transform: [
-      {
-        translateX: animatedValue2.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0, 14]
-        })
-      }
-    ]
-  }
-
   const handleSaveShift = () => {
     const newShift: ShiftProps = {
+      key: `${shiftEntry}${employer}`,
       employer: employer, 
       shiftEntry: shiftEntry!, 
       shiftExit: shiftExit, 
@@ -202,6 +168,25 @@ export default function NewShift() {
     if (employer !== "" && !shiftEntry) {setMissing("Entrada es obligatorio")}
   }
 
+  useEffect(() => {
+    if (shifts.find(shift => 
+      shift.employer === employer && 
+      shift.shiftEntry.getFullYear() === shiftEntry?.getFullYear() &&
+      shift.shiftEntry.getMonth() === shiftEntry?.getMonth() &&
+      shift.shiftEntry.getDate() === shiftEntry?.getDate() &&
+      shift.shiftEntry.getHours() === shiftEntry?.getHours() &&
+      shift.shiftEntry.getMinutes() === shiftEntry?.getMinutes()
+    )) {
+      setMissing("La entrada ya existe para este empleador")
+      setBlockSubmit(true)
+    } else {
+      setMissing("")
+      setBlockSubmit(false)
+    }
+
+  }, [employer, shiftEntry])
+
+  
   return (
     <View style={styles.container}>
       <Link 
@@ -284,14 +269,7 @@ export default function NewShift() {
         
         <View style={styles.lineLeft}>
           <Text style={styles.textLine}>Pagado</Text>
-          <TouchableOpacity
-            activeOpacity={1} 
-            onPress={() => handlePress()}
-          >
-            <Animated.View style={[styles.slide_exterior, animatedStyles]}>
-              <Animated.View style={[styles.slide_interior, animatedStyles2]}></Animated.View>
-            </Animated.View>
-          </TouchableOpacity>
+          <Slider setValue={setPaid} value={paid} />
         </View>
         
         <TextInput 
@@ -354,8 +332,9 @@ export default function NewShift() {
 
       <TouchableOpacity style={styles.boton} onPress={() => checkInfo()}>
         <Boton 
+          margintop={20}
           press={() => handleSaveShift()}
-          block={employer === "" || !shiftEntry ? true : false}
+          block={employer === "" || !shiftEntry || blockSubmit ? true : false}
           to={`/calendar/shifts/${pressedDate}`} 
           text="Registrar Turno" 
           color={theme.colors.verdeBoton}
@@ -431,6 +410,7 @@ const styles = StyleSheet.create ({
     paddingVertical: 10,
     marginHorizontal: 20,
     marginTop: -10,
+    marginBottom: 10,
     height: "auto",
     textAlign: "center",
     textAlignVertical: "center"

@@ -173,6 +173,7 @@ export default function EditEmployer() {
       }
 
       <Boton 
+        margintop={0}
         press={() => handleSaveEmployer()}
         block={inputName === "" || salary === "" || repeatedName ? true : false}
         to='/config' 

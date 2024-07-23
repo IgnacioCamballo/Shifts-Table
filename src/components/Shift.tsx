@@ -5,7 +5,7 @@ import theme from '../theme'
 import { ShiftProps } from '../types'
 import useCalendar from '../hooks/useCalendar'
 import { Link } from 'react-router-native'
-import { firstLetterUpper, formattedMinutes, textDay } from '../utils'
+import { firstLetterUpper, formattedMinutes, formattedMinutesNumber, textDay } from '../utils'
 
 export default function Shift({shift}: {shift: ShiftProps}) {
   const {companysInfo, setCompanysInfo, setEditEmployer} = useCalendar()
@@ -28,16 +28,28 @@ export default function Shift({shift}: {shift: ShiftProps}) {
         <Text style={styles.textLine}>Entrada:</Text>
         <Text style={styles.textLine}>{shiftEntry ? `${shiftEntry.getHours()}:${formattedMinutes(shiftEntry)}` : "-"}</Text>
       </View>
+
       <View style={styles.line}>
         <Text style={styles.textLine}>Salida:</Text>
         <Text style={styles.textLine}>
-            {shiftExit && shiftEntry ?
-              (shiftExit?.getDate() !== shiftEntry?.getDate() ? 
-              `${firstLetterUpper(shiftExit!.toLocaleDateString('es-ES', {month: 'short'}))} ${shiftExit?.getDate()} (${textDay(shiftExit)})  ` : "") 
-              : ""
-            }
-            {shiftExit ? `${shiftExit.getHours()}:${formattedMinutes(shiftExit)}` : "-"}
-          </Text>      </View>
+          {shiftExit && shiftEntry ?
+            (shiftExit?.getDate() !== shiftEntry?.getDate() ? 
+            `${firstLetterUpper(shiftExit!.toLocaleDateString('es-ES', {month: 'short'}))} ${shiftExit?.getDate()} (${textDay(shiftExit)})  ` : "") 
+            : ""
+          }
+          {shiftExit ? `${shiftExit.getHours()}:${formattedMinutes(shiftExit)}` : "-"}
+        </Text>      
+      </View>
+
+      <View style={styles.line}>
+        <Text style={styles.textLine}>Descanso:</Text>
+        <Text style={styles.textLine}>{shiftBreak ? `${shiftBreak.getHours()}:${formattedMinutes(shiftBreak)}` : "0"}</Text>
+      </View>
+
+      <View style={styles.line}>
+        <Text style={styles.textLine}>Horas trabajadas:</Text>
+        <Text style={styles.textLine}>{workedHours !== null && workedMinutes !== null ? `${workedHours}:${formattedMinutesNumber(workedMinutes!)}` : "-"}</Text>
+      </View>
 
       <View style={styles.line}>
         <View style={styles.contColor}>
