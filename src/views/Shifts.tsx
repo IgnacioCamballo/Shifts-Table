@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Animated, Dimensions, StyleSheet, Text, TouchableOpacity, View, ScrollView } from 'react-native'
 import { useParams } from 'react-router-native'
-import { firstLetterUpper } from '../utils'
+import { ShiftProps } from '../types'
+import { firstLetterUpper, textDay } from '../utils'
 import BotonChico from '../components/BotonChico'
 import theme from '../theme'
 import useCalendar from '../hooks/useCalendar'
 import Boton from '../components/Boton'
+import Shift from '../components/Shift'
 
 export default function Shifts() {
   const params = useParams()
@@ -18,31 +20,6 @@ export default function Shifts() {
 
   const [position, setPosition] = useState(new Animated.Value(0))
   const [date, setDate] = useState(new Date(pressedDate))
-  const [employersToday, setEmployersToday] = useState(["Todos"])
-
-  useEffect(() => {
-    const todayShifts = shifts.filter(shift => shift.shiftEntry === date)
-    for (let i=0; i = todayShifts.length; i++) {
-      const name = todayShifts[i].employer
-      if (todayShifts.find(shift => shift.employer === name)) {
-        return
-      } else {
-        setEmployersToday([...employersToday, name])
-      }
-    }
-  }, [, date])
-
-  const textDay = () => {
-    const weekdaysArray = [...Array(7).keys()]
-    const intlWeekDay = new Intl.DateTimeFormat(lenguage, {weekday: "short"})
-    const weekDays = weekdaysArray.map(weekDayIndex => {
-      const weekDayName = intlWeekDay.format(new Date(2021, 10, weekDayIndex))
-      return weekDayName
-    })
-    const day = firstLetterUpper(weekDays[date.getDay()])
-    
-    return (day)
-  }
 
   const prevDay = () => {
       const newDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
@@ -91,13 +68,13 @@ export default function Shifts() {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.arrows}>
         <TouchableOpacity activeOpacity={0.7} onPress={prevDay}>
           <BotonChico color={theme.colors.grisMedio} text='<'/>
         </TouchableOpacity>
 
-        <Text style={styles.monthText}>{firstLetterUpper(date.toLocaleDateString('es-ES', {month: 'short'}))} / {date.toLocaleDateString('es-ES', {day:"numeric"})} ({textDay()})</Text>
+        <Text style={styles.monthText}>{firstLetterUpper(date.toLocaleDateString('es-ES', {month: 'short'}))} / {date.toLocaleDateString('es-ES', {day:"numeric"})} ({textDay(date)})</Text>
         
         <TouchableOpacity activeOpacity={0.7} onPress={nextDay}>
           <BotonChico color={theme.colors.grisMedio} text='>'/>
@@ -106,7 +83,14 @@ export default function Shifts() {
 
       <Boton block={false} press={() => {}} to={`/calendar/shifts/${date}/newShift`} text="Registrar Turno" color={theme.colors.verdeBoton}/>
 
-    </ScrollView>
+      <ScrollView>
+        {shifts.length === 0 || shifts === undefined ? <View></View> : 
+          shifts.filter((shift: ShiftProps) => new Date(shift.shiftEntry.getFullYear(), shift.shiftEntry.getMonth(), shift.shiftEntry.getDate(), 0, 0) === new Date(date.getFullYear(), date.getMonth(), date.getDay(), 0, 0)).map(
+            (mapedShift: ShiftProps) => <Shift shift={mapedShift} />
+          )
+        }
+      </ScrollView>
+    </View>
   )
 }
 

@@ -183,7 +183,7 @@ export default function Config() {
           <Text style={styles.textoConf}>Empleadores</Text>
         </View>
         
-        <ScrollView style={styles.scrollView}>
+        <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
           {companysInfo.length === 0 ? <Text style={styles.textNotEmployers}>Aún no hay empleadores</Text> : 
             companysInfo.map(employer => (
               <Empleador key={employer.name} employer={employer}/>

@@ -13,3 +13,15 @@ export function firstLetterUpper (text: string) {
     const result = text.replace(text[0], text[0].toUpperCase())
     return result
 }
+
+export function textDay (date: Date) {
+    const weekdaysArray = [...Array(7).keys()]
+    const intlWeekDay = new Intl.DateTimeFormat("es", {weekday: "short"})
+    const weekDays = weekdaysArray.map(weekDayIndex => {
+      const weekDayName = intlWeekDay.format(new Date(2021, 10, weekDayIndex))
+      return weekDayName
+    })
+    const day = firstLetterUpper(weekDays[date!.getDay()])
+    
+    return (day)
+  }

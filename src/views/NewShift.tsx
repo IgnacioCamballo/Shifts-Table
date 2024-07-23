@@ -8,7 +8,7 @@ import theme from '../theme'
 import Boton from '../components/Boton'
 import BotonChico from '../components/BotonChico'
 import DatePicker from 'react-native-date-picker'
-import { firstLetterUpper, formattedMinutes, formattedMinutesNumber } from '../utils'
+import { firstLetterUpper, formattedMinutes, formattedMinutesNumber, textDay } from '../utils'
 import Icon from 'react-native-vector-icons/AntDesign'
 import { Picker } from '@react-native-picker/picker'
 import { ShiftProps } from '../types'
@@ -146,18 +146,6 @@ export default function NewShift() {
       }
     )
   }
-  
-  const textDay = () => {
-    const weekdaysArray = [...Array(7).keys()]
-    const intlWeekDay = new Intl.DateTimeFormat(lenguage, {weekday: "short"})
-    const weekDays = weekdaysArray.map(weekDayIndex => {
-      const weekDayName = intlWeekDay.format(new Date(2021, 10, weekDayIndex))
-      return weekDayName
-    })
-    const day = firstLetterUpper(weekDays[shiftExit!.getDay()])
-    
-    return (day)
-  }
 
   const handlePress = () => {
     Animated.parallel([
@@ -270,7 +258,7 @@ export default function NewShift() {
             <Text style={styles.textLine}>
               {shiftExit && shiftEntry ?
                 (shiftExit?.getDate() !== shiftEntry?.getDate() ? 
-                  `${firstLetterUpper(shiftExit!.toLocaleDateString('es-ES', {month: 'short'}))} ${shiftExit?.getDate()} (${textDay()})  ` : "") 
+                  `${firstLetterUpper(shiftExit!.toLocaleDateString('es-ES', {month: 'short'}))} ${shiftExit?.getDate()} (${textDay(shiftExit!)})  ` : "") 
                 : ""
               }
               {shiftExit ? `${shiftExit.getHours()}:${formattedMinutes(shiftExit)}` : "-"}

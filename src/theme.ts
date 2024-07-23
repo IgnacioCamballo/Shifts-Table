@@ -32,7 +32,7 @@ const theme = {
     heigth: {
         publicidad: 80,
         daysContainer: (screenHeight - Constants.statusBarHeight -80 - 194)/6,
-        configScrollView: (screenHeight - Constants.statusBarHeight - 80 - 450)
+        configScrollView: (screenHeight - Constants.statusBarHeight - 80 - 440)
     }
 }
 
