@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Animated, Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Animated, Dimensions, StyleSheet, Text, TouchableOpacity, View, ScrollView } from 'react-native'
 import { useParams } from 'react-router-native'
 import { firstLetterUpper } from '../utils'
 import BotonChico from '../components/BotonChico'
@@ -91,7 +91,7 @@ export default function Shifts() {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.arrows}>
         <TouchableOpacity activeOpacity={0.7} onPress={prevDay}>
           <BotonChico color={theme.colors.grisMedio} text='<'/>
@@ -105,7 +105,8 @@ export default function Shifts() {
       </View>
 
       <Boton block={false} press={() => {}} to={`/calendar/shifts/${date}/newShift`} text="Registrar Turno" color={theme.colors.verdeBoton}/>
-    </View>
+
+    </ScrollView>
   )
 }
 

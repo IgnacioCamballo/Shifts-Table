@@ -7,12 +7,14 @@ export type EmployerProps = {
 }
 
 export type ShiftProps = {
-    shiftEntry: Date,
-    shiftExit: Date,
-    shiftBreak: number,
     employer: string,
-    workedHours: number,
-    workedMinutes: number
+    shiftEntry: Date,
+    shiftExit: Date | null,
+    shiftBreak: Date | null,
+    workedHours: number | null,
+    workedMinutes: number | null,
+    paid: boolean,
+    note: string | null
 }
 
 export type ConfigInfo = {

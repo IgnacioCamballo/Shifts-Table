@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Modal, StyleSheet, Text, TouchableOpacity, View, Platform, Alert } from 'react-native'
+import { Modal, StyleSheet, Text, TouchableOpacity, View, Platform, Alert, ScrollView } from 'react-native'
 import CheckBox from '@react-native-community/checkbox';
 import DatePicker from 'react-native-date-picker'
 import Constants from "expo-constants"
@@ -183,11 +183,13 @@ export default function Config() {
           <Text style={styles.textoConf}>Empleadores</Text>
         </View>
         
-        {companysInfo.length === 0 ? <Text style={styles.textNotEmployers}>Aún no hay empleadores</Text> : 
-          companysInfo.map(employer => (
-            <Empleador key={employer.name} employer={employer}/>
-          ))
-        }
+        <ScrollView style={styles.scrollView}>
+          {companysInfo.length === 0 ? <Text style={styles.textNotEmployers}>Aún no hay empleadores</Text> : 
+            companysInfo.map(employer => (
+              <Empleador key={employer.name} employer={employer}/>
+            ))
+          }
+        </ScrollView>
         
         <Boton block={false} press={() => {}} to='/config/newEmployer' text="Registrar Empleado" color={theme.colors.verdeBoton}/>
       </View>
@@ -272,5 +274,8 @@ const styles = StyleSheet.create ({
   },
   modalButton: {
     fontSize: theme.fontSizes.F18
+  },
+  scrollView: {
+    maxHeight: theme.heigth.configScrollView
   }
 })

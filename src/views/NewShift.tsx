@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { StyleSheet, Text, TextInput, TouchableOpacity, View, Modal, Platform, Alert } from 'react-native'
+import React, { useEffect, useRef, useState } from 'react'
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, Modal, Platform, Alert, Animated, ViewStyle } from 'react-native'
 import { Link, useParams } from 'react-router-native'
 import Constants from "expo-constants"
 
@@ -10,22 +10,29 @@ import BotonChico from '../components/BotonChico'
 import DatePicker from 'react-native-date-picker'
 import { firstLetterUpper, formattedMinutes, formattedMinutesNumber } from '../utils'
 import Icon from 'react-native-vector-icons/AntDesign'
+import { Picker } from '@react-native-picker/picker'
+import { ShiftProps } from '../types'
 
 export default function NewShift() {
   const params = useParams()
   const pressedDate = new Date(params.date!)
   let lenguage = "es"
 
-  const {configInfo} = useCalendar()
+  const {configInfo, companysInfo, shifts, setShifts} = useCalendar()
 
   const [employer, setEmployer] = useState("")
-  const [shiftEntry, setShiftEntry] = useState<Date | null>(new Date(pressedDate.getFullYear(), pressedDate.getMonth(), pressedDate.getDate() ,configInfo.entry?.getHours(), configInfo.entry?.getMinutes()))
-  const [shiftExit, setShiftExit] = useState(new Date(pressedDate.getFullYear(), pressedDate.getMonth(), pressedDate.getDate() ,configInfo.exit?.getHours(), configInfo.exit?.getMinutes()))
+  const [shiftEntry, setShiftEntry] = useState<Date | null>(configInfo.entry ? new Date(pressedDate.getFullYear(), pressedDate.getMonth(), pressedDate.getDate() ,configInfo.entry?.getHours(), configInfo.entry?.getMinutes()) : null)
+  const [shiftExit, setShiftExit] = useState<Date | null>(configInfo.exit ? new Date(pressedDate.getFullYear(), pressedDate.getMonth(), pressedDate.getDate() ,configInfo.exit?.getHours(), configInfo.exit?.getMinutes()): null)
   const [shiftBreak, setShiftBreak] = useState(configInfo.configBreak)
   const [workedHours, setWorkedHours] = useState<number | null>(null)
   const [workedMinutes, setWorkedMinutes] = useState<number | null>(null)
+  const [paid, setPaid] = useState(false)
+  const [note, setNote] = useState("")
 
   const [missing, setMissing] = useState("")
+
+  const animatedValue = useRef(new Animated.Value(paid ? 1 : 0)).current
+  const animatedValue2 = useRef(new Animated.Value(paid ? 1 : 0)).current
 
   const [timeType, setTimeType] = useState("")
   const [date, setDate] = useState<Date | null>(pressedDate)
@@ -89,7 +96,12 @@ export default function NewShift() {
           - ((shiftBreak === undefined || shiftBreak === null) ? 0 : minutes - shiftBreak!.getMinutes() < 0 ? 1 : 0)
           - ((shiftBreak === undefined || shiftBreak === null) ? 0 : shiftBreak!.getHours())
         )
-        setWorkedHours(hours)
+        if(hours >= 0) {
+          setWorkedHours(hours)
+        } else {       
+          setWorkedHours(null)
+          setWorkedMinutes(null)
+        }
       } else {
         const hours = (
           (24 - shiftEntry!.getHours()) 
@@ -99,12 +111,19 @@ export default function NewShift() {
           + (difMonth ? 24 * ((daysInMonth - shiftEntry!.getDate()) + (shiftExit!.getDate() -1)) : 24 * (dayDiference - 1)) 
           + shiftExit!.getHours()
         )  
-        setWorkedHours(hours)
+        if(hours >= 0) {
+          setWorkedHours(hours)
+        } else {       
+          setWorkedHours(null)
+          setWorkedMinutes(null)
+        }
       }
     } else {
       setWorkedHours(null)
       setWorkedMinutes(null)
     }
+
+
   }, [shiftEntry, shiftExit, shiftBreak])
 
   const showAlert = () => {
@@ -140,6 +159,61 @@ export default function NewShift() {
     return (day)
   }
 
+  const handlePress = () => {
+    Animated.parallel([
+      Animated.timing(animatedValue, {
+        toValue: paid ? 0 : 1,
+        duration: 150,
+        useNativeDriver: true,
+      }),
+      Animated.timing(animatedValue2, {
+        toValue: paid ? 0 : 1,
+        duration: 150,
+        useNativeDriver: true,
+      })
+    ]).start();
+    setPaid(!paid);
+  }
+
+  const animatedStyles = {
+    backgroundColor: animatedValue.interpolate({
+      inputRange: [0, 1],
+      outputRange: [theme.colors.grisClaro, theme.colors.verdeMedio]
+    })
+  }
+
+  const animatedStyles2 = {
+    transform: [
+      {
+        translateX: animatedValue2.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, 14]
+        })
+      }
+    ]
+  }
+
+  const handleSaveShift = () => {
+    const newShift: ShiftProps = {
+      employer: employer, 
+      shiftEntry: shiftEntry!, 
+      shiftExit: shiftExit, 
+      shiftBreak: shiftBreak, 
+      workedHours: workedHours,
+      workedMinutes: workedMinutes,
+      paid: paid,
+      note: note
+    }
+    const updatedshifts = [...shifts, newShift]
+    setShifts(updatedshifts)
+  }
+
+  const checkInfo = () => {
+    if (employer === "" && !shiftEntry) {setMissing("Empleador y entrada son obligatorios")}
+    if (employer === "" && shiftEntry) {setMissing("Empleador es obligatorio")}
+    if (employer !== "" && !shiftEntry) {setMissing("Entrada es obligatorio")}
+  }
+
   return (
     <View style={styles.container}>
       <Link 
@@ -159,14 +233,20 @@ export default function NewShift() {
         <View style={styles.line}>
           <Text style={styles.textLine}>Empleador:</Text>
           
-          <TextInput
-            style={styles.textLine}
-            onChangeText={setEmployer}
-            value={employer}
-            maxLength={25}
-            placeholder='Ingresa el nombre'
-            placeholderTextColor={theme.colors.grisMedio}
-          />
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={employer}
+              onValueChange={newValue => setEmployer(newValue)}
+              style={styles.picker}
+              accessibilityLabel='Seleccionar Empleador'
+              mode='dropdown'
+              >
+                <Picker.Item style={styles.pickerItem} label='Seleccionar Empleador' value="" enabled={false}/>
+              {companysInfo.map(employer => 
+                <Picker.Item style={styles.pickerItem} label={employer.name} value={employer.name} key={employer.name}/>
+              )}
+            </Picker>
+          </View>
         </View>
 
         <TouchableOpacity 
@@ -214,12 +294,28 @@ export default function NewShift() {
           <Text style={styles.textLine}>{workedHours !== null && workedMinutes !== null ? `${workedHours}:${formattedMinutesNumber(workedMinutes!)}` : "-"}</Text>
         </View>
         
-        <View style={styles.line}>
+        <View style={styles.lineLeft}>
           <Text style={styles.textLine}>Pagado</Text>
-
+          <TouchableOpacity
+            activeOpacity={1} 
+            onPress={() => handlePress()}
+          >
+            <Animated.View style={[styles.slide_exterior, animatedStyles]}>
+              <Animated.View style={[styles.slide_interior, animatedStyles2]}></Animated.View>
+            </Animated.View>
+          </TouchableOpacity>
         </View>
         
-        <TextInput/>
+        <TextInput 
+          value={note}
+          onChangeText={setNote}
+          style={styles.textInput}
+          multiline = {true}
+          numberOfLines = {2}
+          placeholder='Nota'
+          maxLength={70}
+          scrollEnabled={true}
+        />
       </View>
 
       <Modal
@@ -264,17 +360,19 @@ export default function NewShift() {
         </View>
       </Modal>
 
-      <Boton 
-        press={() => {}}
-        block={employer === "" ? true : false}
-        to={`/calendar/shifts/${pressedDate}`} 
-        text="Registrar Turno" 
-        color={theme.colors.verdeBoton}
-      />
-
       {missing &&
-        <Text style={styles.textAlert}>El nombre ya existe</Text>
+        <Text style={styles.textAlert}>{missing}</Text>
       }
+
+      <TouchableOpacity style={styles.boton} onPress={() => checkInfo()}>
+        <Boton 
+          press={() => handleSaveShift()}
+          block={employer === "" || !shiftEntry ? true : false}
+          to={`/calendar/shifts/${pressedDate}`} 
+          text="Registrar Turno" 
+          color={theme.colors.verdeBoton}
+        />
+      </TouchableOpacity>
     </View>
   )
 }
@@ -310,10 +408,28 @@ const styles = StyleSheet.create ({
     borderBottomWidth: 1,
     borderColor: theme.colors.grisClaro
   },
+  lineLeft: {
+    paddingHorizontal: 15,
+    paddingVertical: 12,
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    gap: 20
+  },
   textLine: {
     fontSize: theme.fontSizes.F20,
     fontWeight: '400',
     textAlign: "right"
+  },
+  textInput: {
+    borderColor: theme.colors.grisClaro,
+    borderWidth: 1,
+    marginHorizontal: 15,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    fontSize: theme.fontSizes.F18,
+    textAlignVertical: "top",
+    maxHeight: 60
   },
   row: {
     flexDirection: "row"
@@ -324,10 +440,15 @@ const styles = StyleSheet.create ({
     textTransform: "uppercase",
     color: theme.colors.rojoBin,
     backgroundColor: theme.colors.rojoClaro,
-    margin: 32,
-    height: 40,
+    paddingVertical: 10,
+    marginHorizontal: 20,
+    marginTop: -10,
+    height: "auto",
     textAlign: "center",
     textAlignVertical: "center"
+  },
+  boton: {
+    marginTop: -20
   },
   modalContainer: {
     flex: 1,
@@ -366,5 +487,36 @@ const styles = StyleSheet.create ({
   },
   modalButton: {
     fontSize: theme.fontSizes.F18
+  },
+  slide_exterior: {
+    flexDirection:"row",
+    borderRadius: 15,
+    width: 40,
+    height: 26,
+    alignItems: "center",
+    position: "relative",
+    top: 1,
+  },
+  slide_interior: {
+    backgroundColor: "#fff",
+    borderColor: theme.colors.grisMasClaro,
+    borderWidth: 1,
+    width: 22,
+    height: 22,
+    borderRadius: 12,
+    margin: 2
+  },
+  pickerContainer: {
+    flex: 1,
+    height: 20,
+    justifyContent: "center",
+  },
+  picker: {
+    marginLeft: 0,
+    transform: [{translateX: 18}]
+  },
+  pickerItem: {
+    fontSize: 18,
+    color: "black"
   }
 })
