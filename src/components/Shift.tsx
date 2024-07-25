@@ -1,21 +1,53 @@
 import React from 'react'
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, Alert } from 'react-native'
 import Icon from "react-native-vector-icons/AntDesign"
 import theme from '../theme'
 import { ShiftProps } from '../types'
 import useCalendar from '../hooks/useCalendar'
 import { Link } from 'react-router-native'
 import { firstLetterUpper, formattedMinutes, formattedMinutesNumber, textDay } from '../utils'
+import Slider from './Slider'
 
 export default function Shift({shift}: {shift: ShiftProps}) {
-  const {companysInfo, setCompanysInfo, setEditEmployer} = useCalendar()
+  const {shifts, setShifts} = useCalendar()
 
-  const {employer, paid, shiftEntry, shiftExit, shiftBreak, workedHours, workedMinutes} = shift
+  const {key, employer, paid, shiftEntry, shiftExit, shiftBreak, workedHours, workedMinutes} = shift
 
-  // const handleDeleteShift = () => {
-  //   const filtered = companysInfo.filter(employer => employer.name !== name)
-  //   setCompanysInfo(filtered)
-  // }
+  const showAlert = () => {
+    Alert.alert(
+      '',
+      "¿seguro deseas eliminar este turno?",
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel'
+        },
+        {
+          text: 'OK',
+          onPress: () => handleDeleteShift(),
+          style: 'cancel'
+        },
+      ],
+      {
+        cancelable: true
+      }
+    )
+  }
+
+  const handleDeleteShift = () => {
+    const filtered = shifts.filter(shift => shift.key !== key)
+    setShifts(filtered)
+  }
+
+  const setPaid = (value: boolean) => {
+    const shiftIndex = shifts.findIndex(shift => shift.key === key)
+    const editedShift = {
+      ...shift, paid: value
+    }
+    const updatedShifts = [...shifts]
+    updatedShifts.splice(shiftIndex, 1, editedShift)
+    setShifts(updatedShifts)
+  }
 
   return (
     <View style={styles.empleador}>
@@ -52,16 +84,13 @@ export default function Shift({shift}: {shift: ShiftProps}) {
       </View>
 
       <View style={styles.line}>
-        <View style={styles.contColor}>
+        <View style={styles.contPago}>
           <Text style={styles.textLine}>Pago:</Text>
-          <Text>
-           
-          </Text>
+          <Slider setValue={setPaid} value={paid}/>
         </View>
         <View style={styles.botones}>
-          {/* <Link 
-            to={`/config/editEmployer/${companysInfo.findIndex(employer => employer.name === name)}`} 
-            onPress={() => setEditEmployer(employer)}
+          <Link 
+            to={`/calendar/shifts/${new Date(shiftEntry.getFullYear(), shiftEntry.getMonth(), shiftEntry.getDate())}/editShift/${key}`} 
             activeOpacity={0.7}
             underlayColor={"none"}
           >
@@ -75,8 +104,8 @@ export default function Shift({shift}: {shift: ShiftProps}) {
             name='delete' 
             color={theme.colors.rojoBin} 
             size={20}
-            onPress={() => handleDeleteEmployer()}
-          /> */}
+            onPress={() => showAlert()}
+          />
         </View>
       </View>
     </View>
@@ -100,9 +129,9 @@ const styles = StyleSheet.create({
       fontSize: theme.fontSizes.F20,
       fontWeight: '400'
     },
-    contColor: {
+    contPago: {
       flexDirection: "row",
-      alignItems: "baseline",
+      alignItems: "center",
       gap: 10
     },
     color: {

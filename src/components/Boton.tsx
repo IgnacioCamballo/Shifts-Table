@@ -1,7 +1,8 @@
 import React from 'react'
-import { View, StyleSheet, Text, ColorValue } from 'react-native'
+import { View, StyleSheet, Text, ColorValue, Linking } from 'react-native'
 import theme from '../theme'
 import { Link } from 'react-router-native'
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 interface ButtonProps {
     text: string;
@@ -22,7 +23,7 @@ export default function Boton({text, color, to, block, press, margintop} : Butto
     }
 
     return (
-        <Link onPress={press} disabled={block} to={to} activeOpacity={0.5} underlayColor="none">
+        <Link activeOpacity={0.5} onPress={press} to={to} disabled={block} underlayColor="none">
             <View style={customeStyle.boton}>
                 <Text style={styles.texto}>{text}</Text>
             </View>
@@ -34,7 +35,7 @@ const styles = StyleSheet.create({
     boton: {
         paddingVertical: 8,
         paddingHorizontal: 16,
-        width: "auto",
+        maxWidth: "auto",
         borderRadius: 10,
         alignSelf: "center"
     },

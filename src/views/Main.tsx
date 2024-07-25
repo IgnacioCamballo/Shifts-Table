@@ -10,6 +10,7 @@ import NewEmployer from './NewEmployer'
 import EditEmployer from './EditEmployer'
 import Shifts from './Shifts'
 import NewShift from './NewShift'
+import EditShift from './EditShift'
 
 export default function Main() {
   return (
@@ -19,10 +20,11 @@ export default function Main() {
           <Route path='/' element={<Calendar />}/>
           <Route path='/totals' element={<Totals />}/>
           <Route path='/config' element={<Config />}/>
-          <Route path='/config/newEmployer' element={<NewEmployer />}/>
-          <Route path='/config/editEmployer/:employer' element={<EditEmployer />}/>
+            <Route path='/config/newEmployer' element={<NewEmployer />}/>
+            <Route path='/config/editEmployer/:employer' element={<EditEmployer />}/>
           <Route path='/calendar/shifts/:date' element={<Shifts />}/>
-          <Route path='/calendar/shifts/:date/newShift' element={<NewShift />}/>
+            <Route path='/calendar/shifts/:date/newShift' element={<NewShift />}/>
+            <Route path='/calendar/shifts/:date/editShift/:shift' element={<EditShift />}/>
         </Routes>
         <LayoutFooter />
     </View>

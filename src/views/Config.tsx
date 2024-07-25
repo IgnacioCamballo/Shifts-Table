@@ -70,7 +70,7 @@ export default function Config() {
 
   const showAlert = () => {
     Alert.alert(
-      'Alerta',
+      '',
       `¿seguro deseas eliminar la hora de ${timeType}?`,
       [
         {

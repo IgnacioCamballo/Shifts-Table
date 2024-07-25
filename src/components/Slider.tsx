@@ -4,7 +4,7 @@ import theme from '../theme';
 
 type ValueProps = {
   value: boolean,
-  setValue: React.Dispatch<React.SetStateAction<boolean>>
+  setValue: React.Dispatch<React.SetStateAction<boolean>> | ((value: boolean) => void)
 }
 
 export default function Slider({value, setValue}: ValueProps) {

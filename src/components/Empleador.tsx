@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, Alert } from 'react-native'
 import Icon from "react-native-vector-icons/AntDesign"
 import theme from '../theme'
 import { EmployerProps } from '../types'
@@ -7,7 +7,7 @@ import useCalendar from '../hooks/useCalendar'
 import { Link } from 'react-router-native'
 
 export default function Empleador({employer}: {employer: EmployerProps}) {
-    const {companysInfo, setCompanysInfo, setEditEmployer} = useCalendar()
+    const {companysInfo, setCompanysInfo} = useCalendar()
 
     const {name, wage, color} = employer
 
@@ -17,6 +17,27 @@ export default function Empleador({employer}: {employer: EmployerProps}) {
             backgroundColor: `${color}`
         }
     }
+
+    const showAlert = () => {
+        Alert.alert(
+          '',
+          "¿seguro deseas eliminar este empleador?",
+          [
+            {
+              text: 'Cancel',
+              style: 'cancel'
+            },
+            {
+              text: 'OK',
+              onPress: () => handleDeleteEmployer(),
+              style: 'cancel'
+            },
+          ],
+          {
+            cancelable: true
+          }
+        )
+      }
 
     const handleDeleteEmployer = () => {
         const filtered = companysInfo.filter(employer => employer.name !== name)
@@ -43,7 +64,6 @@ export default function Empleador({employer}: {employer: EmployerProps}) {
                 <View style={styles.botones}>
                         <Link 
                             to={`/config/editEmployer/${companysInfo.findIndex(employer => employer.name === name)}`} 
-                            onPress={() => setEditEmployer(employer)}
                             activeOpacity={0.7}
                             underlayColor={"none"}
                         >
@@ -57,7 +77,7 @@ export default function Empleador({employer}: {employer: EmployerProps}) {
                             name='delete' 
                             color={theme.colors.rojoBin} 
                             size={20}
-                            onPress={() => handleDeleteEmployer()}
+                            onPress={() => showAlert()}
                         />
                 </View>
             </View>

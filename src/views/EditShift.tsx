@@ -14,20 +14,25 @@ import { Picker } from '@react-native-picker/picker'
 import { ShiftProps } from '../types'
 import Slider from '../components/Slider'
 
-export default function NewShift() {
+export default function EditShift() {
+  const { companysInfo, shifts, setShifts} = useCalendar()
+
   const params = useParams()
   const pressedDate = new Date(params.date!)
+  const editingShiftKey = params.shift!
+  const editingShift = shifts.find(shift => shift.key === editingShiftKey)
+  const editingShiftIndex = shifts.findIndex(shift => shift.key === editingShiftKey)
 
-  const {configInfo, companysInfo, shifts, setShifts} = useCalendar()
+  const {employer, key, note, paid, shiftBreak, shiftEntry, shiftExit, workedHours, workedMinutes} = editingShift!
 
-  const [employer, setEmployer] = useState("")
-  const [shiftEntry, setShiftEntry] = useState<Date | null>(configInfo.entry ? new Date(pressedDate.getFullYear(), pressedDate.getMonth(), pressedDate.getDate() ,configInfo.entry?.getHours(), configInfo.entry?.getMinutes()) : null)
-  const [shiftExit, setShiftExit] = useState<Date | null>(configInfo.exit ? new Date(pressedDate.getFullYear(), pressedDate.getMonth(), pressedDate.getDate() ,configInfo.exit?.getHours(), configInfo.exit?.getMinutes()): null)
-  const [shiftBreak, setShiftBreak] = useState(configInfo.configBreak)
-  const [workedHours, setWorkedHours] = useState<number | null>(null)
-  const [workedMinutes, setWorkedMinutes] = useState<number | null>(null)
-  const [paid, setPaid] = useState(false)
-  const [note, setNote] = useState("")
+  const [employerEdit, setEmployer] = useState(employer)
+  const [shiftEntryEdit, setShiftEntry] = useState<Date | null>(shiftEntry)
+  const [shiftExitEdit, setShiftExit] = useState<Date | null>(shiftExit ? shiftExit : null)
+  const [shiftBreakEdit, setShiftBreak] = useState<Date | null>(shiftBreak ? shiftBreak : null)
+  const [workedHoursEdit, setWorkedHours] = useState<number | null>(workedHours ? workedHours : null)
+  const [workedMinutesEdit, setWorkedMinutes] = useState<number | null>(workedMinutes ? workedMinutes : null)
+  const [paidEdit, setPaid] = useState(paid ? paid : false)
+  const [noteEdit, setNote] = useState(note ? note : "")
 
   const [missing, setMissing] = useState("")
   const [blockSubmit, setBlockSubmit] = useState(true)
@@ -40,16 +45,16 @@ export default function NewShift() {
   const selectedTime = () => {
     switch(timeType) {
       case "entrada": 
-        setDate(shiftEntry ? shiftEntry : pressedDate)
-        setShowDelete(shiftEntry ? true : false)
+        setDate(shiftEntryEdit ? shiftEntryEdit : pressedDate)
+        setShowDelete(shiftEntryEdit ? true : false)
         break
       case "salida":
-        setDate(shiftExit ? shiftExit : (shiftEntry ? shiftEntry : pressedDate))
-        setShowDelete(shiftExit ? true : false)
+        setDate(shiftExitEdit ? shiftExitEdit : (shiftEntryEdit ? shiftEntryEdit : pressedDate))
+        setShowDelete(shiftExitEdit ? true : false)
         break
       case "descanso":
-        setDate(shiftBreak ? shiftBreak : pressedDate)
-        setShowDelete(shiftBreak ? true : false)
+        setDate(shiftBreakEdit ? shiftBreakEdit : pressedDate)
+        setShowDelete(shiftBreakEdit ? true : false)
     }
   }
 
@@ -60,7 +65,7 @@ export default function NewShift() {
     if(timeType === "salida") {
       setShiftExit(newDate!)
       if (newDate !== null) {
-        if (newDate!.getDate() === shiftEntry!.getDate() && (newDate!.getHours() < shiftEntry!.getHours() || (newDate!.getHours() === shiftEntry!.getHours() && newDate!.getMinutes() < shiftEntry!.getMinutes()))) {
+        if (newDate!.getDate() === shiftEntryEdit!.getDate() && (newDate!.getHours() < shiftEntryEdit!.getHours() || (newDate!.getHours() === shiftEntryEdit!.getHours() && newDate!.getMinutes() < shiftEntryEdit!.getMinutes()))) {
           setShiftEntry(null!)
         }
       }
@@ -72,27 +77,27 @@ export default function NewShift() {
   }
   
   useEffect (() => {
-    if(shiftEntry !== null && shiftExit !== null) {
-      const difMonth = shiftExit!.getMonth() !== shiftEntry!.getMonth()
+    if(shiftEntryEdit !== null && shiftExitEdit !== null) {
+      const difMonth = shiftExitEdit!.getMonth() !== shiftEntryEdit!.getMonth()
       const daysInMonth = new Date(pressedDate.getFullYear(), pressedDate.getMonth() + 1, 0).getDate();
       
-      const dayDiference = shiftExit!.getDate() - shiftEntry!.getDate()    
-      const minutes = ((shiftExit!.getMinutes() < shiftEntry!.getMinutes()) ?
-        shiftExit!.getMinutes() + (60 - shiftEntry!.getMinutes()):
-        shiftExit!.getMinutes() - shiftEntry!.getMinutes()
+      const dayDiference = shiftExitEdit!.getDate() - shiftEntryEdit!.getDate()    
+      const minutes = ((shiftExitEdit!.getMinutes() < shiftEntryEdit!.getMinutes()) ?
+      shiftExitEdit!.getMinutes() + (60 - shiftEntryEdit!.getMinutes()):
+      shiftExitEdit!.getMinutes() - shiftEntryEdit!.getMinutes()
       ) 
-      const minutesWithBreak = ((shiftBreak === undefined || shiftBreak === null) ? minutes : 
-        (minutes - shiftBreak!.getMinutes() >= 0 ? minutes - shiftBreak!.getMinutes() : 60 + (minutes - shiftBreak!.getMinutes()))
+      const minutesWithBreak = ((shiftBreakEdit === undefined || shiftBreakEdit === null) ? minutes : 
+        (minutes - shiftBreakEdit!.getMinutes() >= 0 ? minutes - shiftBreakEdit!.getMinutes() : 60 + (minutes - shiftBreakEdit!.getMinutes()))
       )
       
       setWorkedMinutes(minutesWithBreak)
 
       if(dayDiference === 0) {
         const hours = (
-          shiftExit!.getHours() - shiftEntry!.getHours()  
-          - (shiftExit!.getMinutes() < shiftEntry!.getMinutes() ? 1 : 0) 
-          - ((shiftBreak === undefined || shiftBreak === null) ? 0 : minutes - shiftBreak!.getMinutes() < 0 ? 1 : 0)
-          - ((shiftBreak === undefined || shiftBreak === null) ? 0 : shiftBreak!.getHours())
+          shiftExitEdit!.getHours() - shiftEntryEdit!.getHours()  
+          - (shiftExitEdit!.getMinutes() < shiftEntryEdit!.getMinutes() ? 1 : 0) 
+          - ((shiftBreakEdit === undefined || shiftBreakEdit === null) ? 0 : minutes - shiftBreakEdit!.getMinutes() < 0 ? 1 : 0)
+          - ((shiftBreakEdit === undefined || shiftBreakEdit === null) ? 0 : shiftBreakEdit!.getHours())
         )
         if(hours >= 0) {
           setWorkedHours(hours)
@@ -102,12 +107,12 @@ export default function NewShift() {
         }
       } else {
         const hours = (
-          (24 - shiftEntry!.getHours()) 
-          - (shiftExit!.getMinutes() < shiftEntry!.getMinutes() ? 1 : 0) 
-          - ((shiftBreak === undefined || shiftBreak === null) ? 0 : minutes - shiftBreak!.getMinutes() < 0 ? 1 : 0)
-          - ((shiftBreak === undefined || shiftBreak === null) ? 0 : shiftBreak!.getHours())
-          + (difMonth ? 24 * ((daysInMonth - shiftEntry!.getDate()) + (shiftExit!.getDate() -1)) : 24 * (dayDiference - 1)) 
-          + shiftExit!.getHours()
+          (24 - shiftEntryEdit!.getHours()) 
+          - (shiftExitEdit!.getMinutes() < shiftEntryEdit!.getMinutes() ? 1 : 0) 
+          - ((shiftBreakEdit === undefined || shiftBreakEdit === null) ? 0 : minutes - shiftBreakEdit!.getMinutes() < 0 ? 1 : 0)
+          - ((shiftBreakEdit === undefined || shiftBreakEdit === null) ? 0 : shiftBreakEdit!.getHours())
+          + (difMonth ? 24 * ((daysInMonth - shiftEntryEdit!.getDate()) + (shiftExitEdit!.getDate() -1)) : 24 * (dayDiference - 1)) 
+          + shiftExitEdit!.getHours()
         )  
         if(hours >= 0) {
           setWorkedHours(hours)
@@ -122,7 +127,7 @@ export default function NewShift() {
     }
 
 
-  }, [shiftEntry, shiftExit, shiftBreak])
+  }, [shiftEntryEdit, shiftExitEdit, shiftBreakEdit])
 
   const showAlert = () => {
     Alert.alert(
@@ -145,36 +150,38 @@ export default function NewShift() {
     )
   }
 
-  const handleSaveShift = () => {
-    const newShift: ShiftProps = {
-      key: `${shiftEntry}${employer}`,
-      employer: employer, 
-      shiftEntry: shiftEntry!, 
-      shiftExit: shiftExit, 
-      shiftBreak: shiftBreak, 
-      workedHours: workedHours,
-      workedMinutes: workedMinutes,
-      paid: paid,
-      note: note
+  const handleEditShift = () => {
+    const editedShift: ShiftProps = {
+      key: `${shiftEntryEdit}${employerEdit}`,
+      employer: employerEdit, 
+      shiftEntry: shiftEntryEdit!, 
+      shiftExit: shiftExitEdit, 
+      shiftBreak: shiftBreakEdit, 
+      workedHours: workedHoursEdit,
+      workedMinutes: workedMinutesEdit,
+      paid: paidEdit,
+      note: noteEdit
     }
-    const updatedshifts = [...shifts, newShift]
+    const updatedshifts = [...shifts]
+    updatedshifts.splice(editingShiftIndex, 1, editedShift)
     setShifts(updatedshifts)
   }
 
   const checkInfo = () => {
-    if (employer === "" && !shiftEntry) {setMissing("Empleador y entrada son obligatorios")}
-    if (employer === "" && shiftEntry) {setMissing("Empleador es obligatorio")}
-    if (employer !== "" && !shiftEntry) {setMissing("Entrada es obligatorio")}
+    if (employerEdit === "" && !shiftEntryEdit) {setMissing("Empleador y entrada son obligatorios")}
+    if (employerEdit === "" && shiftEntryEdit) {setMissing("Empleador es obligatorio")}
+    if (employerEdit !== "" && !shiftEntryEdit) {setMissing("Entrada es obligatorio")}
   }
 
   useEffect(() => {
-    if (shifts.find(shift => 
-      shift.employer === employer && 
-      shift.shiftEntry.getFullYear() === shiftEntry?.getFullYear() &&
-      shift.shiftEntry.getMonth() === shiftEntry?.getMonth() &&
-      shift.shiftEntry.getDate() === shiftEntry?.getDate() &&
-      shift.shiftEntry.getHours() === shiftEntry?.getHours() &&
-      shift.shiftEntry.getMinutes() === shiftEntry?.getMinutes()
+    const currentExcluded = shifts.filter (shift => shift.key !== key)
+    if (currentExcluded.find(shift => 
+      shift.employer === employerEdit && 
+      shift.shiftEntry.getFullYear() === shiftEntryEdit?.getFullYear() &&
+      shift.shiftEntry.getMonth() === shiftEntryEdit?.getMonth() &&
+      shift.shiftEntry.getDate() === shiftEntryEdit?.getDate() &&
+      shift.shiftEntry.getHours() === shiftEntryEdit?.getHours() &&
+      shift.shiftEntry.getMinutes() === shiftEntryEdit?.getMinutes()
     )) {
       setMissing("La entrada ya existe para este empleador")
       setBlockSubmit(true)
@@ -182,8 +189,7 @@ export default function NewShift() {
       setMissing("")
       setBlockSubmit(false)
     }
-
-  }, [employer, shiftEntry])
+  }, [employerEdit, shiftEntryEdit])
 
   
   return (
@@ -198,7 +204,7 @@ export default function NewShift() {
       </Link>
 
       <View>
-        <Text style={styles.textoConf}>Nuevo Turno</Text>
+        <Text style={styles.textoConf}>Editar Turno</Text>
       </View>
 
       <View style={styles.empleador}>
@@ -207,7 +213,7 @@ export default function NewShift() {
           
           <View style={styles.pickerContainer}>
             <Picker
-              selectedValue={employer}
+              selectedValue={employerEdit}
               onValueChange={newValue => setEmployer(newValue)}
               style={styles.picker}
               accessibilityLabel='Seleccionar Empleador'
@@ -228,7 +234,7 @@ export default function NewShift() {
         >
           <Text style={styles.textLine}>Entrada:</Text>
           <View >
-            <Text style={styles.textLine}>{shiftEntry ? `${shiftEntry.getHours()}:${formattedMinutes(shiftEntry)}` : "-"}</Text>
+            <Text style={styles.textLine}>{shiftEntryEdit ? `${shiftEntryEdit.getHours()}:${formattedMinutes(shiftEntryEdit)}` : "-"}</Text>
           </View>
         </TouchableOpacity>
 
@@ -240,12 +246,12 @@ export default function NewShift() {
           <Text style={styles.textLine}>Salida:</Text>
           <View >
             <Text style={styles.textLine}>
-              {shiftExit && shiftEntry ?
-                (shiftExit?.getDate() !== shiftEntry?.getDate() ? 
-                  `${firstLetterUpper(shiftExit!.toLocaleDateString('es-ES', {month: 'short'}))} ${shiftExit?.getDate()} (${textDay(shiftExit!)})  ` : "") 
+              {shiftExitEdit && shiftEntryEdit ?
+                (shiftExitEdit?.getDate() !== shiftEntryEdit?.getDate() ? 
+                  `${firstLetterUpper(shiftExitEdit!.toLocaleDateString('es-ES', {month: 'short'}))} ${shiftExitEdit?.getDate()} (${textDay(shiftExitEdit!)})  ` : "") 
                 : ""
               }
-              {shiftExit ? `${shiftExit.getHours()}:${formattedMinutes(shiftExit)}` : "-"}
+              {shiftExitEdit ? `${shiftExitEdit.getHours()}:${formattedMinutes(shiftExitEdit)}` : "-"}
             </Text>
           </View>
         </TouchableOpacity>
@@ -257,22 +263,22 @@ export default function NewShift() {
         >
           <Text style={styles.textLine}>Descanso:</Text>
           <View >
-            <Text style={styles.textLine}>{shiftBreak ? `${shiftBreak.getHours()}:${formattedMinutes(shiftBreak)}` : "0"}</Text>
+            <Text style={styles.textLine}>{shiftBreakEdit ? `${shiftBreakEdit.getHours()}:${formattedMinutes(shiftBreakEdit)}` : "0"}</Text>
           </View>
         </TouchableOpacity>
         
         <View style={styles.line}>
           <Text style={styles.textLine}>Horas trabajadas:</Text>
-          <Text style={styles.textLine}>{workedHours !== null && workedMinutes !== null ? `${workedHours}:${formattedMinutesNumber(workedMinutes!)}` : "-"}</Text>
+          <Text style={styles.textLine}>{workedHoursEdit !== null && workedMinutesEdit !== null ? `${workedHoursEdit}:${formattedMinutesNumber(workedMinutesEdit!)}` : "-"}</Text>
         </View>
         
         <View style={styles.lineLeft}>
           <Text style={styles.textLine}>Pagado</Text>
-          <Slider setValue={setPaid} value={paid} />
+          <Slider setValue={setPaid} value={paidEdit} />
         </View>
         
         <TextInput 
-          value={note}
+          value={noteEdit}
           onChangeText={setNote}
           style={styles.textInput}
           multiline = {true}
@@ -304,8 +310,8 @@ export default function NewShift() {
              
             <DatePicker 
               mode={timeType === "salida" ? "datetime" : 'time'}
-              minimumDate={shiftEntry && timeType === "salida" ? shiftEntry : pressedDate}
-              maximumDate={timeType === "entrada" && shiftExit ? shiftExit : new Date(pressedDate!.getFullYear(), pressedDate!.getMonth(), pressedDate!.getDate() + 2, 23, 59)}
+              minimumDate={shiftEntryEdit && timeType === "salida" ? shiftEntryEdit : pressedDate}
+              maximumDate={timeType === "entrada" && shiftExitEdit ? shiftExitEdit : new Date(pressedDate!.getFullYear(), pressedDate!.getMonth(), pressedDate!.getDate() + 2, 23, 59)}
               locale='es'
               date={date!}
               onDateChange={setDate}
@@ -332,10 +338,10 @@ export default function NewShift() {
       <TouchableOpacity style={styles.boton} onPress={() => checkInfo()}>
         <Boton 
           margintop={20}
-          press={() => handleSaveShift()}
-          block={employer === "" || !shiftEntry || blockSubmit ? true : false}
+          press={() => handleEditShift()}
+          block={employerEdit === "" || !shiftEntryEdit || blockSubmit ? true : false}
           to={`/calendar/shifts/${pressedDate}`} 
-          text="Registrar Turno" 
+          text="Guardar cambios" 
           color={theme.colors.verdeBoton}
         />
       </TouchableOpacity>

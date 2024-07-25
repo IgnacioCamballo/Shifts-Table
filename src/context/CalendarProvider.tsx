@@ -13,8 +13,6 @@ const CalendarProvider = ({ children }: props) => {
   const [companysInfo, setCompanysInfo] = useState<EmployerProps[]>([])
   const [shifts, setShifts] = useState<ShiftProps[]>([])
 
-  const [editEmployer, setEditEmployer] = useState<EmployerProps | {}>({})
-
   const getConfigStorage = async () => {
     try {
       const storagedConfig = await AsyncStorage.getItem("config")
@@ -86,7 +84,6 @@ const CalendarProvider = ({ children }: props) => {
 
   useEffect(() => {
     AsyncStorage.setItem("shifts", JSON.stringify(shifts))
-    console.log(shifts)
   }, [shifts])
 
   return (
@@ -95,11 +92,9 @@ const CalendarProvider = ({ children }: props) => {
         configInfo,
         companysInfo,
         shifts,
-        editEmployer,
         setConfigInfo,
         setCompanysInfo,
         setShifts,
-        setEditEmployer
       }}
     >
       {children}
