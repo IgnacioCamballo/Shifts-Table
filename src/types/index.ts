@@ -9,6 +9,7 @@ export type EmployerProps = {
 export type ShiftProps = {
     key: string,
     employer: string,
+    short: string,
     shiftEntry: Date,
     shiftExit: Date | null,
     shiftBreak: Date | null,

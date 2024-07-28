@@ -154,6 +154,7 @@ export default function EditShift() {
     const editedShift: ShiftProps = {
       key: `${shiftEntryEdit}${employerEdit}`,
       employer: employerEdit, 
+      short: companysInfo.find(company => company.name === employerEdit)!.short,
       shiftEntry: shiftEntryEdit!, 
       shiftExit: shiftExitEdit, 
       shiftBreak: shiftBreakEdit, 

@@ -148,7 +148,8 @@ export default function NewShift() {
   const handleSaveShift = () => {
     const newShift: ShiftProps = {
       key: `${shiftEntry}${employer}`,
-      employer: employer, 
+      employer: employer,
+      short: companysInfo.find(company => company.name === employer)!.short,
       shiftEntry: shiftEntry!, 
       shiftExit: shiftExit, 
       shiftBreak: shiftBreak, 

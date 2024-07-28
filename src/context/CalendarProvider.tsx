@@ -51,6 +51,7 @@ const CalendarProvider = ({ children }: props) => {
           const item = {
             key: shift.key,
             employer: shift.employer,
+            short: shift.short,
             shiftEntry: new Date(shift.shiftEntry),
             shiftExit: shift.shiftExit ? new Date(shift.shiftExit) : null,
             shiftBreak: shift.shiftBreak ? new Date(shift.shiftBreak) : null,
