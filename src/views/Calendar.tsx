@@ -31,7 +31,7 @@ export default function Calendar() {
   const [nav, setNav] = useState(false)
   const [pressedDate, setPressedDate] = useState<Date>()
 
-  const {} = useCalendar()
+  const {shifts, companysInfo} = useCalendar()
 
   let currentDate = new Date()
   let actualyear = new Date().getFullYear()
@@ -97,7 +97,11 @@ export default function Calendar() {
 
   const renderItem = (item: DayProps) => {
     const {day, key, isCurrentDay, shadowed} = item
-    
+
+    const date = new Date(currentDay.getFullYear(), currentDay.getMonth(), day)
+
+    const colorShifts = shifts.filter(shift => shift.shiftEntry.getFullYear() === date.getFullYear() && shift.shiftEntry.getMonth() === date.getMonth() && shift.shiftEntry.getDate() === date.getDate())
+
     return (
       <TouchableOpacity
       activeOpacity={0.7}
@@ -106,7 +110,11 @@ export default function Calendar() {
       onPress={() => handleDayPress(key)}
       >
         {nav && <Navigate to={`/calendar/shifts/${pressedDate}`}/>}
-        
+        {shadowed === true ? <View></View> : colorShifts.map(shiftColor => 
+          <View key={shiftColor.key} style={[styles.coloredShiftBox, {backgroundColor: companysInfo.find(employer => employer.name === shiftColor.employer)!.color}]}>
+            <Text style={styles.coloredShiftText}>{shiftColor.short}</Text>
+          </View>
+        )}
         <Text style={shadowed ? styles.emptyDayText : [styles.dayText, isCurrentDay && styles.selectedDayText]}>{day.toLocaleString()}</Text>
       </TouchableOpacity>
     )
@@ -252,32 +260,39 @@ const styles = StyleSheet.create({
     height: theme.heigth.daysContainer,
     width: (screenWidth - 20)/7,
     borderColor: theme.colors.negro,
-    borderWidth: 0.5,
-    alignItems: "flex-end",
-    justifyContent: "flex-start",
-    paddingTop: 1,
-    paddingRight: 3
+    borderWidth: 0.5
   },
   dayContainerEmpty: {
     width: (screenWidth - 20)/7,
     height: theme.heigth.daysContainer,
     backgroundColor: theme.colors.grisMasClaro,
     borderColor: theme.colors.gris,
-    borderWidth: 0.5,
-    alignItems: "flex-end",
-    justifyContent: "flex-start",
-    paddingTop: 1,
-    paddingRight: 3
+    borderWidth: 0.5    
   },
   dayText: {
+    position: "absolute",
+    top: 1,
+    right: 3,
     fontSize: theme.fontSizes.F12
   },
   emptyDayText: {
+    position: "absolute",
+    top: 1,
+    right: 3,
     fontSize: theme.fontSizes.F12,
     color: theme.colors.gris
   },
   selectedDayText: {
     color: theme.colors.rojo,
   },
+  coloredShiftBox: {
+    flex:1,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  coloredShiftText: {
+    color: theme.colors.negro,
+    fontSize: theme.fontSizes.F18,
+    fontWeight: "400"
+  }
 });
-
