@@ -58,6 +58,7 @@ const CalendarProvider = ({ children }: props) => {
             workedHours: shift.workedHours,
             workedMinutes: shift.workedMinutes,
             paid: shift.paid,
+            salary: shift.salary,
             note: shift.note
           }
           return (item)

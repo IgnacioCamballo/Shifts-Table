@@ -161,6 +161,7 @@ export default function EditShift() {
       workedHours: workedHoursEdit,
       workedMinutes: workedMinutesEdit,
       paid: paidEdit,
+      salary: workedHours ? (workedHours + workedMinutes!/60) * companysInfo.find(company => company.name === employer)!.wage : null,
       note: noteEdit
     }
     const updatedshifts = [...shifts]

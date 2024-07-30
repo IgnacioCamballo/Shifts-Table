@@ -156,10 +156,12 @@ export default function NewShift() {
       workedHours: workedHours,
       workedMinutes: workedMinutes,
       paid: paid,
+      salary: workedHours ? (workedHours + workedMinutes!/60) * companysInfo.find(company => company.name === employer)!.wage : null,
       note: note
     }
     const updatedshifts = [...shifts, newShift]
     setShifts(updatedshifts)
+    console.log(newShift)
   }
 
   const checkInfo = () => {

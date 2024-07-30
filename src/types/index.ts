@@ -16,6 +16,7 @@ export type ShiftProps = {
     workedHours: number | null,
     workedMinutes: number | null,
     paid: boolean,
+    salary: number | null,
     note: string | null
 }
 
