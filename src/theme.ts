@@ -31,10 +31,10 @@ const theme = {
     },
     heigth: {
         publicidad: 80,
-        daysContainer: (screenHeight - Constants.statusBarHeight -80 - 194)/6,
-        configScrollView: (screenHeight - Constants.statusBarHeight - 80 - 440),
-        shiftScrollView: (screenHeight - Constants.statusBarHeight - 80 - 220),
-        monthDetailScrollView: (screenHeight - Constants.statusBarHeight - 80 - 260)
+        daysContainer: (screenHeight - Constants.statusBarHeight - 194)/6,
+        configScrollView: (screenHeight - Constants.statusBarHeight - 440),
+        shiftScrollView: (screenHeight - Constants.statusBarHeight - 220),
+        monthDetailScrollView: (screenHeight - Constants.statusBarHeight - 260)
     }
 }
 

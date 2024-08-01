@@ -19,9 +19,9 @@ export default function LayoutFooter() {
 
     return (
         <View style={styles.containerGrande}>
-            <View style={styles.publicidad}>
+            {/* <View style={styles.publicidad}>
                 <Text>Publicidad</Text>
-            </View>
+            </View> */}
             <View style={styles.container}>
                 <MenuItem to="/" >
                         <IonIcon name='calendar-outline' size={30}  color={pathname === "/" ? theme.colors.verdeOscuro : theme.colors.negro}/>
