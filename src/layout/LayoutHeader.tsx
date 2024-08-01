@@ -11,6 +11,7 @@ function NombreLayout () {
   if(pathname === "/") return "Calendario"
   if(pathname.startsWith("/calendar/shifts/")) return "Turnos"
   if(pathname === "/totals") return "Totales"
+  if(pathname.startsWith("/totals/")) return "Totales"
   if(pathname.startsWith("/totalsDetail/")) return "Días trabajados"
   if(pathname === "/config") return "Configuración"
   if(pathname === "/config/newEmployer") return "Registrar Empleador"

@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import { Text, TouchableOpacity, View, StyleSheet, Animated, ScrollView } from 'react-native'
-import { useParams } from 'react-router-native'
+import { Link, useParams } from 'react-router-native'
 import { firstLetterUpper, formattedMinutes} from '../utils'
+import Icon from "react-native-vector-icons/AntDesign"
 import BotonChico from '../components/BotonChico'
 import theme from '../theme'
 import { Dimensions } from 'react-native'
@@ -143,6 +144,16 @@ export default function MonthDetail() {
 
   return (
     <View style={styles.container}>
+      <Link style={styles.link} to={`/totals/${currentDay}`} underlayColor="none">
+        <View style={[styles.flexRow, {gap: 4}]}>
+          <Icon 
+            name="doubleleft" 
+            color={theme.colors.negro} 
+            size={18}
+          />
+          <Text style={styles.textLine}>Atras</Text>
+        </View>
+      </Link>
       <View style={styles.arrows}>
         <TouchableOpacity activeOpacity={0.7} onPress={prevMonth}>
           <BotonChico color={theme.colors.grisMedio} text='<'/>
@@ -306,5 +317,10 @@ const styles = StyleSheet.create({
   },
   scrollView:{
     maxHeight: theme.heigth.monthDetailScrollView
+  },
+  link: {
+    position: "absolute",
+    top: -32,
+    left: 12
   }
 })

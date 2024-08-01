@@ -5,14 +5,17 @@ import theme from '../theme'
 import { firstLetterUpper, formattedMinutesNumber } from '../utils'
 import { Picker } from '@react-native-picker/picker'
 import useCalendar from '../hooks/useCalendar'
-import { Link } from 'react-router-native'
+import { Link, useParams } from 'react-router-native'
 
 let screenWidth = Dimensions.get("window").width
 
 export default function Totals() {
+  const param = useParams()
+  const currentMonth = param.month ? new Date(param.month) : new Date()
+
   const {companysInfo, shifts} = useCalendar()
 
-  const [currentDay, setCurrentDay] = useState(new Date());
+  const [currentDay, setCurrentDay] = useState(currentMonth);
   const [position, setPosition] = useState(new Animated.Value(0))
 
   const [employer, setEmployer] = useState("Todos")
