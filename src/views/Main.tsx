@@ -11,6 +11,7 @@ import EditEmployer from './EditEmployer'
 import Shifts from './Shifts'
 import NewShift from './NewShift'
 import EditShift from './EditShift'
+import MonthDetail from './MonthDetail'
 
 export default function Main() {
   return (
@@ -18,13 +19,15 @@ export default function Main() {
         <LayoutHeader />
         <Routes>
           <Route path='/' element={<Calendar />}/>
-          <Route path='/totals' element={<Totals />}/>
+            <Route path='/calendar/shifts/:date' element={<Shifts />}/>
+              <Route path='/calendar/shifts/:date/newShift' element={<NewShift />}/>
+              <Route path='/calendar/shifts/:date/editShift/:shift' element={<EditShift />}/>
           <Route path='/config' element={<Config />}/>
             <Route path='/config/newEmployer' element={<NewEmployer />}/>
             <Route path='/config/editEmployer/:employer' element={<EditEmployer />}/>
-          <Route path='/calendar/shifts/:date' element={<Shifts />}/>
-            <Route path='/calendar/shifts/:date/newShift' element={<NewShift />}/>
-            <Route path='/calendar/shifts/:date/editShift/:shift' element={<EditShift />}/>
+          <Route path='/totals' element={<Totals />}/>
+            <Route path='/totals/:month' element={<Totals />}/>
+            <Route path='/totalsDetail/:month/' element={<MonthDetail />}/>
         </Routes>
         <LayoutFooter />
     </View>

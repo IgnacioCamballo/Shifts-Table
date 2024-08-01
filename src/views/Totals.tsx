@@ -5,6 +5,7 @@ import theme from '../theme'
 import { firstLetterUpper, formattedMinutesNumber } from '../utils'
 import { Picker } from '@react-native-picker/picker'
 import useCalendar from '../hooks/useCalendar'
+import { Link } from 'react-router-native'
 
 let screenWidth = Dimensions.get("window").width
 
@@ -145,7 +146,7 @@ export default function Totals() {
           <BotonChico color={theme.colors.grisMedio} text='<'/>
         </TouchableOpacity>
 
-        <Text style={styles.monthText}>{firstLetterUpper(currentDay.toLocaleDateString('es-ES', { month: 'long' }))}</Text>
+        <Text style={styles.monthText}>{firstLetterUpper(currentDay.toLocaleDateString('es-ES', { month: 'long' }))} / {currentDay.toLocaleDateString('es-ES', { year: '2-digit' })}</Text>
         
         <TouchableOpacity activeOpacity={0.7} onPress={nextMonth}>
         <BotonChico color={theme.colors.grisMedio} text='>'/>
@@ -177,9 +178,9 @@ export default function Totals() {
         <Text style={styles.textLine}>Dias trabajados:</Text>
         <View style={styles.botonVer}>
           <Text style={styles.textLine}>{workedDays}</Text>
-          <TouchableOpacity activeOpacity={0.8}>
+          <Link to={`/totalsDetail/${currentDay}/`} activeOpacity={0.8} underlayColor="none">
             <BotonChico color={theme.colors.verdeBoton} text='ver'/>
-          </TouchableOpacity>
+          </Link>
         </View>
       </View>
       

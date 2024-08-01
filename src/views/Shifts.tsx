@@ -111,6 +111,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 48
   },
   scrollView: {
+    maxHeight: theme.heigth.shiftScrollView,
     marginTop: 16
   }
 })

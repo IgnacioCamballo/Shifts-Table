@@ -9,11 +9,12 @@ function NombreLayout () {
   const {pathname} = useLocation()
 
   if(pathname === "/") return "Calendario"
+  if(pathname.startsWith("/calendar/shifts/")) return "Turnos"
   if(pathname === "/totals") return "Totales"
+  if(pathname.startsWith("/totalsDetail/")) return "Días trabajados"
   if(pathname === "/config") return "Configuración"
   if(pathname === "/config/newEmployer") return "Registrar Empleador"
   if(pathname.startsWith("/config/editEmployer/")) return "Editar Empleador"
-  if(pathname.startsWith("/calendar/shifts/")) return "Turnos"
 }
 
 export default function LayoutHeader() {
