@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { StyleSheet, Text, TextInput, TouchableOpacity, View, Modal, Platform, Alert, Animated, ViewStyle } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, Modal, Platform, Alert } from 'react-native'
 import { Link, useParams } from 'react-router-native'
 import Constants from "expo-constants"
 
@@ -311,6 +311,7 @@ export default function EditShift() {
             </View>
              
             <DatePicker 
+              theme='light'
               mode={timeType === "salida" ? "datetime" : 'time'}
               minimumDate={shiftEntryEdit && timeType === "salida" ? shiftEntryEdit : pressedDate}
               maximumDate={timeType === "entrada" && shiftExitEdit ? shiftExitEdit : new Date(pressedDate!.getFullYear(), pressedDate!.getMonth(), pressedDate!.getDate() + 2, 23, 59)}
@@ -358,7 +359,7 @@ const styles = StyleSheet.create ({
   },
   textoConf: {
     alignSelf: "center",
-    color: theme.colors.verdeOscuro,
+    color: theme.colors.grisOscuro,
     fontWeight: '800',
     fontSize: theme.fontSizes.F20,
   },

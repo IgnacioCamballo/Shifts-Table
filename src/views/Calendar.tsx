@@ -6,7 +6,8 @@ import {
   Dimensions, 
   TouchableOpacity, 
   FlatList, 
-  Animated
+  Animated,
+  PanResponder
 } from 'react-native';
 import { Navigate } from 'react-router-native';
 import useCalendar from '../hooks/useCalendar';
@@ -182,6 +183,23 @@ export default function Calendar() {
     })
   };
 
+  const panResponder =
+  PanResponder.create({
+    onMoveShouldSetPanResponder: (evt, gestureState) => true,
+    onPanResponderMove: (evt, gestureState) => {
+      position.setValue(gestureState.dx)
+    },
+    onPanResponderRelease: (evt, gestureState) => {
+      if(gestureState.dx > 150) {
+        prevMonth();
+      } else if(gestureState.dx < -150) {
+        nextMonth();
+      } else {
+        position.setValue(0)
+      }
+    }
+  })
+
   return (
     <View style={styles.container}>
       <View style={styles.arrows}>
@@ -205,10 +223,13 @@ export default function Calendar() {
       </View>
 
       <Animated.View 
+        horizontal={true}
+        scrollEnabled={true}
         style={[
           styles.daysContainer,
           {transform:[{translateX: position}]}
         ]}
+        {...panResponder.panHandlers}
       >
         <FlatList
           scrollEnabled={false}

@@ -6,10 +6,10 @@ let screenHeight = Dimensions.get("window").height
 
 const theme = {
     colors: {
-        verdeBase: "#B3C277",
+        verdeBase: "#517481",
         verdeOscuro: "#3D5B0D",
         verdeMedio: "#AFD839",
-        verdeBoton: "#B4EF55",
+        verdeBoton: "#6CAE75",
         negro: "#000",
         gris: "grey",
         grisOscuro: "#343434",
@@ -19,7 +19,8 @@ const theme = {
         blanco: "fff",
         rojoBin: "#A30000",
         rojo: "red",
-        rojoClaro: "#EA7E7E"
+        rojoClaro: "#EA7E7E",
+        azulClaro: "#6392A3"
     },
     fontSizes: {
         F20: 20,

@@ -18,7 +18,7 @@ export default function Main() {
     <View style={styles.containerGeneral}>
         <LayoutHeader />
         <Routes>
-          <Route path='/' element={<Calendar />}/>
+          <Route path='/calendar' element={<Calendar />}/>
             <Route path='/calendar/shifts/:date' element={<Shifts />}/>
               <Route path='/calendar/shifts/:date/newShift' element={<NewShift />}/>
               <Route path='/calendar/shifts/:date/editShift/:shift' element={<EditShift />}/>

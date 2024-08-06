@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Animated, Dimensions, StyleSheet, Text, TouchableOpacity, View, ScrollView } from 'react-native'
-import { useParams } from 'react-router-native'
+import { Link, useParams } from 'react-router-native'
 import { ShiftProps } from '../types'
 import { firstLetterUpper, textDay } from '../utils'
 import BotonChico from '../components/BotonChico'
@@ -8,6 +8,7 @@ import theme from '../theme'
 import useCalendar from '../hooks/useCalendar'
 import Boton from '../components/Boton'
 import Shift from '../components/Shift'
+import Icon from 'react-native-vector-icons/AntDesign'
 
 export default function Shifts() {
   const params = useParams()
@@ -69,6 +70,16 @@ export default function Shifts() {
 
   return (
     <View style={styles.container}>
+      <Link style={styles.link} to="/calendar" underlayColor="none">
+        <View style={[styles.flexRow, {gap: 4}]}>
+          <Icon 
+            name="doubleleft" 
+            color={theme.colors.negro} 
+            size={18}
+          />
+          <Text style={styles.textLine}>Atras</Text>
+        </View>
+      </Link>
       <View style={styles.arrows}>
         <TouchableOpacity activeOpacity={0.7} onPress={prevDay}>
           <BotonChico color={theme.colors.grisMedio} text='<'/>
@@ -113,5 +124,19 @@ const styles = StyleSheet.create({
   scrollView: {
     maxHeight: theme.heigth.shiftScrollView,
     marginTop: 16
+  },
+  textLine: {
+    fontSize: theme.fontSizes.F18,
+    fontWeight: '400'
+  },
+  flexRow: {
+    flexDirection: "row",
+    gap: 8,
+    alignItems: "center"
+  },
+  link: {
+    position: "absolute",
+    top: -32,
+    left: 12
   }
 })

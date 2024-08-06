@@ -158,6 +158,7 @@ export default function Config() {
             </View>
              
             <DatePicker 
+              theme='light'
               mode='time'
               locale='es'
               date={date}
@@ -210,7 +211,7 @@ const styles = StyleSheet.create ({
   },
   textoConf: {
     alignSelf: "center",
-    color: theme.colors.verdeOscuro,
+    color: theme.colors.grisOscuro,
     fontWeight: '800',
     fontSize: theme.fontSizes.F20,
     marginBottom: 3

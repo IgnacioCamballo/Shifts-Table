@@ -8,7 +8,7 @@ import { useLocation, useParams } from 'react-router-native';
 function NombreLayout () {
   const {pathname} = useLocation()
 
-  if(pathname === "/") return "Calendario"
+  if(pathname === "/calendar") return "Calendario"
   if(pathname.startsWith("/calendar/shifts/")) return "Turnos"
   if(pathname === "/totals") return "Totales"
   if(pathname.startsWith("/totals/")) return "Totales"
@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     alignItems: "center"
   },
   text: {
-    color: theme.colors.grisOscuro,
+    color: theme.colors.negro,
     fontSize: theme.fontSizes.F20,
     fontWeight: "bold"
   }

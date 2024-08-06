@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Text, TouchableOpacity, View, StyleSheet, Animated, ScrollView } from 'react-native'
 import { Link, useParams } from 'react-router-native'
-import { firstLetterUpper, formattedMinutes} from '../utils'
+import { firstLetterUpper, formattedMinutes, textDay} from '../utils'
 import Icon from "react-native-vector-icons/AntDesign"
 import BotonChico from '../components/BotonChico'
 import theme from '../theme'
@@ -199,7 +199,7 @@ export default function MonthDetail() {
 
         <View style={styles.flexRow}>
           <TouchableOpacity style={styles.outerCircle} onPress={() => setShownDays("Pagos")}>
-            <View style={[styles.innerCircle, shownDays === "Pagos" ? styles.bgBlack : {}]}></View>
+            <View style={[styles.innerCircle2, shownDays === "Pagos" ? styles.bgBlack : {}]}></View>
           </TouchableOpacity>
 
           <Text style={styles.textSelector}>Pagos</Text>
@@ -207,7 +207,7 @@ export default function MonthDetail() {
 
         <View style={styles.flexRow}>
           <TouchableOpacity style={styles.outerCircle} onPress={() => setShownDays("Inpagos")}>
-            <View style={[styles.innerCircle, shownDays === "Inpagos" ? styles.bgBlack : {}]}></View>
+            <View style={[styles.innerCircle3, shownDays === "Inpagos" ? styles.bgBlack : {}]}></View>
           </TouchableOpacity>
 
           <Text style={styles.textSelector}>Inpagos</Text>
@@ -219,7 +219,10 @@ export default function MonthDetail() {
       <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
         {monthlyShiftsFilteredPayment.map(shift => (
           <View key={shift.key} style={styles.line}>
-            <Text style={[styles.textLine, {width: 50}]}>{shift.shiftEntry.getDate()}</Text>
+            <View style={[styles.flexRow, {gap: 2}]}>
+              <Text style={styles.textLine}>{textDay(shift.shiftEntry)}/</Text>
+              <Text style={[styles.textLine, {width: 50}]}>{shift.shiftEntry.getDate()}</Text>
+            </View>
             <Text style={styles.textLine}>{entryExitHours(shift.shiftEntry, shift.shiftExit)}</Text>
             <Text style={[styles.textLine, {width: 80, textAlign:"right"}]}>{calculateHours(shift.shiftEntry, shift.shiftExit, shift.shiftBreak)}</Text>
           </View>
@@ -312,8 +315,19 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
   },
+  innerCircle2: {
+    width: 8,
+    height: 8,
+    borderRadius: 6,
+  },
+  innerCircle3: {
+    width: 8,
+    height: 8,
+    borderRadius: 6,
+  },
   bgBlack: {
-    backgroundColor: theme.colors.negro
+    backgroundColor: theme.colors.negro,
+    borderRadius: 4
   },
   scrollView:{
     maxHeight: theme.heigth.monthDetailScrollView

@@ -22,18 +22,25 @@ export default function LayoutFooter() {
             {/* <View style={styles.publicidad}>
                 <Text>Publicidad</Text>
             </View> */}
+
             <View style={styles.container}>
-                <MenuItem to="/">
-                    <IonIcon name='calendar-outline' size={30}  color={pathname === "/" ? theme.colors.verdeOscuro : theme.colors.negro}/>
-                    <Text>Calendario</Text>
+                <MenuItem to="/calendar" >
+                    <View style={[styles.border, pathname === "/calendar" ? styles.borderBlack : {}]}>
+                        <IonIcon name='calendar-outline' size={30}  color={pathname === "/calendar" ? theme.colors.azulClaro : theme.colors.negro}/>
+                        <Text>Calendario</Text>
+                    </View>
                 </MenuItem>
                 <MenuItem to="/totals">
-                    <IonIcon name='bar-chart-outline' size={30} color={pathname === "/totals" ? theme.colors.verdeOscuro : theme.colors.negro}/>
-                    <Text>Totales</Text>
+                    <View style={[styles.border, pathname === "/totals" ? styles.borderBlack : {}]}>
+                        <IonIcon name='bar-chart-outline' size={30} color={pathname === "/totals" ? theme.colors.azulClaro : theme.colors.negro}/>
+                        <Text>Totales</Text>
+                    </View>
                 </MenuItem>
-                <MenuItem to="/config">
-                    <IonIcon name='settings-outline' size={30} color={pathname === "/config" ? theme.colors.verdeOscuro : theme.colors.negro}/>
-                    <Text>Configuración</Text>
+                <MenuItem to="/config">                   
+                    <View style={[styles.border, pathname === "/config" ? styles.borderBlack : {}]}>
+                        <IonIcon name='settings-outline' size={30} color={pathname === "/config" ? theme.colors.azulClaro : theme.colors.negro}/>
+                        <Text>Configuración</Text>
+                    </View>
                 </MenuItem>
             </View>
         </View>
@@ -62,7 +69,14 @@ const styles = StyleSheet.create({
     },
     menuItem: {
         width: 120,
-        alignItems: "center"
+        alignItems: "center",
+    },
+    border:{
+        alignItems: "center",
+    },
+    borderBlack: {
+        borderBottomColor: theme.colors.negro,
+        borderBottomWidth: 1    
     },
     icono: {
         margin: 0,

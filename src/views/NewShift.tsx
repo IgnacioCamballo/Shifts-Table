@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { StyleSheet, Text, TextInput, TouchableOpacity, View, Modal, Platform, Alert, Animated, ViewStyle } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, Modal, Platform, Alert, ScrollView } from 'react-native'
 import { Link, useParams } from 'react-router-native'
 import Constants from "expo-constants"
 
@@ -161,7 +161,6 @@ export default function NewShift() {
     }
     const updatedshifts = [...shifts, newShift]
     setShifts(updatedshifts)
-    console.log(newShift)
   }
 
   const checkInfo = () => {
@@ -200,148 +199,151 @@ export default function NewShift() {
         <BotonChico text='x' color={theme.colors.grisClaro}/>
       </Link>
 
-      <View>
-        <Text style={styles.textoConf}>Nuevo Turno</Text>
-      </View>
-
-      <View style={styles.empleador}>
-        <View style={styles.line}>
-          <Text style={styles.textLine}>Empleador:</Text>
-          
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={employer}
-              onValueChange={newValue => setEmployer(newValue)}
-              style={styles.picker}
-              accessibilityLabel='Seleccionar Empleador'
-              mode='dropdown'
-              >
-                <Picker.Item style={styles.pickerItem} label='Seleccionar Empleador' value="" enabled={false}/>
-              {companysInfo.map(employer => 
-                <Picker.Item style={styles.pickerItem} label={employer.name} value={employer.name} key={employer.name}/>
-              )}
-            </Picker>
-          </View>
+      <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
+        <View>
+          <Text style={styles.textoConf}>Nuevo Turno</Text>
         </View>
 
-        <TouchableOpacity 
-          activeOpacity={0.8} 
-          style={styles.line}
-          onPress={() => {setTimeType("entrada"), setModalOpen(true)}}
-        >
-          <Text style={styles.textLine}>Entrada:</Text>
-          <View >
-            <Text style={styles.textLine}>{shiftEntry ? `${shiftEntry.getHours()}:${formattedMinutes(shiftEntry)}` : "-"}</Text>
+        <View style={styles.empleador}>
+          <View style={styles.line}>
+            <Text style={styles.textLine}>Empleador:</Text>
+            
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={employer}
+                onValueChange={newValue => setEmployer(newValue)}
+                style={styles.picker}
+                accessibilityLabel='Seleccionar Empleador'
+                mode='dropdown'
+                >
+                  <Picker.Item style={styles.pickerItem} label='Seleccionar Empleador' value="" enabled={false}/>
+                {companysInfo.map(employer => 
+                  <Picker.Item style={styles.pickerItem} label={employer.name} value={employer.name} key={employer.name}/>
+                )}
+              </Picker>
+            </View>
           </View>
-        </TouchableOpacity>
 
-        <TouchableOpacity 
-          activeOpacity={0.8} 
-          style={styles.line}
-          onPress={() => {setTimeType("salida"), setModalOpen(true)}}
-        >
-          <Text style={styles.textLine}>Salida:</Text>
-          <View >
-            <Text style={styles.textLine}>
-              {shiftExit && shiftEntry ?
-                (shiftExit?.getDate() !== shiftEntry?.getDate() ? 
+          <TouchableOpacity 
+            activeOpacity={0.8} 
+            style={styles.line}
+            onPress={() => {setTimeType("entrada"), setModalOpen(true)}}
+            >
+            <Text style={styles.textLine}>Entrada:</Text>
+            <View >
+              <Text style={styles.textLine}>{shiftEntry ? `${shiftEntry.getHours()}:${formattedMinutes(shiftEntry)}` : "-"}</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            activeOpacity={0.8} 
+            style={styles.line}
+            onPress={() => {setTimeType("salida"), setModalOpen(true)}}
+            >
+            <Text style={styles.textLine}>Salida:</Text>
+            <View >
+              <Text style={styles.textLine}>
+                {shiftExit && shiftEntry ?
+                  (shiftExit?.getDate() !== shiftEntry?.getDate() ? 
                   `${firstLetterUpper(shiftExit!.toLocaleDateString('es-ES', {month: 'short'}))} ${shiftExit?.getDate()} (${textDay(shiftExit!)})  ` : "") 
-                : ""
-              }
-              {shiftExit ? `${shiftExit.getHours()}:${formattedMinutes(shiftExit)}` : "-"}
-            </Text>
-          </View>
-        </TouchableOpacity>
-        
-        <TouchableOpacity 
-          activeOpacity={0.8} 
-          style={styles.line}
-          onPress={() => {setTimeType("descanso"), setModalOpen(true)}}
-        >
-          <Text style={styles.textLine}>Descanso:</Text>
-          <View >
-            <Text style={styles.textLine}>{shiftBreak ? `${shiftBreak.getHours()}:${formattedMinutes(shiftBreak)}` : "0"}</Text>
-          </View>
-        </TouchableOpacity>
-        
-        <View style={styles.line}>
-          <Text style={styles.textLine}>Horas trabajadas:</Text>
-          <Text style={styles.textLine}>{workedHours !== null && workedMinutes !== null ? `${workedHours}:${formattedMinutesNumber(workedMinutes!)}` : "-"}</Text>
-        </View>
-        
-        <View style={styles.lineLeft}>
-          <Text style={styles.textLine}>Pagado</Text>
-          <Slider setValue={setPaid} value={paid} />
-        </View>
-        
-        <TextInput 
-          value={note}
-          onChangeText={setNote}
-          style={styles.textInput}
-          multiline = {true}
-          numberOfLines = {2}
-          placeholder='Nota'
-          maxLength={70}
-          scrollEnabled={true}
-        />
-      </View>
-
-      <Modal
-        visible={modalOpen}
-        onShow={selectedTime}
-        transparent={true}
-        animationType="fade"
-        >
-        <View style={styles.modalContainer}>
-          <View style={styles.modal}>
-            <View style={styles.modalTitleContainer}>
-              <Text style={styles.modalTitle}>{timeType === "descanso" ? "Descanso" : `Horario de ${timeType}`}</Text>
-              {showDelete && <Icon 
-                style={styles.delete}
-                name='delete' 
-                color={theme.colors.rojoBin} 
-                size={20}
-                onPress={() => {showAlert()}}
-              />}
+                  : ""
+                }
+                {shiftExit ? `${shiftExit.getHours()}:${formattedMinutes(shiftExit)}` : "-"}
+              </Text>
             </View>
-             
-            <DatePicker 
-              mode={timeType === "salida" ? "datetime" : 'time'}
-              minimumDate={shiftEntry && timeType === "salida" ? shiftEntry : pressedDate}
-              maximumDate={timeType === "entrada" && shiftExit ? shiftExit : new Date(pressedDate!.getFullYear(), pressedDate!.getMonth(), pressedDate!.getDate() + 2, 23, 59)}
-              locale='es'
-              date={date!}
-              onDateChange={setDate}
-              dividerColor={theme.colors.verdeBase}
-              is24hourSource={timeType === "descanso" ? "locale" : "device"}
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            activeOpacity={0.8} 
+            style={styles.line}
+            onPress={() => {setTimeType("descanso"), setModalOpen(true)}}
+            >
+            <Text style={styles.textLine}>Descanso:</Text>
+            <View >
+              <Text style={styles.textLine}>{shiftBreak ? `${shiftBreak.getHours()}:${formattedMinutes(shiftBreak)}` : "0"}</Text>
+            </View>
+          </TouchableOpacity>
+          
+          <View style={styles.line}>
+            <Text style={styles.textLine}>Horas trabajadas:</Text>
+            <Text style={styles.textLine}>{workedHours !== null && workedMinutes !== null ? `${workedHours}:${formattedMinutesNumber(workedMinutes!)}` : "-"}</Text>
+          </View>
+          
+          <View style={styles.lineLeft}>
+            <Text style={styles.textLine}>Pagado</Text>
+            <Slider setValue={setPaid} value={paid} />
+          </View>
+          
+          <TextInput 
+            value={note}
+            onChangeText={setNote}
+            style={styles.textInput}
+            multiline = {true}
+            numberOfLines = {2}
+            placeholder='Nota'
+            maxLength={70}
+            scrollEnabled={true}
             />
+        </View>
 
-            <View style={styles.modalButtons}>
-              <TouchableOpacity activeOpacity={0.7} onPress={() => {setModalOpen(false), setTimeType("")}}>
-                <Text style={styles.modalButton}>Cancelar</Text>
-              </TouchableOpacity>
-              <TouchableOpacity activeOpacity={0.7} onPress={() => {setModalOpen(false), changeConfigInfo(date)}}>
-                <Text style={styles.modalButton}>Guardar</Text>
-              </TouchableOpacity>
+        <Modal
+          visible={modalOpen}
+          onShow={selectedTime}
+          transparent={true}
+          animationType="fade"
+          >
+          <View style={styles.modalContainer}>
+            <View style={styles.modal}>
+              <View style={styles.modalTitleContainer}>
+                <Text style={styles.modalTitle}>{timeType === "descanso" ? "Descanso" : `Horario de ${timeType}`}</Text>
+                {showDelete && <Icon 
+                  style={styles.delete}
+                  name='delete' 
+                  color={theme.colors.rojoBin} 
+                  size={20}
+                  onPress={() => {showAlert()}}
+                  />}
+              </View>
+              
+              <DatePicker 
+                theme='light'
+                mode={timeType === "salida" ? "datetime" : 'time'}
+                minimumDate={shiftEntry && timeType === "salida" ? shiftEntry : pressedDate}
+                maximumDate={timeType === "entrada" && shiftExit ? shiftExit : new Date(pressedDate!.getFullYear(), pressedDate!.getMonth(), pressedDate!.getDate() + 2, 23, 59)}
+                locale='es'
+                date={date!}
+                onDateChange={setDate}
+                dividerColor={theme.colors.verdeBase}
+                is24hourSource={timeType === "descanso" ? "locale" : "device"}
+                />
+
+              <View style={styles.modalButtons}>
+                <TouchableOpacity activeOpacity={0.7} onPress={() => {setModalOpen(false), setTimeType("")}}>
+                  <Text style={styles.modalButton}>Cancelar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity activeOpacity={0.7} onPress={() => {setModalOpen(false), changeConfigInfo(date)}}>
+                  <Text style={styles.modalButton}>Guardar</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
 
-      {missing &&
-        <Text style={styles.textAlert}>{missing}</Text>
-      }
+        {missing &&
+          <Text style={styles.textAlert}>{missing}</Text>
+        }
 
-      <TouchableOpacity style={styles.boton} onPress={() => checkInfo()}>
-        <Boton 
-          margintop={20}
-          press={() => handleSaveShift()}
-          block={employer === "" || !shiftEntry || blockSubmit ? true : false}
-          to={`/calendar/shifts/${pressedDate}`} 
-          text="Registrar Turno" 
-          color={theme.colors.verdeBoton}
-        />
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.boton} onPress={() => checkInfo()}>
+          <Boton 
+            margintop={20}
+            press={() => handleSaveShift()}
+            block={employer === "" || !shiftEntry || blockSubmit ? true : false}
+            to={`/calendar/shifts/${pressedDate}`} 
+            text="Registrar Turno" 
+            color={theme.colors.verdeBoton}
+            />
+        </TouchableOpacity>
+      </ScrollView>
     </View>
   )
 }
@@ -353,7 +355,7 @@ const styles = StyleSheet.create ({
   },
   textoConf: {
     alignSelf: "center",
-    color: theme.colors.verdeOscuro,
+    color: theme.colors.grisOscuro,
     fontWeight: '800',
     fontSize: theme.fontSizes.F20,
   },
@@ -488,5 +490,8 @@ const styles = StyleSheet.create ({
   pickerItem: {
     fontSize: 18,
     color: "black"
+  },
+  scrollView: {
+    maxHeight: theme.heigth.shiftScrollView,
   }
 })
