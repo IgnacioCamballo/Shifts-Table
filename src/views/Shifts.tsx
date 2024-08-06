@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
   },
   textLine: {
     fontSize: theme.fontSizes.F18,
-    fontWeight: '400'
+    fontWeight: '500'
   },
   flexRow: {
     flexDirection: "row",

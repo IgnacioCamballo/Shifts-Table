@@ -190,9 +190,9 @@ export default function Calendar() {
       position.setValue(gestureState.dx)
     },
     onPanResponderRelease: (evt, gestureState) => {
-      if(gestureState.dx > 150) {
+      if(gestureState.dx > 80) {
         prevMonth();
-      } else if(gestureState.dx < -150) {
+      } else if(gestureState.dx < -80) {
         nextMonth();
       } else {
         position.setValue(0)

@@ -28,13 +28,11 @@ export default function LayoutHeader() {
 
 const styles = StyleSheet.create({
   container: {
-    height: Constants.statusBarHeight + 36,
+    height: 36,
     backgroundColor: theme.colors.verdeBase,
-    paddingTop: Platform.OS === "ios" ? Constants.statusBarHeight : Constants.statusBarHeight -5,
+    paddingTop: Platform.OS === "ios" ? 5 : 0,
     paddingBottom: 10,
     alignItems: "center",
-    position: "relative",
-    top: -Constants.statusBarHeight 
   },
   text: {
     color: theme.colors.negro,

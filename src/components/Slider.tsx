@@ -31,7 +31,7 @@ export default function Slider({value, setValue}: ValueProps) {
   const animatedStyles = {
     backgroundColor: animatedValue.interpolate({
       inputRange: [0, 1],
-      outputRange: [theme.colors.grisClaro, theme.colors.verdeMedio]
+      outputRange: [theme.colors.grisClaro, theme.colors.verdeBoton]
     })
   }
 

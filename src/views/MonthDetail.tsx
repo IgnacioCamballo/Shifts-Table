@@ -151,7 +151,7 @@ export default function MonthDetail() {
             color={theme.colors.negro} 
             size={18}
           />
-          <Text style={styles.textLine}>Atras</Text>
+          <Text style={styles.textLineAtras}>Atras</Text>
         </View>
       </Link>
       <View style={styles.arrows}>
@@ -257,6 +257,10 @@ const styles = StyleSheet.create({
   textLine: {
     fontSize: theme.fontSizes.F18,
     fontWeight: '400'
+  },
+  textLineAtras: {
+    fontSize: theme.fontSizes.F18,
+    fontWeight: '500'
   },
   employersContainer: {
     borderTopWidth: 2,
