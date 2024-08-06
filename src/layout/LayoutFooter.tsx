@@ -24,21 +24,21 @@ export default function LayoutFooter() {
             </View> */}
 
             <View style={styles.container}>
-                <MenuItem to="/calendar" >
-                    <View style={[styles.border, pathname === "/calendar" ? styles.borderBlack : {}]}>
-                        <IonIcon name='calendar-outline' size={30}  color={pathname === "/calendar" ? theme.colors.azulClaro : theme.colors.negro}/>
+                <MenuItem to="/" >
+                    <View style={[styles.border, pathname === "/" || pathname.startsWith("/calendar") ? styles.borderBlack : {}]}>
+                        <IonIcon name='calendar-outline' size={30}  color={pathname === "/" || pathname.startsWith("/calendar") ? theme.colors.azulClaro : theme.colors.negro}/>
                         <Text>Calendario</Text>
                     </View>
                 </MenuItem>
                 <MenuItem to="/totals">
-                    <View style={[styles.border, pathname === "/totals" ? styles.borderBlack : {}]}>
-                        <IonIcon name='bar-chart-outline' size={30} color={pathname === "/totals" ? theme.colors.azulClaro : theme.colors.negro}/>
+                    <View style={[styles.border, pathname.startsWith("/totals") ? styles.borderBlack : {}]}>
+                        <IonIcon name='bar-chart-outline' size={30} color={pathname.startsWith("/totals") ? theme.colors.azulClaro : theme.colors.negro}/>
                         <Text>Totales</Text>
                     </View>
                 </MenuItem>
                 <MenuItem to="/config">                   
-                    <View style={[styles.border, pathname === "/config" ? styles.borderBlack : {}]}>
-                        <IonIcon name='settings-outline' size={30} color={pathname === "/config" ? theme.colors.azulClaro : theme.colors.negro}/>
+                    <View style={[styles.border, pathname.startsWith("/config") ? styles.borderBlack : {}]}>
+                        <IonIcon name='settings-outline' size={30} color={pathname.startsWith("/config") ? theme.colors.azulClaro : theme.colors.negro}/>
                         <Text>Configuración</Text>
                     </View>
                 </MenuItem>

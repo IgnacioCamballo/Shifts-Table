@@ -70,7 +70,7 @@ export default function Shifts() {
 
   return (
     <View style={styles.container}>
-      <Link style={styles.link} to="/calendar" underlayColor="none">
+      <Link style={styles.link} to="/" underlayColor="none">
         <View style={[styles.flexRow, {gap: 4}]}>
           <Icon 
             name="doubleleft" 

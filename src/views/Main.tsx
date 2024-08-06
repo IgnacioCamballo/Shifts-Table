@@ -1,6 +1,6 @@
 import React from 'react'
 import { View, StyleSheet } from 'react-native'
-import { Route, Routes } from 'react-router-native'
+import { Navigate, Route, Routes } from 'react-router-native'
 import LayoutHeader from '../layout/LayoutHeader'
 import LayoutFooter from '../layout/LayoutFooter'
 import Calendar from './Calendar'
@@ -18,7 +18,7 @@ export default function Main() {
     <View style={styles.containerGeneral}>
         <LayoutHeader />
         <Routes>
-          <Route path='/calendar' element={<Calendar />}/>
+          <Route path='/' element={<Calendar />}/>
             <Route path='/calendar/shifts/:date' element={<Shifts />}/>
               <Route path='/calendar/shifts/:date/newShift' element={<NewShift />}/>
               <Route path='/calendar/shifts/:date/editShift/:shift' element={<EditShift />}/>
