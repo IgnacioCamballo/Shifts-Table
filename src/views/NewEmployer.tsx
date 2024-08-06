@@ -63,7 +63,7 @@ export default function NewEmployer() {
         style={styles.botonCerrar}
         underlayColor="none"
         >
-        <BotonChico text='x' color={theme.colors.grisClaro}/>
+        <BotonChico text='x' icon="" color={theme.colors.grisClaro}/>
       </Link>
 
       <View>

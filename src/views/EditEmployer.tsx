@@ -71,7 +71,7 @@ export default function EditEmployer() {
         style={styles.botonCerrar}
         underlayColor="none"
         >
-        <BotonChico text='x' color={theme.colors.grisClaro}/>
+        <BotonChico text='x' icon='' color={theme.colors.grisClaro}/>
       </Link>
 
       <View>

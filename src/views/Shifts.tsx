@@ -82,13 +82,13 @@ export default function Shifts() {
       </Link>
       <View style={styles.arrows}>
         <TouchableOpacity activeOpacity={0.7} onPress={prevDay}>
-          <BotonChico color={theme.colors.grisMedio} text='<'/>
+          <BotonChico color={theme.colors.grisMedio} text='' icon='left'/>
         </TouchableOpacity>
 
         <Text style={styles.monthText}>{firstLetterUpper(date.toLocaleDateString('es-ES', {month: 'short'}))} / {date.toLocaleDateString('es-ES', {day:"numeric"})} ({textDay(date)})</Text>
         
         <TouchableOpacity activeOpacity={0.7} onPress={nextDay}>
-          <BotonChico color={theme.colors.grisMedio} text='>'/>
+          <BotonChico color={theme.colors.grisMedio} text='' icon='right'/>
         </TouchableOpacity>
       </View>
 

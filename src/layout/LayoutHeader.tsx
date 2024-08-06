@@ -3,7 +3,7 @@ import { View, StyleSheet, Text } from 'react-native'
 import Constants from "expo-constants"
 import { Platform } from 'react-native';
 import theme from '../theme';
-import { useLocation, useParams } from 'react-router-native';
+import { useLocation } from 'react-router-native';
 
 function NombreLayout () {
   const {pathname} = useLocation()
@@ -32,7 +32,9 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.verdeBase,
     paddingTop: Platform.OS === "ios" ? Constants.statusBarHeight : Constants.statusBarHeight -5,
     paddingBottom: 10,
-    alignItems: "center"
+    alignItems: "center",
+    position: "relative",
+    top: -Constants.statusBarHeight 
   },
   text: {
     color: theme.colors.negro,

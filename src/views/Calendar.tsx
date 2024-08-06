@@ -204,13 +204,13 @@ export default function Calendar() {
     <View style={styles.container}>
       <View style={styles.arrows}>
         <TouchableOpacity activeOpacity={0.7} onPress={prevMonth}>
-          <BotonChico color={theme.colors.grisMedio} text='<'/>
+          <BotonChico color={theme.colors.grisMedio} text='' icon='left'/>
         </TouchableOpacity>
 
         <Text style={styles.monthText}>{firstLetterUpper(currentDay.toLocaleDateString('es-ES', { month: 'long' }))}</Text>
         
         <TouchableOpacity activeOpacity={0.7} onPress={nextMonth}>
-        <BotonChico color={theme.colors.grisMedio} text='>'/>
+        <BotonChico color={theme.colors.grisMedio} text='' icon='right'/>
         </TouchableOpacity>
       </View>
 

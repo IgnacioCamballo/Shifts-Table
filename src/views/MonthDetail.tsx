@@ -156,13 +156,13 @@ export default function MonthDetail() {
       </Link>
       <View style={styles.arrows}>
         <TouchableOpacity activeOpacity={0.7} onPress={prevMonth}>
-          <BotonChico color={theme.colors.grisMedio} text='<'/>
+          <BotonChico color={theme.colors.grisMedio} text='' icon='left'/>
         </TouchableOpacity>
 
         <Text style={styles.monthText}>{firstLetterUpper(currentDay.toLocaleDateString('es-ES', { month: 'long' }))} / {currentDay.toLocaleDateString('es-ES', { year: '2-digit' })}</Text>
         
         <TouchableOpacity activeOpacity={0.7} onPress={nextMonth}>
-        <BotonChico color={theme.colors.grisMedio} text='>'/>
+        <BotonChico color={theme.colors.grisMedio} text='' icon='right'/>
         </TouchableOpacity>
       </View>
 
