@@ -23,17 +23,17 @@ export default function LayoutFooter() {
                 <Text>Publicidad</Text>
             </View> */}
             <View style={styles.container}>
-                <MenuItem to="/" >
-                        <IonIcon name='calendar-outline' size={30}  color={pathname === "/" ? theme.colors.verdeOscuro : theme.colors.negro}/>
-                        <Text>Calendario</Text>
+                <MenuItem to="/">
+                    <IonIcon name='calendar-outline' size={30}  color={pathname === "/" ? theme.colors.verdeOscuro : theme.colors.negro}/>
+                    <Text>Calendario</Text>
                 </MenuItem>
                 <MenuItem to="/totals">
-                        <IonIcon name='bar-chart-outline' size={30} color={pathname === "/totals" ? theme.colors.verdeOscuro : theme.colors.negro}/>
-                        <Text>Totales</Text>
+                    <IonIcon name='bar-chart-outline' size={30} color={pathname === "/totals" ? theme.colors.verdeOscuro : theme.colors.negro}/>
+                    <Text>Totales</Text>
                 </MenuItem>
                 <MenuItem to="/config">
-                        <IonIcon name='settings-outline' size={30} color={pathname === "/config" ? theme.colors.verdeOscuro : theme.colors.negro}/>
-                        <Text>Configuración</Text>
+                    <IonIcon name='settings-outline' size={30} color={pathname === "/config" ? theme.colors.verdeOscuro : theme.colors.negro}/>
+                    <Text>Configuración</Text>
                 </MenuItem>
             </View>
         </View>
