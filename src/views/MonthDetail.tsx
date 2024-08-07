@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Text, TouchableOpacity, View, StyleSheet, Animated, ScrollView } from 'react-native'
 import { Link, useParams } from 'react-router-native'
 import { firstLetterUpper, formattedMinutes, textDay} from '../utils'
@@ -21,6 +21,7 @@ export default function MonthDetail() {
   const [position, setPosition] = useState(new Animated.Value(0))
   const [employer, setEmployer] = useState("Todos")
   const [shownDays, setShownDays] = useState("Todos")
+  const [employersList, setEmployersList] = useState<string[]>([])
 
   const monthlyShifts = shifts.filter(shift => shift.shiftEntry.getFullYear() === currentDay.getFullYear() && shift.shiftEntry.getMonth() === currentDay.getMonth())
   const monthlyShiftsFiltered = employer === "Todos" ? monthlyShifts : monthlyShifts.filter(shift => shift.employer === employer)
@@ -142,6 +143,20 @@ export default function MonthDetail() {
     }
   }
 
+  useEffect(() => {
+    const copyList = [...employersList]
+    if(!monthlyShifts){
+      return
+    } else {
+      monthlyShifts.forEach(shift => {if(copyList.some(employer => employer === shift.employer)) {
+        return
+      } else {
+        copyList.push(shift.employer)
+      }})
+    }
+    setEmployersList(copyList)
+  }, [currentDay])
+
   return (
     <View style={styles.container}>
       <Link style={styles.link} to={`/totals/${currentDay}`} underlayColor="none">
@@ -179,8 +194,8 @@ export default function MonthDetail() {
               mode='dropdown'
               >
                 <Picker.Item style={styles.pickerItem} label='Todos' value="Todos"/>
-              {companysInfo.map(employer => 
-                <Picker.Item style={styles.pickerItem} label={employer.name} value={employer.name} key={employer.name}/>
+              {employersList.map(employer => 
+                <Picker.Item style={styles.pickerItem} label={employer} value={employer} key={employer}/>
               )}
             </Picker>
           </View>

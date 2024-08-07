@@ -17,6 +17,7 @@ export type ShiftProps = {
     workedMinutes: number | null,
     paid: boolean,
     salary: number | null,
+    color: string,
     note: string | null
 }
 

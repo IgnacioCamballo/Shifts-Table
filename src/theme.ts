@@ -20,7 +20,8 @@ const theme = {
         rojoBin: "#A30000",
         rojo: "red",
         rojoClaro: "#EA7E7E",
-        azulClaro: "#6392A3"
+        azulClaro: "#6392A3",
+        slider: "#397B63"
     },
     fontSizes: {
         F20: 20,

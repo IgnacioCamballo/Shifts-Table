@@ -17,6 +17,7 @@ export default function Totals() {
 
   const [currentDay, setCurrentDay] = useState(currentMonth);
   const [position, setPosition] = useState(new Animated.Value(0))
+  const [employersList, setEmployersList] = useState<string[]>([])
 
   const [employer, setEmployer] = useState("Todos")
   const [workedDays, setWorkedDays] = useState(0)
@@ -87,6 +88,20 @@ export default function Totals() {
     }, initialHours);
     setUnpaidHours(`${totalHours}:${formattedMinutesNumber(totalMinutes)}`);
   }
+
+  useEffect(() => {
+    const copyList = [...employersList]
+    if(!monthlyShifts){
+      return
+    } else {
+      monthlyShifts.forEach(shift => {if(copyList.some(employer => employer === shift.employer)) {
+        return
+      } else {
+        copyList.push(shift.employer)
+      }})
+    }
+    setEmployersList(copyList)
+  }, [currentDay])
 
   useEffect(() => {
     findWorkedDays()
@@ -169,8 +184,8 @@ export default function Totals() {
               mode='dropdown'
               >
                 <Picker.Item style={styles.pickerItem} label='Todos' value="Todos"/>
-              {companysInfo.map(employer => 
-                <Picker.Item style={styles.pickerItem} label={employer.name} value={employer.name} key={employer.name}/>
+              {employersList.map(employer => 
+                <Picker.Item style={styles.pickerItem} label={employer} value={employer} key={employer}/>
               )}
             </Picker>
           </View>

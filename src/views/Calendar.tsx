@@ -7,7 +7,8 @@ import {
   TouchableOpacity, 
   FlatList, 
   Animated,
-  PanResponder
+  PanResponder,
+  TouchableWithoutFeedback
 } from 'react-native';
 import { Navigate } from 'react-router-native';
 import useCalendar from '../hooks/useCalendar';
@@ -104,20 +105,20 @@ export default function Calendar() {
     const colorShifts = shifts.filter(shift => shift.shiftEntry.getFullYear() === date.getFullYear() && shift.shiftEntry.getMonth() === date.getMonth() && shift.shiftEntry.getDate() === date.getDate())
 
     return (
-      <TouchableOpacity
-      activeOpacity={0.7}
-      key={key}
-      style={shadowed ? styles.dayContainerEmpty : styles.dayContainer}
-      onPress={() => handleDayPress(key)}
+      <TouchableWithoutFeedback
+        key={key}
+        onPress={() => handleDayPress(key)}
       >
-        {nav && <Navigate to={`/calendar/shifts/${pressedDate}`}/>}
-        {shadowed === true ? <View></View> : colorShifts.map(shiftColor => 
-          <View key={shiftColor.key} style={[styles.coloredShiftBox, {backgroundColor: companysInfo.find(employer => employer.name === shiftColor.employer)!.color}]}>
-            <Text style={styles.coloredShiftText}>{shiftColor.short}</Text>
-          </View>
-        )}
-        <Text style={shadowed ? styles.emptyDayText : [styles.dayText, isCurrentDay && styles.selectedDayText]}>{day.toLocaleString()}</Text>
-      </TouchableOpacity>
+        <View style={shadowed ? styles.dayContainerEmpty : styles.dayContainer}>
+          {nav && <Navigate to={`/calendar/shifts/${pressedDate}`}/>}
+          {shadowed === true ? <View></View> : colorShifts.map(shiftColor => 
+            <View key={shiftColor.key} style={[styles.coloredShiftBox, {backgroundColor: companysInfo.some(employer => employer.name === shiftColor.employer) ? companysInfo.find(employer => employer.name === shiftColor.employer)!.color : shiftColor.color}]}>
+              <Text style={styles.coloredShiftText}>{shiftColor.short}</Text>
+            </View>
+          )}
+          <Text style={shadowed ? styles.emptyDayText : [styles.dayText, isCurrentDay && styles.selectedDayText]}>{day.toLocaleString()}</Text>
+        </View>
+      </TouchableWithoutFeedback>
     )
   }
   

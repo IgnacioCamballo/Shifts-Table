@@ -169,7 +169,7 @@ export default function NewEmployer() {
         press={() => handleSaveEmployer()}
         block={inputName === "" || salary === "" || repeatedName ? true : false}
         to='/config' 
-        text="Registrar Empleado" 
+        text="Registrar Empleador" 
         color={theme.colors.verdeBoton}
       />
 

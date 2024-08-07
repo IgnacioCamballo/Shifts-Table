@@ -192,7 +192,7 @@ export default function Config() {
           }
         </ScrollView>
         
-        <Boton margintop={20} block={false} press={() => {}} to='/config/newEmployer' text="Registrar Empleado" color={theme.colors.verdeBoton}/>
+        <Boton margintop={20} block={false} press={() => {}} to='/config/newEmployer' text="Registrar Empleador" color={theme.colors.verdeBoton}/>
       </View>
     </View>
   )

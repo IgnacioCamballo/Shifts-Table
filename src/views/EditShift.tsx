@@ -23,7 +23,19 @@ export default function EditShift() {
   const editingShift = shifts.find(shift => shift.key === editingShiftKey)
   const editingShiftIndex = shifts.findIndex(shift => shift.key === editingShiftKey)
 
-  const {employer, key, note, paid, shiftBreak, shiftEntry, shiftExit, workedHours, workedMinutes} = editingShift!
+  const {
+    employer, 
+    key, 
+    note, 
+    paid, 
+    shiftBreak, 
+    shiftEntry, 
+    shiftExit, 
+    workedHours, 
+    workedMinutes, 
+    salary,
+    color
+  } = editingShift!
 
   const [employerEdit, setEmployer] = useState(employer)
   const [shiftEntryEdit, setShiftEntry] = useState<Date | null>(shiftEntry)
@@ -161,7 +173,14 @@ export default function EditShift() {
       workedHours: workedHoursEdit,
       workedMinutes: workedMinutesEdit,
       paid: paidEdit,
-      salary: workedHours ? (workedHours + workedMinutes!/60) * companysInfo.find(company => company.name === employer)!.wage : null,
+      salary: workedHours ? 
+        companysInfo.some(company => company.name === employerEdit) 
+        ? (workedHours + workedMinutes!/60) * companysInfo.find(company => company.name === employer)!.wage 
+        : salary 
+      : null,
+      color: companysInfo.some(company => company.name === employerEdit)
+        ? companysInfo.find(company => company.name === employer)!.color
+        : color,
       note: noteEdit
     }
     const updatedshifts = [...shifts]
