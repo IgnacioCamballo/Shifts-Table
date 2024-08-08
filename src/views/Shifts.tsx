@@ -80,6 +80,7 @@ export default function Shifts() {
           <Text style={styles.textLine}>Atras</Text>
         </View>
       </Link>
+      
       <View style={styles.arrows}>
         <TouchableOpacity activeOpacity={0.7} onPress={prevDay}>
           <BotonChico color={theme.colors.grisMedio} text='' icon='left'/>

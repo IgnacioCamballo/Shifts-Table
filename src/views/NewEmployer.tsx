@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { StyleSheet, Text, TextInput, TouchableOpacity, View, Modal, Platform } from 'react-native'
 import ColorPicker, { HueSlider, Panel1, Preview, returnedResults } from 'reanimated-color-picker'
-import { Link } from 'react-router-native'
+import { Link, useParams } from 'react-router-native'
 import Constants from "expo-constants"
 
 import { EmployerProps } from '../types'
@@ -11,6 +11,9 @@ import Boton from '../components/Boton'
 import BotonChico from '../components/BotonChico'
 
 export default function NewEmployer() {
+  const params = useParams()
+  const pressedDate = params.date
+
   const { companysInfo, setCompanysInfo } = useCalendar()
 
   const [inputName, setInputName] = useState("")
@@ -58,7 +61,7 @@ export default function NewEmployer() {
   return (
     <View style={styles.container}>
       <Link 
-        to={'/config'}
+        to={pressedDate === undefined ? '/config' : `/calendar/shifts/${pressedDate}/newShift`}
         activeOpacity={0.7} 
         style={styles.botonCerrar}
         underlayColor="none"
@@ -168,7 +171,7 @@ export default function NewEmployer() {
         margintop={0}
         press={() => handleSaveEmployer()}
         block={inputName === "" || salary === "" || repeatedName ? true : false}
-        to='/config' 
+        to={pressedDate === undefined ? '/config' : `/calendar/shifts/${pressedDate}/newShift`} 
         text="Registrar Empleador" 
         color={theme.colors.verdeBoton}
       />

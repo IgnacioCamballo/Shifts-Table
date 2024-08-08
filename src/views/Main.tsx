@@ -24,6 +24,7 @@ export default function Main() {
               <Route path='/calendar/shifts/:date/editShift/:shift' element={<EditShift />}/>
           <Route path='/config' element={<Config />}/>
             <Route path='/config/newEmployer' element={<NewEmployer />}/>
+            <Route path='/config/newEmployer/:date' element={<NewEmployer />}/>
             <Route path='/config/editEmployer/:employer' element={<EditEmployer />}/>
           <Route path='/totals' element={<Totals />}/>
             <Route path='/totals/:month' element={<Totals />}/>

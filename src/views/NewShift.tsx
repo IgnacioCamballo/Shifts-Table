@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { StyleSheet, Text, TextInput, TouchableOpacity, View, Modal, Platform, Alert, ScrollView } from 'react-native'
-import { Link, useParams } from 'react-router-native'
+import { Link, Navigate, useParams } from 'react-router-native'
 import Constants from "expo-constants"
 
 import useCalendar from '../hooks/useCalendar'
@@ -202,7 +202,7 @@ export default function NewShift() {
 
       <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
         <View>
-          <Text style={styles.textoConf}>Nuevo Turno</Text>
+          <Text style={styles.textoConf}>Nuevo Turno {firstLetterUpper(pressedDate.toLocaleDateString('es-ES', {month: 'short'}))} / {pressedDate.toLocaleDateString('es-ES', {day:"numeric"})}</Text>
         </View>
 
         <View style={styles.empleador}>
@@ -218,13 +218,16 @@ export default function NewShift() {
                 mode='dropdown'
                 >
                   <Picker.Item style={styles.pickerItem} label='Seleccionar Empleador' value="" enabled={false}/>
-                {companysInfo.map(employer => 
-                  <Picker.Item style={styles.pickerItem} label={employer.name} value={employer.name} key={employer.name}/>
-                )}
+                  {companysInfo.map(employer => 
+                    <Picker.Item style={styles.pickerItem} label={employer.name} value={employer.name} key={employer.name}/>
+                  )}
+                  <Picker.Item style={styles.pickerItem} label='+ Crear nuevo empleador' value="newEmployer"/>
               </Picker>
             </View>
           </View>
 
+          {employer === "newEmployer" && <Navigate to={`/config/newEmployer/${pressedDate}`}/>}
+          
           <TouchableOpacity 
             activeOpacity={0.8} 
             style={styles.line}
