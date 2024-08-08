@@ -5,16 +5,14 @@ import {
   StyleSheet, 
   Dimensions, 
   TouchableOpacity, 
-  FlatList, 
   Animated,
-  PanResponder,
-  TouchableWithoutFeedback
+  PanResponder
 } from 'react-native';
 import { Navigate } from 'react-router-native';
 import useCalendar from '../hooks/useCalendar';
-import BotonChico from '../components/BotonChico';
 import theme from '../theme';
 import { firstLetterUpper } from '../utils';
+import SwiftArrows from '../components/SwiftArrows';
 
 let screenWidth = Dimensions.get("window").width
 let lenguage = "es"
@@ -105,7 +103,8 @@ export default function Calendar() {
     const colorShifts = shifts.filter(shift => shift.shiftEntry.getFullYear() === date.getFullYear() && shift.shiftEntry.getMonth() === date.getMonth() && shift.shiftEntry.getDate() === date.getDate())
 
     return (
-      <TouchableWithoutFeedback
+      <TouchableOpacity
+        activeOpacity={0.9}
         key={key}
         onPress={() => handleDayPress(key)}
       >
@@ -118,7 +117,7 @@ export default function Calendar() {
           )}
           <Text style={shadowed ? styles.emptyDayText : [styles.dayText, isCurrentDay && styles.selectedDayText]}>{day.toLocaleString()}</Text>
         </View>
-      </TouchableWithoutFeedback>
+      </TouchableOpacity>
     )
   }
   
@@ -203,17 +202,11 @@ export default function Calendar() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.arrows}>
-        <TouchableOpacity activeOpacity={0.7} onPress={prevMonth}>
-          <BotonChico color={theme.colors.grisMedio} text='' icon='left'/>
-        </TouchableOpacity>
-
-        <Text style={styles.monthText}>{firstLetterUpper(currentDay.toLocaleDateString('es-ES', { month: 'long' }))}</Text>
-        
-        <TouchableOpacity activeOpacity={0.7} onPress={nextMonth}>
-        <BotonChico color={theme.colors.grisMedio} text='' icon='right'/>
-        </TouchableOpacity>
-      </View>
+      <SwiftArrows 
+        leftAction={prevMonth} 
+        text={`${firstLetterUpper(currentDay.toLocaleDateString('es-ES', { month: 'long' }))}`}
+        rightAction={nextMonth} 
+      />
 
       <View style={styles.weekDays}>
         {weekDays.map(day => 
@@ -223,23 +216,16 @@ export default function Calendar() {
         )}
       </View>
 
-      <Animated.View 
-        horizontal={true}
-        scrollEnabled={true}
+      <Animated.ScrollView 
         style={[
-          styles.daysContainer,
-          {transform:[{translateX: position}]}
-        ]}
+          {transform:[{translateX: position}]}]
+        }
         {...panResponder.panHandlers}
       >
-        <FlatList
-          scrollEnabled={false}
-          data={monthdays}
-          renderItem={({item}) => renderItem(item)}
-          numColumns={7}
-          keyExtractor={(item) => item.key}
-        />
-      </Animated.View>
+        <View style={styles.daysContainer}>
+          {monthdays.map(monthDay => renderItem(monthDay))}
+        </View>
+      </Animated.ScrollView>
     </View>
   );
 };
@@ -248,16 +234,6 @@ const styles = StyleSheet.create({
    container: {
     flex: 1,
     padding: 10  
-  },
-  monthText: {
-    fontSize: theme.fontSizes.F20,
-    fontWeight: 'bold',
-  },
-  arrows: {
-    height: 28,
-    flexDirection: 'row',
-    justifyContent: "space-between",
-    paddingHorizontal: 48
   },
   textDayContainer: {
     height: 20,
@@ -276,7 +252,10 @@ const styles = StyleSheet.create({
   },
   daysContainer: {
     flex: 1,
-    marginTop: 5
+    marginTop: 5,
+    width: screenWidth - 20,
+    flexDirection: "row", 
+    flexWrap: "wrap"
   },
   dayContainer: {
     height: theme.heigth.daysContainer,
