@@ -8,6 +8,8 @@ import theme from '../theme'
 import { Dimensions } from 'react-native'
 import { Picker } from '@react-native-picker/picker'
 import useCalendar from '../hooks/useCalendar'
+import SwiftArrows from '../components/SwiftArrows'
+import TransparentButton from '../components/TransparentButton'
 
 let screenWidth = Dimensions.get("window").width
 
@@ -159,27 +161,18 @@ export default function MonthDetail() {
 
   return (
     <View style={styles.container}>
-      <Link style={styles.link} to={`/totals/${currentDay}`} underlayColor="none">
-        <View style={[styles.flexRow, {gap: 4}]}>
-          <Icon 
-            name="doubleleft" 
-            color={theme.colors.negro} 
-            size={18}
-          />
-          <Text style={styles.textLineAtras}>Atras</Text>
-        </View>
-      </Link>
-      <View style={styles.arrows}>
-        <TouchableOpacity activeOpacity={0.7} onPress={prevMonth}>
-          <BotonChico color={theme.colors.grisMedio} text='' icon='left'/>
-        </TouchableOpacity>
-
-        <Text style={styles.monthText}>{firstLetterUpper(currentDay.toLocaleDateString('es-ES', { month: 'long' }))} / {currentDay.toLocaleDateString('es-ES', { year: '2-digit' })}</Text>
-        
-        <TouchableOpacity activeOpacity={0.7} onPress={nextMonth}>
-        <BotonChico color={theme.colors.grisMedio} text='' icon='right'/>
-        </TouchableOpacity>
-      </View>
+      <TransparentButton 
+        link={`/totals/${currentDay}`}
+        style={styles.link}
+        nameIconLeft='doubleleft'
+        text='Atras'
+      />
+      
+      <SwiftArrows 
+        leftAction={prevMonth} 
+        text={`${firstLetterUpper(currentDay.toLocaleDateString('es-ES', { month: 'long' }))} / ${currentDay.toLocaleDateString('es-ES', { year: '2-digit' })}`}
+        rightAction={nextMonth} 
+      />
 
       <View style={styles.employersContainer}>
         <View style={[styles.line, {borderBottomWidth: 0, paddingBottom: 0}]}>

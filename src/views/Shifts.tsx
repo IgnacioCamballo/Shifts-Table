@@ -9,6 +9,8 @@ import useCalendar from '../hooks/useCalendar'
 import Boton from '../components/Boton'
 import Shift from '../components/Shift'
 import Icon from 'react-native-vector-icons/AntDesign'
+import SwiftArrows from '../components/SwiftArrows'
+import TransparentButton from '../components/TransparentButton'
 
 export default function Shifts() {
   const params = useParams()
@@ -70,28 +72,18 @@ export default function Shifts() {
 
   return (
     <View style={styles.container}>
-      <Link style={styles.link} to="/" underlayColor="none">
-        <View style={[styles.flexRow, {gap: 4}]}>
-          <Icon 
-            name="doubleleft" 
-            color={theme.colors.negro} 
-            size={18}
-          />
-          <Text style={styles.textLine}>Atras</Text>
-        </View>
-      </Link>
-      
-      <View style={styles.arrows}>
-        <TouchableOpacity activeOpacity={0.7} onPress={prevDay}>
-          <BotonChico color={theme.colors.grisMedio} text='' icon='left'/>
-        </TouchableOpacity>
+      <TransparentButton 
+        style={styles.link} 
+        link='/' 
+        nameIconLeft="doubleleft" 
+        text="Atras"
+      />
 
-        <Text style={styles.monthText}>{firstLetterUpper(date.toLocaleDateString('es-ES', {month: 'short'}))} / {date.toLocaleDateString('es-ES', {day:"numeric"})} ({textDay(date)})</Text>
-        
-        <TouchableOpacity activeOpacity={0.7} onPress={nextDay}>
-          <BotonChico color={theme.colors.grisMedio} text='' icon='right'/>
-        </TouchableOpacity>
-      </View>
+      <SwiftArrows 
+        leftAction={prevDay} 
+        text={`${firstLetterUpper(date.toLocaleDateString('es-ES', {month: 'short'}))} / ${date.toLocaleDateString('es-ES', {day:"numeric"})} (${textDay(date)})`}
+        rightAction={nextDay} 
+      />
 
       <Boton margintop={12} block={false} press={() => {}} to={`/calendar/shifts/${date}/newShift`} text="Registrar Turno" color={theme.colors.verdeBoton}/>
 
@@ -115,12 +107,6 @@ const styles = StyleSheet.create({
   monthText: {
     fontSize: theme.fontSizes.F20,
     fontWeight: 'bold',
-  },
-  arrows: {
-    height: 28,
-    flexDirection: 'row',
-    justifyContent: "space-between",
-    paddingHorizontal: 48
   },
   scrollView: {
     maxHeight: theme.heigth.shiftScrollView,
