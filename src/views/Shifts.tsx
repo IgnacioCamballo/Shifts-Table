@@ -1,14 +1,12 @@
 import React, { useState } from 'react'
-import { Animated, Dimensions, StyleSheet, Text, TouchableOpacity, View, ScrollView } from 'react-native'
-import { Link, useParams } from 'react-router-native'
+import { Animated, Dimensions, ScrollView, StyleSheet, View} from 'react-native'
+import { useParams } from 'react-router-native'
 import { ShiftProps } from '../types'
 import { firstLetterUpper, textDay } from '../utils'
-import BotonChico from '../components/BotonChico'
-import theme from '../theme'
+import theme from '../theme/theme'
 import useCalendar from '../hooks/useCalendar'
 import Boton from '../components/Boton'
 import Shift from '../components/Shift'
-import Icon from 'react-native-vector-icons/AntDesign'
 import SwiftArrows from '../components/SwiftArrows'
 import TransparentButton from '../components/TransparentButton'
 
@@ -21,53 +19,16 @@ export default function Shifts() {
   let screenWidth = Dimensions.get("window").width
   let lenguage = "es"
 
-  const [position, setPosition] = useState(new Animated.Value(0))
   const [date, setDate] = useState(new Date(pressedDate))
 
   const prevDay = () => {
-      const newDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
-  
-      Animated.timing(position, {
-        toValue: screenWidth,
-        duration: 100,
-        useNativeDriver: false
-      }).start(() => {
-        setDate(newDate)
-        Animated.timing(position, {
-          toValue: -screenWidth,
-          duration: 0,
-          useNativeDriver: false
-        }).start(() => {
-          Animated.timing(position, {
-            toValue: 0,
-            duration: 200,
-            useNativeDriver: false
-          }).start()
-        })
-      })
-    };
+    const newDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
+    setDate(newDate)
+  };
   
   const nextDay = () => {
     const newDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
-
-    Animated.timing(position, {
-      toValue: -screenWidth,
-      duration: 100,
-      useNativeDriver: false
-    }).start(() => {
-      setDate(newDate)
-      Animated.timing(position, {
-        toValue: screenWidth,
-        duration: 0,
-        useNativeDriver: false
-      }).start(() => {
-        Animated.timing(position, {
-          toValue: 0,
-          duration: 200,
-          useNativeDriver: false
-        }).start()
-      })
-    })
+    setDate(newDate)
   };
 
   return (
@@ -104,22 +65,9 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10  
   },
-  monthText: {
-    fontSize: theme.fontSizes.F20,
-    fontWeight: 'bold',
-  },
   scrollView: {
     maxHeight: theme.heigth.shiftScrollView,
     marginTop: 16
-  },
-  textLine: {
-    fontSize: theme.fontSizes.F18,
-    fontWeight: '500'
-  },
-  flexRow: {
-    flexDirection: "row",
-    gap: 8,
-    alignItems: "center"
   },
   link: {
     position: "absolute",

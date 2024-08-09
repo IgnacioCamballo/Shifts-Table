@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Text, TouchableOpacity, View, StyleSheet, Animated, ScrollView } from 'react-native'
-import { Link, useParams } from 'react-router-native'
+import { useParams } from 'react-router-native'
 import { firstLetterUpper, formattedMinutes, textDay} from '../utils'
-import Icon from "react-native-vector-icons/AntDesign"
-import BotonChico from '../components/BotonChico'
-import theme from '../theme'
+import theme from '../theme/theme'
 import { Dimensions } from 'react-native'
 import { Picker } from '@react-native-picker/picker'
 import useCalendar from '../hooks/useCalendar'
@@ -17,10 +15,9 @@ export default function MonthDetail() {
   const param = useParams()
   const month = param.month
 
-  const {companysInfo, shifts} = useCalendar()
+  const {shifts} = useCalendar()
 
   const [currentDay, setCurrentDay] = useState(new Date(month!))
-  const [position, setPosition] = useState(new Animated.Value(0))
   const [employer, setEmployer] = useState("Todos")
   const [shownDays, setShownDays] = useState("Todos")
   const [employersList, setEmployersList] = useState<string[]>([])
@@ -32,48 +29,12 @@ export default function MonthDetail() {
 
   const prevMonth = () => {
     const newDate = new Date(currentDay.getFullYear(), currentDay.getMonth() - 1);
-
-    Animated.timing(position, {
-      toValue: screenWidth,
-      duration: 100,
-      useNativeDriver: false
-    }).start(() => {
-      setCurrentDay(newDate)
-      Animated.timing(position, {
-        toValue: -screenWidth,
-        duration: 0,
-        useNativeDriver: false
-      }).start(() => {
-        Animated.timing(position, {
-          toValue: 0,
-          duration: 200,
-          useNativeDriver: false
-        }).start()
-      })
-    })
+    setCurrentDay(newDate)
   };
 
   const nextMonth = () => {
     const newDate = new Date(currentDay.getFullYear(), currentDay.getMonth() + 1);
-
-    Animated.timing(position, {
-      toValue: -screenWidth,
-      duration: 100,
-      useNativeDriver: false
-    }).start(() => {
-      setCurrentDay(newDate)
-      Animated.timing(position, {
-        toValue: screenWidth,
-        duration: 0,
-        useNativeDriver: false
-      }).start(() => {
-        Animated.timing(position, {
-          toValue: 0,
-          duration: 200,
-          useNativeDriver: false
-        }).start()
-      })
-    })
+    setCurrentDay(newDate)
   };
 
   function findWorkedHours() {
@@ -244,16 +205,6 @@ const styles = StyleSheet.create({
   container: {
     padding: 10
   },
-  arrows: {
-    height: 28,
-    flexDirection: 'row',
-    justifyContent: "space-between",
-    paddingHorizontal: 48
-  },
-  monthText: {
-    fontSize: theme.fontSizes.F20,
-    fontWeight: 'bold',
-  },
   line: {
     paddingHorizontal: 15,
     paddingVertical: 8,
@@ -265,10 +216,6 @@ const styles = StyleSheet.create({
   textLine: {
     fontSize: theme.fontSizes.F18,
     fontWeight: '400'
-  },
-  textLineAtras: {
-    fontSize: theme.fontSizes.F18,
-    fontWeight: '500'
   },
   employersContainer: {
     borderTopWidth: 2,

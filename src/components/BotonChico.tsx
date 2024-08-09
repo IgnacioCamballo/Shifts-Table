@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, StyleSheet, Text, ColorValue, TouchableOpacity } from 'react-native'
 import { Platform } from 'react-native';
-import theme from '../theme'
+import theme from '../theme/theme'
 import Icon from 'react-native-vector-icons/AntDesign';
 
 interface ButtonProps {

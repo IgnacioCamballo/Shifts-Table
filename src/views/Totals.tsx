@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { Text, TouchableOpacity, View, StyleSheet, Animated, Dimensions } from 'react-native'
+import { Text, View, StyleSheet, Animated, Dimensions } from 'react-native'
 import BotonChico from '../components/BotonChico'
-import theme from '../theme'
+import theme from '../theme/theme'
 import { firstLetterUpper, formattedMinutesNumber } from '../utils'
 import { Picker } from '@react-native-picker/picker'
 import useCalendar from '../hooks/useCalendar'
@@ -14,10 +14,9 @@ export default function Totals() {
   const param = useParams()
   const currentMonth = param.month ? new Date(param.month) : new Date()
 
-  const {companysInfo, shifts} = useCalendar()
+  const {shifts} = useCalendar()
 
   const [currentDay, setCurrentDay] = useState(currentMonth);
-  const [position, setPosition] = useState(new Animated.Value(0))
   const [employersList, setEmployersList] = useState<string[]>([])
 
   const [employer, setEmployer] = useState("Todos")
@@ -114,48 +113,12 @@ export default function Totals() {
 
   const prevMonth = () => {
     const newDate = new Date(currentDay.getFullYear(), currentDay.getMonth() - 1);
-
-    Animated.timing(position, {
-      toValue: screenWidth,
-      duration: 100,
-      useNativeDriver: false
-    }).start(() => {
-      setCurrentDay(newDate)
-      Animated.timing(position, {
-        toValue: -screenWidth,
-        duration: 0,
-        useNativeDriver: false
-      }).start(() => {
-        Animated.timing(position, {
-          toValue: 0,
-          duration: 200,
-          useNativeDriver: false
-        }).start()
-      })
-    })
+    setCurrentDay(newDate)
   };
 
   const nextMonth = () => {
     const newDate = new Date(currentDay.getFullYear(), currentDay.getMonth() + 1);
-
-    Animated.timing(position, {
-      toValue: -screenWidth,
-      duration: 100,
-      useNativeDriver: false
-    }).start(() => {
-      setCurrentDay(newDate)
-      Animated.timing(position, {
-        toValue: screenWidth,
-        duration: 0,
-        useNativeDriver: false
-      }).start(() => {
-        Animated.timing(position, {
-          toValue: 0,
-          duration: 200,
-          useNativeDriver: false
-        }).start()
-      })
-    })
+    setCurrentDay(newDate)
   };
 
   return (
@@ -229,16 +192,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10  
-  },
-  arrows: {
-    height: 28,
-    flexDirection: 'row',
-    justifyContent: "space-between",
-    paddingHorizontal: 48
-  },
-  monthText: {
-    fontSize: theme.fontSizes.F20,
-    fontWeight: 'bold',
   },
   line: {
     paddingHorizontal: 15,

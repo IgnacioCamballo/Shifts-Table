@@ -6,7 +6,7 @@ import Constants from "expo-constants"
 
 import { EmployerProps } from '../types'
 import useCalendar from '../hooks/useCalendar'
-import theme from '../theme'
+import theme from '../theme/theme'
 import Boton from '../components/Boton'
 import BotonChico from '../components/BotonChico'
 

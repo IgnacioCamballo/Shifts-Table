@@ -1,6 +1,6 @@
 import React from 'react'
 import { View, StyleSheet, Text, ColorValue, Linking } from 'react-native'
-import theme from '../theme'
+import theme from '../theme/theme'
 import { Link } from 'react-router-native'
 import { TouchableOpacity } from 'react-native-gesture-handler';
 

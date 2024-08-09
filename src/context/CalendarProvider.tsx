@@ -12,6 +12,7 @@ const CalendarProvider = ({ children }: props) => {
   const [configInfo, setConfigInfo] = useState<ConfigInfo>({ entry: null, exit: null, configBreak: null })
   const [companysInfo, setCompanysInfo] = useState<EmployerProps[]>([])
   const [shifts, setShifts] = useState<ShiftProps[]>([])
+  const [lenguage, setLenguage] = useState<String>("es")
 
   const getConfigStorage = async () => {
     try {
@@ -41,7 +42,7 @@ const CalendarProvider = ({ children }: props) => {
       console.log(error)
     }
   }
-
+  
   const getShiftsStorage = async () => {
     try {
       const storagedShifts = await AsyncStorage?.getItem('shifts')
@@ -59,7 +60,8 @@ const CalendarProvider = ({ children }: props) => {
             workedMinutes: shift.workedMinutes,
             paid: shift.paid,
             salary: shift.salary,
-            note: shift.note
+            note: shift.note,
+            color: shift.color
           }
           return (item)
         })
@@ -70,7 +72,22 @@ const CalendarProvider = ({ children }: props) => {
     }
   }
 
+  const getLenguageStorage = async () => {
+    try {
+      const storagedLenguage = await AsyncStorage.getItem('lenguage')
+      if (storagedLenguage !== null) {
+        const parsed: string = await JSON.parse(storagedLenguage)
+        setLenguage(parsed)
+      } else {
+        setLenguage("es")
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  
   useEffect(() => {
+    getLenguageStorage()
     getConfigStorage()
     getCompanysStorage()
     getShiftsStorage()
@@ -88,15 +105,22 @@ const CalendarProvider = ({ children }: props) => {
     AsyncStorage.setItem("shifts", JSON.stringify(shifts))
   }, [shifts])
 
+  useEffect(() => {
+    AsyncStorage.setItem("lenguage", JSON.stringify(lenguage))
+    console.log(lenguage)
+  }, [lenguage])
+
   return (
     <CalendarContext.Provider
       value={{
         configInfo,
         companysInfo,
         shifts,
+        lenguage,
         setConfigInfo,
         setCompanysInfo,
         setShifts,
+        setLenguage
       }}
     >
       {children}

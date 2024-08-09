@@ -4,13 +4,19 @@ import {
   Text, 
   StyleSheet, 
   Dimensions, 
-  TouchableOpacity, 
-  Animated,
-  PanResponder
+  TouchableOpacity
 } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, { 
+  Easing, 
+  useAnimatedStyle, 
+  useSharedValue, 
+  withSequence, 
+  withTiming 
+} from 'react-native-reanimated';
 import { Navigate } from 'react-router-native';
 import useCalendar from '../hooks/useCalendar';
-import theme from '../theme';
+import theme from '../theme/theme';
 import { firstLetterUpper } from '../utils';
 import SwiftArrows from '../components/SwiftArrows';
 
@@ -25,13 +31,17 @@ type DayProps = {
 }
 
 export default function Calendar() {
+  
+
   const [currentDay, setCurrentDay] = useState(new Date());
   const [monthdays, setMonthDays] = useState<DayProps[]>([])
-  const [position, setPosition] = useState(new Animated.Value(0))
   const [nav, setNav] = useState(false)
   const [pressedDate, setPressedDate] = useState<Date>()
 
   const {shifts, companysInfo} = useCalendar()
+
+  const translationX = useSharedValue(0)
+  const prevTranslationX = useSharedValue(0)
 
   let currentDate = new Date()
   let actualyear = new Date().getFullYear()
@@ -139,66 +149,51 @@ export default function Calendar() {
 
   const prevMonth = () => {
     const newDate = new Date(currentDay.getFullYear(), currentDay.getMonth() - 1);
-
-    Animated.timing(position, {
-      toValue: screenWidth,
-      duration: 100,
-      useNativeDriver: false
-    }).start(() => {
+    setTimeout(() => {
       setCurrentDay(newDate)
-      Animated.timing(position, {
-        toValue: -screenWidth,
-        duration: 0,
-        useNativeDriver: false
-      }).start(() => {
-        Animated.timing(position, {
-          toValue: 0,
-          duration: 200,
-          useNativeDriver: false
-        }).start()
-      })
-    })
+    }, 100);
+
+    translationX.value = withSequence(
+      withTiming(screenWidth, {duration: 200, easing: Easing.in(Easing.quad)}),
+      withTiming(-screenWidth, {duration: 0}),
+      withTiming(0, {duration: 200, easing: Easing.out(Easing.quad)}),
+    ) 
   };
 
   const nextMonth = () => {
     const newDate = new Date(currentDay.getFullYear(), currentDay.getMonth() + 1);
-
-    Animated.timing(position, {
-      toValue: -screenWidth,
-      duration: 100,
-      useNativeDriver: false
-    }).start(() => {
+    setTimeout(() => {
       setCurrentDay(newDate)
-      Animated.timing(position, {
-        toValue: screenWidth,
-        duration: 0,
-        useNativeDriver: false
-      }).start(() => {
-        Animated.timing(position, {
-          toValue: 0,
-          duration: 200,
-          useNativeDriver: false
-        }).start()
-      })
-    })
+    }, 100);
+    
+    translationX.value = withSequence(
+      withTiming(-screenWidth, {duration: 200, easing: Easing.in(Easing.quad)}),
+      withTiming(screenWidth, {duration: 0}),
+      withTiming(0, {duration: 200, easing: Easing.out(Easing.quad)}),
+    ) 
   };
 
-  const panResponder =
-  PanResponder.create({
-    onMoveShouldSetPanResponder: (evt, gestureState) => true,
-    onPanResponderMove: (evt, gestureState) => {
-      position.setValue(gestureState.dx)
-    },
-    onPanResponderRelease: (evt, gestureState) => {
-      if(gestureState.dx > 80) {
-        prevMonth();
-      } else if(gestureState.dx < -80) {
-        nextMonth();
+  const animatedStyles = useAnimatedStyle(() => ({
+    transform: [{ translateX: translationX.value }],
+  }));
+
+  const panGesture = Gesture.Pan()
+    .onStart(() => {
+      prevTranslationX.value = translationX.value
+    })
+    .onUpdate(event => {
+      translationX.value = prevTranslationX.value + event.translationX
+    })
+    .onFinalize(() => {
+      if(translationX.value < -80){
+        nextMonth()
+      } else if (translationX.value > 80) {
+        prevMonth()
       } else {
-        position.setValue(0)
+        translationX.value = 0
       }
-    }
-  })
+    })
+    .runOnJS(true)
 
   return (
     <View style={styles.container}>
@@ -215,17 +210,16 @@ export default function Calendar() {
           </View>
         )}
       </View>
-
-      <Animated.ScrollView 
-        style={[
-          {transform:[{translateX: position}]}]
-        }
-        {...panResponder.panHandlers}
-      >
-        <View style={styles.daysContainer}>
-          {monthdays.map(monthDay => renderItem(monthDay))}
-        </View>
-      </Animated.ScrollView>
+      
+      <GestureDetector gesture={panGesture}>
+        <Animated.ScrollView 
+          style={[animatedStyles]}
+          >
+          <View style={styles.daysContainer}>
+            {monthdays.map(monthDay => renderItem(monthDay))}
+          </View>
+        </Animated.ScrollView>
+      </GestureDetector>
     </View>
   );
 };

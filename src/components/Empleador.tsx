@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, Text, StyleSheet, Alert } from 'react-native'
 import Icon from "react-native-vector-icons/AntDesign"
-import theme from '../theme'
+import theme from '../theme/theme'
 import { EmployerProps } from '../types'
 import useCalendar from '../hooks/useCalendar'
 import { Link } from 'react-router-native'

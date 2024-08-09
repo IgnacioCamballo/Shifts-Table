@@ -1,7 +1,7 @@
 import React from 'react'
 import { StyleSheet, View, Text, StyleProp, ViewStyle } from 'react-native'
 import { Link } from 'react-router-native'
-import theme from '../theme'
+import theme from '../theme/theme'
 import Icon from 'react-native-vector-icons/AntDesign'
 
 type TransparentButtonProps = {

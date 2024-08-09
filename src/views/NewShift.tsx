@@ -4,7 +4,7 @@ import { Link, Navigate, useParams } from 'react-router-native'
 import Constants from "expo-constants"
 
 import useCalendar from '../hooks/useCalendar'
-import theme from '../theme'
+import theme from '../theme/theme'
 import Boton from '../components/Boton'
 import BotonChico from '../components/BotonChico'
 import DatePicker from 'react-native-date-picker'

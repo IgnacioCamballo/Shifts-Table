@@ -1,4 +1,3 @@
-import { ThemeProvider } from "@react-navigation/native"
 import { Dimensions } from "react-native"
 import Constants from "expo-constants"
 
@@ -34,8 +33,8 @@ const theme = {
     heigth: {
         publicidad: 80,
         daysContainer: (screenHeight - Constants.statusBarHeight - 194)/6,
-        configScrollView: (screenHeight - Constants.statusBarHeight - 440),
-        shiftScrollView: (screenHeight - Constants.statusBarHeight - 220),
+        configScrollView: (screenHeight - Constants.statusBarHeight - 540),
+        shiftScrollView: (screenHeight - Constants.statusBarHeight - 200),
         monthDetailScrollView: (screenHeight - Constants.statusBarHeight - 260)
     }
 }

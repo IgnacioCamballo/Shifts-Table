@@ -1,20 +1,22 @@
 import React, { useState } from 'react'
 import { Modal, StyleSheet, Text, TouchableOpacity, View, Platform, Alert, ScrollView } from 'react-native'
-import CheckBox from '@react-native-community/checkbox';
 import DatePicker from 'react-native-date-picker'
 import Constants from "expo-constants"
 import useCalendar from '../hooks/useCalendar'
-import theme from '../theme'
+import theme from '../theme/theme'
 import Empleador from '../components/Empleador'
 import Boton from '../components/Boton'
 import { formattedMinutes } from '../utils'
 import Icon from 'react-native-vector-icons/AntDesign';
+import { Picker } from '@react-native-picker/picker'
 
 export default function Config() {
   const {
     configInfo,
     companysInfo,
+    lenguage,
     setConfigInfo,
+    setLenguage
   } = useCalendar()
 
   let config = {...configInfo}
@@ -91,6 +93,26 @@ export default function Config() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.configGeneral}>
+        <View style={styles.tituloConf}>
+          <Text style={styles.textoConf}>Idioma</Text>
+        </View>
+
+        <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={lenguage}
+              onValueChange={newValue => setLenguage(newValue)}
+              style={styles.picker}
+              accessibilityLabel='Seleccionar Empleador'
+              mode='dropdown'
+              >
+                <Picker.Item style={styles.pickerItem} label='Español' value="es"/>
+                <Picker.Item style={styles.pickerItem} label='English' value="en"/>
+                <Picker.Item style={styles.pickerItem} label='Portugues' value="pt"/>
+            </Picker>
+          </View>
+      </View>
+
       <View style={styles.configGeneral}>
         <View style={styles.tituloConf}>
           <Text style={styles.textoConf}>Configuracion Predeterminada</Text>
@@ -278,5 +300,22 @@ const styles = StyleSheet.create ({
   },
   scrollView: {
     maxHeight: theme.heigth.configScrollView
+  },
+  pickerContainer: {
+    height: 40,
+    justifyContent: "center",
+    marginBottom: 20,
+    marginTop: 10,
+    borderColor: theme.colors.grisMedio,
+    borderWidth: 1,
+    borderRadius:4
+  },
+  picker: {
+    marginLeft: "39%"
+  },
+  pickerItem: {
+    textAlign: "center",
+    fontSize: 20,
+    color: "black"
   }
 })

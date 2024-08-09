@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, StyleSheet, Text } from 'react-native'
 import IonIcon from "react-native-vector-icons/Ionicons"
-import theme from '../theme'
+import theme from '../theme/theme'
 import { Link, useLocation } from 'react-router-native';
 
 const MenuItem = ({ children, to }: { children: any, to: string}) => {
