@@ -1,6 +1,6 @@
 import React, { useRef } from 'react'
 import { Animated, TouchableOpacity, StyleSheet } from 'react-native';
-import theme from '../theme/theme';
+import theme from '../../theme/theme';
 
 type ValueProps = {
   value: boolean,
@@ -8,18 +8,17 @@ type ValueProps = {
 }
 
 export default function Slider({value, setValue}: ValueProps) {
-  const animatedValue = useRef(new Animated.Value(value ? 1 : 0)).current
-  const animatedValue2 = useRef(new Animated.Value(value ? 1 : 0)).current
+  const bgColorStylesValue = useRef(new Animated.Value(value ? 1 : 0)).current
+  const translateStylesValue = useRef(new Animated.Value(value ? 1 : 0)).current
   
   const handlePress = () => {
-
     Animated.parallel([
-      Animated.timing(animatedValue, {
+      Animated.timing(bgColorStylesValue, {
         toValue: value ? 0 : 1,
         duration: 150,
         useNativeDriver: true,
       }),
-      Animated.timing(animatedValue2, {
+      Animated.timing(translateStylesValue, {
         toValue: value ? 0 : 1,
         duration: 150,
         useNativeDriver: true,
@@ -28,17 +27,17 @@ export default function Slider({value, setValue}: ValueProps) {
     setValue(!value);
   }
 
-  const animatedStyles = {
-    backgroundColor: animatedValue.interpolate({
+  const BgColorStyles = {
+    backgroundColor: bgColorStylesValue.interpolate({
       inputRange: [0, 1],
       outputRange: [theme.colors.grisClaro, theme.colors.slider]
     })
   }
 
-  const animatedStyles2 = {
+  const translateStyles = {
     transform: [
       {
-        translateX: animatedValue2.interpolate({
+        translateX: translateStylesValue.interpolate({
           inputRange: [0, 1],
           outputRange: [0, 14]
         })
@@ -51,8 +50,8 @@ export default function Slider({value, setValue}: ValueProps) {
       activeOpacity={1} 
       onPress={() => handlePress()}
     >
-      <Animated.View style={[styles.slide_exterior, animatedStyles]}>
-        <Animated.View style={[styles.slide_interior, animatedStyles2]}></Animated.View>
+      <Animated.View style={[styles.slide_exterior, BgColorStyles]}>
+        <Animated.View style={[styles.slide_interior, translateStyles]}></Animated.View>
       </Animated.View>
     </TouchableOpacity>
   )

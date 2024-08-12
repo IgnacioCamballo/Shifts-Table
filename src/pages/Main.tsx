@@ -1,6 +1,6 @@
 import React from 'react'
 import { View, StyleSheet } from 'react-native'
-import { Navigate, Route, Routes } from 'react-router-native'
+import { Route, Routes } from 'react-router-native'
 import LayoutHeader from '../layout/LayoutHeader'
 import LayoutFooter from '../layout/LayoutFooter'
 import Calendar from './Calendar'

@@ -76,7 +76,7 @@ const CalendarProvider = ({ children }: props) => {
     try {
       const storagedLenguage = await AsyncStorage.getItem('lenguage')
       if (storagedLenguage !== null) {
-        const parsed: string = await JSON.parse(storagedLenguage)
+        const parsed = await JSON.parse(storagedLenguage)
         setLenguage(parsed)
       } else {
         setLenguage("es")

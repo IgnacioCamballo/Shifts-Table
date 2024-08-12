@@ -1,12 +1,11 @@
 import React from 'react'
 import { View, Text, StyleSheet, Alert } from 'react-native'
-import Icon from "react-native-vector-icons/AntDesign"
-import theme from '../theme/theme'
-import { ShiftProps } from '../types'
-import useCalendar from '../hooks/useCalendar'
-import { Link } from 'react-router-native'
-import { firstLetterUpper, formattedMinutes, formattedMinutesNumber, textDay } from '../utils'
-import Slider from './Slider'
+import theme from '../../theme/theme'
+import { ShiftProps } from '../../types'
+import useCalendar from '../../hooks/useCalendar'
+import { firstLetterUpper, formattedMinutes, formattedMinutesNumber, textDay } from '../../utils'
+import Slider from '../Atoms/Slider'
+import EditDeletButtons from './EditDeletButtons'
 
 export default function Shift({shift}: {shift: ShiftProps}) {
   const {shifts, setShifts} = useCalendar()
@@ -88,25 +87,11 @@ export default function Shift({shift}: {shift: ShiftProps}) {
           <Text style={styles.textLine}>Pago:</Text>
           <Slider setValue={setPaid} value={paid}/>
         </View>
-        <View style={styles.botones}>
-          <Link 
-            to={`/calendar/shifts/${new Date(shiftEntry.getFullYear(), shiftEntry.getMonth(), shiftEntry.getDate())}/editShift/${key}`} 
-            activeOpacity={0.7}
-            underlayColor={"none"}
-          >
-            <Icon
-              name='edit' 
-              color={theme.colors.verdeOscuro} 
-              size={20}
-              />
-          </Link>
-          <Icon 
-            name='delete' 
-            color={theme.colors.rojoBin} 
-            size={20}
-            onPress={() => showAlert()}
-          />
-        </View>
+
+        <EditDeletButtons 
+          DeleteAlert={showAlert} 
+          link={`/calendar/shifts/${new Date(shiftEntry.getFullYear(), shiftEntry.getMonth(), shiftEntry.getDate())}/editShift/${key}`}
+        />
       </View>
     </View>
   )
@@ -139,9 +124,5 @@ const styles = StyleSheet.create({
       height: 20,
       position: "relative",
       top: 3
-    },
-    botones: {
-      flexDirection: "row",
-      gap: 20
     }
 })

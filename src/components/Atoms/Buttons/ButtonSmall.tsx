@@ -1,16 +1,14 @@
 import React from 'react'
-import { View, StyleSheet, Text, ColorValue, TouchableOpacity } from 'react-native'
+import { View, StyleSheet, ColorValue } from 'react-native'
 import { Platform } from 'react-native';
-import theme from '../theme/theme'
-import Icon from 'react-native-vector-icons/AntDesign';
+import theme from '../../../theme/theme';
 
 interface ButtonProps {
-  text: string;
+  children: React.ReactNode
   color: ColorValue;
-  icon: string
 }
 
-export default function BotonChico({ text, color, icon }: ButtonProps) {
+export default function ButtonSmall({ children, color }: ButtonProps) {
   let customeStyle = {
     boton: {
       ...styles.boton,
@@ -20,12 +18,7 @@ export default function BotonChico({ text, color, icon }: ButtonProps) {
 
   return (
     <View style={customeStyle.boton}>
-      <Icon 
-        name={icon} 
-        color={theme.colors.negro} 
-        size={18}
-      />
-      <Text style={styles.texto}>{text}</Text>
+      {children}
     </View>
   )
 }
@@ -46,10 +39,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row"
-  },
-  texto: {
-    fontSize: theme.fontSizes.F20,
-    fontWeight: "500",
-    lineHeight: theme.fontSizes.F20
   }
 })

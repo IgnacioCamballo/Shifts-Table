@@ -1,5 +1,5 @@
 import { NativeRouter } from 'react-router-native';
-import Main from './src/views/Main';
+import Main from './src/pages/Main';
 import { CalendarProvider } from './src/context/CalendarProvider';
 import { StatusBar } from 'react-native';
 import theme from './src/theme/theme';

@@ -27,6 +27,13 @@ export type ConfigInfo = {
     configBreak: Date | null
 }
 
+export type DayProps = {
+    key: string, 
+    day: number, 
+    isCurrentDay: boolean,
+    shadowed: boolean
+  }
+
 export type CalendarContextProps = {   
     configInfo: ConfigInfo,
     companysInfo: EmployerProps[],

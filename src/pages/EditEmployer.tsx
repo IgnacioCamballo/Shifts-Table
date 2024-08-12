@@ -7,8 +7,8 @@ import Constants from "expo-constants"
 import { EmployerProps } from '../types'
 import useCalendar from '../hooks/useCalendar'
 import theme from '../theme/theme'
-import Boton from '../components/Boton'
-import BotonChico from '../components/BotonChico'
+import ButtonSmall from '../components/Atoms/Buttons/ButtonSmall'
+import Button from '../components/Atoms/Buttons/Button'
 
 export default function EditEmployer() {
   const { companysInfo, setCompanysInfo } = useCalendar()
@@ -71,7 +71,9 @@ export default function EditEmployer() {
         style={styles.botonCerrar}
         underlayColor="none"
         >
-        <BotonChico text='x' icon='' color={theme.colors.grisClaro}/>
+        <ButtonSmall color={theme.colors.grisClaro}>
+          <Text style={styles.textBotonChico}>x</Text>
+        </ButtonSmall>
       </Link>
 
       <View>
@@ -172,14 +174,14 @@ export default function EditEmployer() {
         </Modal>
       }
 
-      <Boton 
-        margintop={0}
+      <Button 
         press={() => handleSaveEmployer()}
-        block={inputName === "" || salary === "" || repeatedName ? true : false}
+        block={inputName === "" || salary === "" || repeatedName ? true : false} 
         to='/config' 
-        text="Guardar cambios" 
         color={theme.colors.verdeBoton}
-      />
+      >
+        <Text style={styles.textoBoton}>Guardar cambios</Text>
+      </Button>
 
       {repeatedName &&
         <Text style={styles.textAlert}>El nombre ya existe</Text>
@@ -291,5 +293,13 @@ const styles = StyleSheet.create ({
     height: 40,
     textAlign: "center",
     textAlignVertical: "center"
+  },
+  textoBoton: {
+    fontSize: theme.fontSizes.F18,
+    fontWeight: "500"    
+  }, textBotonChico: {
+    fontSize: theme.fontSizes.F20,
+    fontWeight: "500",
+    lineHeight: theme.fontSizes.F20
   }
 })

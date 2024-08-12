@@ -3,8 +3,7 @@ import {
   View, 
   Text, 
   StyleSheet, 
-  Dimensions, 
-  TouchableOpacity
+  Dimensions
 } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { 
@@ -14,59 +13,33 @@ import Animated, {
   withSequence, 
   withTiming 
 } from 'react-native-reanimated';
-import { Navigate } from 'react-router-native';
-import useCalendar from '../hooks/useCalendar';
 import theme from '../theme/theme';
-import { firstLetterUpper } from '../utils';
-import SwiftArrows from '../components/SwiftArrows';
+import { firstLetterUpper, weekdays } from '../utils';
+import SwiftArrows from '../components/Molecules/SwiftArrows';
+import { DayProps } from '../types';
+import RenderDayCalendar from '../components/Atoms/RenderDayCalendar';
 
 let screenWidth = Dimensions.get("window").width
 let lenguage = "es"
 
-type DayProps = {
-    key: string, 
-    day: number, 
-    isCurrentDay: boolean,
-    shadowed: boolean
-}
-
 export default function Calendar() {
-  
-
   const [currentDay, setCurrentDay] = useState(new Date());
   const [monthdays, setMonthDays] = useState<DayProps[]>([])
   const [nav, setNav] = useState(false)
   const [pressedDate, setPressedDate] = useState<Date>()
 
-  const {shifts, companysInfo} = useCalendar()
-
   const translationX = useSharedValue(0)
   const prevTranslationX = useSharedValue(0)
 
-  let currentDate = new Date()
-  let actualyear = new Date().getFullYear()
   
-  //arreglo weekDays con los dias de la semana de lunes a domingo, idioma ajustable
-  const weekdaysArray = [...Array(7).keys()]
-  const intlWeekDay = new Intl.DateTimeFormat(lenguage, {weekday: "short"})
-  const weekDays = weekdaysArray.map(weekDayIndex => {
-    const weekDayName = intlWeekDay.format(new Date(2021, 10, weekDayIndex +1))
-    return weekDayName
-  })
-
-  //arreglo months con los meses, idioma ajustable
-  const monthsArray = [...Array(12).keys()]
-  const intlMonth = new Intl.DateTimeFormat(lenguage, {month: "short"})
-  const months = monthsArray.map(monthIndex => {
-    const month = intlMonth.format(new Date(actualyear, monthIndex))
-    return month
-  })
-
   useEffect(() => {
     const today = new Date();
     setCurrentDay(today);
   }, []);
-
+  
+  //creates the array with the month days to build the grid, filling past month last days and next month
+  //first days as necesary
+  let currentDate = new Date()
   useEffect(() => {
     const daysInMonth = new Date(currentDay.getFullYear(), currentDay.getMonth() + 1, 0).getDate();
     const firstDayOfMonth = new Date(currentDay.getFullYear(), currentDay.getMonth(), 1).getDay();
@@ -105,32 +78,7 @@ export default function Calendar() {
     setMonthDays(days);
   }, [currentDay])
 
-  const renderItem = (item: DayProps) => {
-    const {day, key, isCurrentDay, shadowed} = item
-
-    const date = new Date(currentDay.getFullYear(), currentDay.getMonth(), day)
-
-    const colorShifts = shifts.filter(shift => shift.shiftEntry.getFullYear() === date.getFullYear() && shift.shiftEntry.getMonth() === date.getMonth() && shift.shiftEntry.getDate() === date.getDate())
-
-    return (
-      <TouchableOpacity
-        activeOpacity={0.9}
-        key={key}
-        onPress={() => handleDayPress(key)}
-      >
-        <View style={shadowed ? styles.dayContainerEmpty : styles.dayContainer}>
-          {nav && <Navigate to={`/calendar/shifts/${pressedDate}`}/>}
-          {shadowed === true ? <View></View> : colorShifts.map(shiftColor => 
-            <View key={shiftColor.key} style={[styles.coloredShiftBox, {backgroundColor: companysInfo.some(employer => employer.name === shiftColor.employer) ? companysInfo.find(employer => employer.name === shiftColor.employer)!.color : shiftColor.color}]}>
-              <Text style={styles.coloredShiftText}>{shiftColor.short}</Text>
-            </View>
-          )}
-          <Text style={shadowed ? styles.emptyDayText : [styles.dayText, isCurrentDay && styles.selectedDayText]}>{day.toLocaleString()}</Text>
-        </View>
-      </TouchableOpacity>
-    )
-  }
-  
+  //navigate to the day pressed on the screen
   const handleDayPress = (key: string) => {
     const selected = monthdays.find(arrayDay => arrayDay.key === key)
 
@@ -147,6 +95,7 @@ export default function Calendar() {
     setNav(true)
   };
 
+  //change to previous month with animation
   const prevMonth = () => {
     const newDate = new Date(currentDay.getFullYear(), currentDay.getMonth() - 1);
     setTimeout(() => {
@@ -160,6 +109,7 @@ export default function Calendar() {
     ) 
   };
 
+  //change to next month with animation
   const nextMonth = () => {
     const newDate = new Date(currentDay.getFullYear(), currentDay.getMonth() + 1);
     setTimeout(() => {
@@ -177,6 +127,7 @@ export default function Calendar() {
     transform: [{ translateX: translationX.value }],
   }));
 
+  //reads screen to change month with swipe
   const panGesture = Gesture.Pan()
     .onStart(() => {
       prevTranslationX.value = translationX.value
@@ -204,7 +155,7 @@ export default function Calendar() {
       />
 
       <View style={styles.weekDays}>
-        {weekDays.map(day => 
+        {weekdays(lenguage).map(day => 
           <View key={day} style={styles.textDayContainer}>
             <Text style={styles.textDayContainerText}>{day}</Text>
           </View>
@@ -216,7 +167,16 @@ export default function Calendar() {
           style={[animatedStyles]}
           >
           <View style={styles.daysContainer}>
-            {monthdays.map(monthDay => renderItem(monthDay))}
+            {monthdays.map(monthDay => 
+              <RenderDayCalendar 
+                currentDay={currentDay} 
+                item={monthDay} 
+                nav={nav} 
+                onPress={handleDayPress} 
+                pressedDate={pressedDate!}
+                key={monthDay.key}
+              />
+            )}
           </View>
         </Animated.ScrollView>
       </GestureDetector>

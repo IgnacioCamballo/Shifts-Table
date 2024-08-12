@@ -4,11 +4,11 @@ import DatePicker from 'react-native-date-picker'
 import Constants from "expo-constants"
 import useCalendar from '../hooks/useCalendar'
 import theme from '../theme/theme'
-import Empleador from '../components/Empleador'
-import Boton from '../components/Boton'
+import Employer from '../components/Molecules/Employer'
 import { formattedMinutes } from '../utils'
 import Icon from 'react-native-vector-icons/AntDesign';
 import { Picker } from '@react-native-picker/picker'
+import Button from '../components/Atoms/Buttons/Button'
 
 export default function Config() {
   const {
@@ -209,12 +209,14 @@ export default function Config() {
         <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
           {companysInfo.length === 0 ? <Text style={styles.textNotEmployers}>Aún no hay empleadores</Text> : 
             companysInfo.map(employer => (
-              <Empleador key={employer.name} employer={employer}/>
+              <Employer key={employer.name} employer={employer}/>
             ))
           }
         </ScrollView>
         
-        <Boton margintop={20} block={false} press={() => {}} to='/config/newEmployer' text="Registrar Empleador" color={theme.colors.verdeBoton}/>
+        <Button margintop={20} to='/config/newEmployer' color={theme.colors.verdeBoton}>
+          <Text style={styles.textoBoton}>Registrar Empleador</Text>
+        </Button>
       </View>
     </View>
   )
@@ -317,5 +319,9 @@ const styles = StyleSheet.create ({
     textAlign: "center",
     fontSize: 20,
     color: "black"
+  },
+  textoBoton: {
+    fontSize: theme.fontSizes.F18,
+    fontWeight: "500"    
   }
 })

@@ -1,7 +1,8 @@
 import React from 'react'
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
-import theme from '../theme/theme'
-import BotonChico from './BotonChico'
+import Icon from 'react-native-vector-icons/AntDesign';
+import theme from '../../theme/theme'
+import ButtonSmall from '../Atoms/Buttons/ButtonSmall';
 
 type SwiftArrowsProps = {
   text: string,
@@ -13,13 +14,25 @@ export default function SwiftArrows({text, leftAction, rightAction}: SwiftArrows
   return (
     <View style={styles.arrows}>
         <TouchableOpacity activeOpacity={0.7} onPress={leftAction}>
-          <BotonChico color={theme.colors.grisMedio} text='' icon='left'/>
+          <ButtonSmall color={theme.colors.grisMedio}>
+          <Icon 
+            name="left" 
+            color={theme.colors.negro} 
+            size={18}
+          />
+          </ButtonSmall>
         </TouchableOpacity>
 
         <Text style={styles.monthText}>{text}</Text>
         
         <TouchableOpacity activeOpacity={0.7} onPress={rightAction}>
-        <BotonChico color={theme.colors.grisMedio} text='' icon='right'/>
+        <ButtonSmall color={theme.colors.grisMedio}>
+          <Icon 
+            name="right" 
+            color={theme.colors.negro} 
+            size={18}
+          />
+        </ButtonSmall>
         </TouchableOpacity>
       </View>
   )

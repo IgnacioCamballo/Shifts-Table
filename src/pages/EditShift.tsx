@@ -5,14 +5,14 @@ import Constants from "expo-constants"
 
 import useCalendar from '../hooks/useCalendar'
 import theme from '../theme/theme'
-import Boton from '../components/Boton'
-import BotonChico from '../components/BotonChico'
 import DatePicker from 'react-native-date-picker'
 import { firstLetterUpper, formattedMinutes, formattedMinutesNumber, textDay } from '../utils'
 import Icon from 'react-native-vector-icons/AntDesign'
 import { Picker } from '@react-native-picker/picker'
 import { ShiftProps } from '../types'
-import Slider from '../components/Slider'
+import Slider from '../components/Atoms/Slider'
+import ButtonSmall from '../components/Atoms/Buttons/ButtonSmall'
+import Button from '../components/Atoms/Buttons/Button'
 
 export default function EditShift() {
   const { companysInfo, shifts, setShifts} = useCalendar()
@@ -221,7 +221,9 @@ export default function EditShift() {
         style={styles.botonCerrar}
         underlayColor="none"
         >
-        <BotonChico text='x' icon='' color={theme.colors.grisClaro}/>
+        <ButtonSmall color={theme.colors.grisClaro}>
+          <Text style={styles.textButtonSmall}>x</Text>
+        </ButtonSmall>
       </Link>
 
       <View>
@@ -358,14 +360,15 @@ export default function EditShift() {
       }
 
       <TouchableOpacity style={styles.boton} onPress={() => checkInfo()}>
-        <Boton 
+        <Button 
           margintop={20}
           press={() => handleEditShift()}
           block={employerEdit === "" || !shiftEntryEdit || blockSubmit ? true : false}
           to={`/calendar/shifts/${pressedDate}`} 
-          text="Guardar cambios" 
           color={theme.colors.verdeBoton}
-        />
+        >
+          <Text style={styles.textoBoton}>Guardar cambios</Text>
+        </Button>
       </TouchableOpacity>
     </View>
   )
@@ -513,5 +516,14 @@ const styles = StyleSheet.create ({
   pickerItem: {
     fontSize: 18,
     color: "black"
+  },
+  textoBoton: {
+    fontSize: theme.fontSizes.F18,
+    fontWeight: "500"    
+  },
+  textButtonSmall: {
+    fontSize: theme.fontSizes.F20,
+    fontWeight: "500",
+    lineHeight: theme.fontSizes.F20
   }
 })

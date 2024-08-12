@@ -5,9 +5,10 @@ import { firstLetterUpper, formattedMinutes, textDay} from '../utils'
 import theme from '../theme/theme'
 import { Dimensions } from 'react-native'
 import { Picker } from '@react-native-picker/picker'
+import Icon from 'react-native-vector-icons/AntDesign'
 import useCalendar from '../hooks/useCalendar'
-import SwiftArrows from '../components/SwiftArrows'
-import TransparentButton from '../components/TransparentButton'
+import SwiftArrows from '../components/Molecules/SwiftArrows'
+import TransparentButton from '../components/Atoms/Buttons/ButtonTransparent'
 
 let screenWidth = Dimensions.get("window").width
 
@@ -122,12 +123,14 @@ export default function MonthDetail() {
 
   return (
     <View style={styles.container}>
-      <TransparentButton 
-        link={`/totals/${currentDay}`}
-        style={styles.link}
-        nameIconLeft='doubleleft'
-        text='Atras'
-      />
+      <TransparentButton link={`/totals/${currentDay}`} style={styles.link}>
+        <Icon 
+          name="doubleleft" 
+          color={theme.colors.negro} 
+          size={17}
+        />
+        <Text style={[styles.textLine, {fontWeight: 500}]}>Atras</Text>
+      </TransparentButton>
       
       <SwiftArrows 
         leftAction={prevMonth} 

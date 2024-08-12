@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { Text, View, StyleSheet, Animated, Dimensions } from 'react-native'
-import BotonChico from '../components/BotonChico'
+import { Text, View, StyleSheet } from 'react-native'
 import theme from '../theme/theme'
 import { firstLetterUpper, formattedMinutesNumber } from '../utils'
 import { Picker } from '@react-native-picker/picker'
 import useCalendar from '../hooks/useCalendar'
 import { Link, useParams } from 'react-router-native'
-import SwiftArrows from '../components/SwiftArrows'
-
-let screenWidth = Dimensions.get("window").width
+import SwiftArrows from '../components/Molecules/SwiftArrows'
+import ButtonSmall from '../components/Atoms/Buttons/ButtonSmall'
 
 export default function Totals() {
   const param = useParams()
@@ -155,7 +153,9 @@ export default function Totals() {
         <View style={styles.botonVer}>
           <Text style={styles.textLine}>{workedDays}</Text>
           <Link to={`/totalsDetail/${currentDay}/`} activeOpacity={0.8} underlayColor="none">
-            <BotonChico color={theme.colors.verdeBoton} text='Ver detalle' icon=''/>
+            <ButtonSmall color={theme.colors.verdeBoton}>
+              <Text style={styles.textButtonSmall}>Ver detalle</Text>
+            </ButtonSmall>
           </Link>
         </View>
       </View>
@@ -226,5 +226,10 @@ const styles = StyleSheet.create({
   botonVer: {
     flexDirection: "row",
     gap: 12
+  },
+  textButtonSmall: {
+    fontSize: theme.fontSizes.F20,
+    fontWeight: "500",
+    lineHeight: theme.fontSizes.F20
   }
 })
