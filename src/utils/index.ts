@@ -1,5 +1,5 @@
 
-export const weekdays = (lenguage: string) => {
+export function weekdays(lenguage: string) {
   const weekdaysArray = [...Array(7).keys()]
   const intlWeekDay = new Intl.DateTimeFormat(lenguage, {weekday: "short"})
   const weekDays = weekdaysArray.map(weekDayIndex => {
@@ -25,9 +25,9 @@ export function firstLetterUpper(text: string) {
   return result
 }
 
-export function textDay(date: Date) {
+export function textDay(date: Date, lenguage: string) {
   const weekdaysArray = [...Array(7).keys()]
-  const intlWeekDay = new Intl.DateTimeFormat("es", { weekday: "short" })
+  const intlWeekDay = new Intl.DateTimeFormat(lenguage, { weekday: "short" })
   const weekDays = weekdaysArray.map(weekDayIndex => {
     const weekDayName = intlWeekDay.format(new Date(2021, 10, weekDayIndex))
     return weekDayName

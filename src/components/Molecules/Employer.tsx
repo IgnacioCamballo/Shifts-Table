@@ -4,9 +4,11 @@ import theme from '../../theme/theme'
 import { EmployerProps } from '../../types'
 import useCalendar from '../../hooks/useCalendar'
 import EditDeletButtons from './EditDeletButtons'
+import translations from "../../lenguages/lenguages.json"
+
 
 export default function Employer({ employer }: { employer: EmployerProps }) {
-  const { companysInfo, setCompanysInfo } = useCalendar()
+  const { companysInfo, setCompanysInfo, lenguage } = useCalendar()
 
   const { name, wage, color } = employer
 
@@ -20,10 +22,10 @@ export default function Employer({ employer }: { employer: EmployerProps }) {
   const showAlert = () => {
     Alert.alert(
       '',
-      "¿seguro deseas eliminar este empleador?",
+      translations.employerDeleteAlert.find(i => i.lenguage === lenguage)?.text,
       [
         {
-          text: 'Cancel',
+          text: translations.cancel.find(i => i.lenguage === lenguage)?.text,
           style: 'cancel'
         },
         {
@@ -46,18 +48,18 @@ export default function Employer({ employer }: { employer: EmployerProps }) {
   return (
     <View style={styles.empleador}>
       <View style={styles.line}>
-        <Text style={styles.textLine}>Nombre:</Text>
+        <Text style={styles.textLine}>{translations.name.find(i => i.lenguage === lenguage)?.text}:</Text>
         <Text style={styles.textLine}>{name}</Text>
       </View>
 
       <View style={styles.line}>
-        <Text style={styles.textLine}>Salario por hora:</Text>
+        <Text style={styles.textLine}>{translations.hourlyWage.find(i => i.lenguage === lenguage)?.text}:</Text>
         <Text style={styles.textLine}>{`$ ${wage}`}</Text>
       </View>
 
       <View style={styles.line}>
         <View style={styles.contColor}>
-          <Text style={styles.textLine}>Color:</Text>
+          <Text style={styles.textLine}>{translations.color.find(i => i.lenguage === lenguage)?.text}:</Text>
           <View style={dynamicStyles.color}></View>
         </View>
         <EditDeletButtons 

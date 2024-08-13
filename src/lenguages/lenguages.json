@@ -1,14 +1,277 @@
-[
-  {
-    "text": {
-      "es": {},
-      "en": {},
-      "pt": {}
-    },
-    "text1": {
-      "es": {},
-      "en": {},
-      "pt": {}
-    }
-  }
-]
+{
+  "calendar": [
+    {"lenguage": "es", "text": "Calendario"},
+    {"lenguage": "en", "text": "Calendar"},
+    {"lenguage": "pt", "text": "Calendário"}
+  ],
+  "shifts": [
+    {"lenguage": "es", "text": "Turnos"},
+    {"lenguage": "en", "text": "Shifts"},
+    {"lenguage": "pt", "text": "Turnos"}
+  ],
+  "newShift": [
+    {"lenguage": "es", "text": "Nuevo Turno"},
+    {"lenguage": "en", "text": "New Shift"},
+    {"lenguage": "pt", "text": "Novo Turno"}
+  ],
+  "editShifts": [
+    {"lenguage": "es", "text": "Editar Turnos"},
+    {"lenguage": "en", "text": "Edit Shifts"},
+    {"lenguage": "pt", "text": "Editar Turnos"}
+  ],
+  "createNewShift": [
+    {"lenguage": "es", "text": "Crear nuevo turno"},
+    {"lenguage": "en", "text": "Create new shift"},
+    {"lenguage": "pt", "text": "Crear nuevo turno"}
+  ],
+  "totals": [
+    {"lenguage": "es", "text": "Totales"},
+    {"lenguage": "en", "text": "Totals"},
+    {"lenguage": "pt", "text": "Totales"}
+  ],
+  "totalHours": [
+    {"lenguage": "es", "text": "Totale de horas"},
+    {"lenguage": "en", "text": "Total hours"},
+    {"lenguage": "pt", "text": "Totale de horas"}
+  ],
+  "workedDays": [
+    {"lenguage": "es", "text": "Días trabajados"},
+    {"lenguage": "en", "text": "Worked Days"},
+    {"lenguage": "pt", "text": "Dias trabalhados"}
+  ],
+  "settings": [
+    {"lenguage": "es", "text": "Ajustes"},
+    {"lenguage": "en", "text": "Settings"},
+    {"lenguage": "pt", "text": "Configuração"}
+  ],
+  "createEmployer": [
+    {"lenguage": "es", "text": "Crear Empleador"},
+    {"lenguage": "en", "text": "Create Employer"},
+    {"lenguage": "pt", "text": "Criar Empregador"}
+  ],
+  "newEmployer": [
+    {"lenguage": "es", "text": "Nuevo Empleador"},
+    {"lenguage": "en", "text": "New Employer"},
+    {"lenguage": "pt", "text": "Novo Empregador"}
+  ],
+  "createNewEmployer": [
+    {"lenguage": "es", "text": "Crear nuevo empleador"},
+    {"lenguage": "en", "text": "Create new employer"},
+    {"lenguage": "pt", "text": "Criar novo empregador"}
+  ],
+  "editEmployer": [
+    {"lenguage": "es", "text": "Editar Empleador"},
+    {"lenguage": "en", "text": "Edit Employer"},
+    {"lenguage": "pt", "text": "Editar Empregador"}
+  ],
+  "selectEmployer": [
+    {"lenguage": "es", "text": "Seleccionar empleador"},
+    {"lenguage": "en", "text": "Select employer"},
+    {"lenguage": "pt", "text": "Selecione o empregador"}
+  ],
+  "employerDeleteAlert": [
+    {"lenguage": "es", "text": "¿seguro que deseas eliminar este empleador?"},
+    {"lenguage": "en", "text": "Are you sure you want to delete this employer?"},
+    {"lenguage": "pt", "text": "Tem certeza de que deseja remover este empregador?"}
+  ],
+  "shiftDeleteAlert": [
+    {"lenguage": "es", "text": "¿seguro que deseas eliminar este turno?"},
+    {"lenguage": "en", "text": "Are you sure you want to delete this shift?"},
+    {"lenguage": "pt", "text": "Tem certeza de que deseja remover este turno?"}
+  ],
+  "defaultDeleteAlert": [
+    {"lenguage": "es", "text": "¿seguro que deseas eliminar este horario predefinida?"},
+    {"lenguage": "en", "text": "Are you sure you want to delete this default time?"},
+    {"lenguage": "pt", "text": "Tem certeza de que deseja remover este horário padrão?"}
+  ],
+  "timeDeleteAlert": [
+    {"lenguage": "es", "text": "¿seguro que deseas eliminar este horario?"},
+    {"lenguage": "en", "text": "Are you sure you want to delete this time?"},
+    {"lenguage": "pt", "text": "Tem certeza de que deseja remover este horário?"}
+  ],
+  "repeatedNameAlert": [
+    {"lenguage": "es", "text": "El nombre ya existe"},
+    {"lenguage": "en", "text": "The name already exists"},
+    {"lenguage": "pt", "text": "o nome já existe"}
+  ],
+  "noEmployersYet": [
+    {"lenguage": "es", "text": "Aún no hay empleadores registrados"},
+    {"lenguage": "en", "text": "There are no registered employers yet"},
+    {"lenguage": "pt", "text": "Ainda não há empregadores cadastrados"}
+  ],
+  "noEmployerAlert": [
+    {"lenguage": "es", "text": "El empleador es obligatorio"},
+    {"lenguage": "en", "text": "The employer is obligatory"},
+    {"lenguage": "pt", "text": "O empregador é obrigatório"}
+  ],
+  "noEntryAlert": [
+    {"lenguage": "es", "text": "El horario de entrada es obligatorio"},
+    {"lenguage": "en", "text": "The starting hour is obligatory"},
+    {"lenguage": "pt", "text": "A hora de início é obrigatória"}
+  ],
+  "noEntryEmployerAlert": [
+    {"lenguage": "es", "text": "Empleador y horario de entrada son obligatorios"},
+    {"lenguage": "en", "text": "Employer and starting hour are obligatory"},
+    {"lenguage": "pt", "text": "Empregador e horário de início são obrigatórios"}
+  ],
+  "repetedShiftAlert": [
+    {"lenguage": "es", "text": "El turno ya existe para este empleador"},
+    {"lenguage": "en", "text": "Shift already exist for this employer"},
+    {"lenguage": "pt", "text": "O turno já existe para este empregador"}
+  ],
+  "cancel": [
+    {"lenguage": "es", "text": "Cancelar"},
+    {"lenguage": "en", "text": "Cancel"},
+    {"lenguage": "pt", "text": "Cancelar"}
+  ],
+  "save": [
+    {"lenguage": "es", "text": "Guardar"},
+    {"lenguage": "en", "text": "Save"},
+    {"lenguage": "pt", "text": "Salvar"}
+  ],
+  "back": [
+    {"lenguage": "es", "text": "Volver"},
+    {"lenguage": "en", "text": "Back"},
+    {"lenguage": "pt", "text": "Voltar"}
+  ],
+  "saveChanges": [
+    {"lenguage": "es", "text": "Guardar cambios"},
+    {"lenguage": "en", "text": "Save changes"},
+    {"lenguage": "pt", "text": "Salvar alterações"}
+  ],
+  "name": [
+    {"lenguage": "es", "text": "Nombre"},
+    {"lenguage": "en", "text": "Name"},
+    {"lenguage": "pt", "text": "Nome"}
+  ],
+  "shortName": [
+    {"lenguage": "es", "text": "Siglas"},
+    {"lenguage": "en", "text": "Short name"},
+    {"lenguage": "pt", "text": "Siglas"}
+  ],
+  "placeholderName": [
+    {"lenguage": "es", "text": "Ingresa el nombre"},
+    {"lenguage": "en", "text": "Insert name"},
+    {"lenguage": "pt", "text": "Insira o nome"}
+  ],
+  "placeholderShortName": [
+    {"lenguage": "es", "text": "Ingresa las siglas"},
+    {"lenguage": "en", "text": "Insert short name"},
+    {"lenguage": "pt", "text": "Insira as siglas"}
+  ],
+  "hourlyWage": [
+    {"lenguage": "es", "text": "Salario por hora"},
+    {"lenguage": "en", "text": "Hourly wage"},
+    {"lenguage": "pt", "text": "Salário por hora"}
+  ],
+  "color": [
+    {"lenguage": "es", "text": "Color"},
+    {"lenguage": "en", "text": "Color"},
+    {"lenguage": "pt", "text": "Cor"}
+  ],
+  "employer": [
+    {"lenguage": "es", "text": "Empleador"},
+    {"lenguage": "en", "text": "Employer"},
+    {"lenguage": "pt", "text": "Empregador"}
+  ],
+  "employers": [
+    {"lenguage": "es", "text": "Empleadores"},
+    {"lenguage": "en", "text": "Employers"},
+    {"lenguage": "pt", "text": "Empregadores"}
+  ],
+  "entry": [
+    {"lenguage": "es", "text": "Entrada"},
+    {"lenguage": "en", "text": "Start"},
+    {"lenguage": "pt", "text": "Entrada"}
+  ],
+  "entryHour": [
+    {"lenguage": "es", "text": "Hora de entrada"},
+    {"lenguage": "en", "text": "Starting hour"},
+    {"lenguage": "pt", "text": "Horário de entrada"}
+  ],
+  "exit": [
+    {"lenguage": "es", "text": "Salida"},
+    {"lenguage": "en", "text": "End"},
+    {"lenguage": "pt", "text": "Saída"}
+  ],
+  "exitHour": [
+    {"lenguage": "es", "text": "Hora de salida"},
+    {"lenguage": "en", "text": "Exit hour"},
+    {"lenguage": "pt", "text": "Hora de saída"}
+  ],
+  "break": [
+    {"lenguage": "es", "text": "Descanso"},
+    {"lenguage": "en", "text": "Break"},
+    {"lenguage": "pt", "text": "Pausa"}
+  ],
+  "workedHours": [
+    {"lenguage": "es", "text": "Horas trabajadas"},
+    {"lenguage": "en", "text": "Worked hours"},
+    {"lenguage": "pt", "text": "Horas trabalhadas"}
+  ],
+  "paid": [
+    {"lenguage": "es", "text": "Pagado"},
+    {"lenguage": "en", "text": "Paid"},
+    {"lenguage": "pt", "text": "Pago"}
+  ],
+  "isPaid": [
+    {"lenguage": "es", "text": "Pagos"},
+    {"lenguage": "en", "text": "Paid"},
+    {"lenguage": "pt", "text": "Pago"}
+  ],
+  "unPaid": [
+    {"lenguage": "es", "text": "No pagos"},
+    {"lenguage": "en", "text": "Unpaid"},
+    {"lenguage": "pt", "text": "Não pago"}
+  ],
+  "note": [
+    {"lenguage": "es", "text": "Nota"},
+    {"lenguage": "en", "text": "Note"},
+    {"lenguage": "pt", "text": "Observação"}
+  ],
+  "lenguage": [
+    {"lenguage": "es", "text": "Idioma"},
+    {"lenguage": "en", "text": "Lenguage"},
+    {"lenguage": "pt", "text": "Linguagem"}
+  ],
+  "selectLenguage": [
+    {"lenguage": "es", "text": "Seleccionar idioma"},
+    {"lenguage": "en", "text": "Select lenguage"},
+    {"lenguage": "pt", "text": "Selecione o linguagem"}
+  ],
+  "defaultHours": [
+    {"lenguage": "es", "text": "Horas Predefinidas"},
+    {"lenguage": "en", "text": "Default Hours"},
+    {"lenguage": "pt", "text": "Horas Predefinidas"}
+  ],
+  "all": [
+    {"lenguage": "es", "text": "Todos"},
+    {"lenguage": "en", "text": "All"},
+    {"lenguage": "pt", "text": "Todos"}
+  ],
+  "days": [
+    {"lenguage": "es", "text": "Días"},
+    {"lenguage": "en", "text": "Days"},
+    {"lenguage": "pt", "text": "Dias"}
+  ],
+  "seeDetail": [
+    {"lenguage": "es", "text": "Ver Detalle"},
+    {"lenguage": "en", "text": "Detailed View"},
+    {"lenguage": "pt", "text": "Ver detalhe"}
+  ],
+  "totalSalary": [
+    {"lenguage": "es", "text": "Salario total"},
+    {"lenguage": "en", "text": "Total Salary"},
+    {"lenguage": "pt", "text": "Salário total"}
+  ],
+  "unpaidHours": [
+    {"lenguage": "es", "text": "Horas aún no pagadas"},
+    {"lenguage": "en", "text": "Hours not paid yet"},
+    {"lenguage": "pt", "text": "Horas ainda não pagas"}
+  ],
+  "unpaidSalary": [
+    {"lenguage": "es", "text": "Salario Pendiente"},
+    {"lenguage": "en", "text": "Pending Salary"},
+    {"lenguage": "pt", "text": "Salário pendente"}
+  ]
+}

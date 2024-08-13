@@ -2,6 +2,8 @@ import { View, Text, StyleSheet } from "react-native";
 import { Link } from "react-router-native";
 import IonIcon from "react-native-vector-icons/Ionicons"
 import theme from "../../../theme/theme";
+import translations from "../../../lenguages/lenguages.json";
+import useCalendar from "../../../hooks/useCalendar";
 
 type LogoTotalsProps = {
   to: string,
@@ -9,12 +11,14 @@ type LogoTotalsProps = {
 }
 
 export default function LogoTotals({to, pathName}: LogoTotalsProps) {
+  const {lenguage} = useCalendar()
+
   return (
     <Link to={to} activeOpacity={0.7} underlayColor="none">
       <View style={styles.menuItem}>
         <View style={[styles.border, pathName.startsWith("/totals") ? styles.borderBlack : {}]}>
           <IonIcon name='bar-chart-outline' size={30}  color={pathName.startsWith("/totals") ? theme.colors.azulClaro : theme.colors.negro}/>
-          <Text>Totales</Text>
+          <Text>{translations.totals.find(i => i.lenguage === lenguage)?.text}</Text>
         </View>
       </View>
     </Link>

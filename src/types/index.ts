@@ -38,10 +38,10 @@ export type CalendarContextProps = {
     configInfo: ConfigInfo,
     companysInfo: EmployerProps[],
     shifts: ShiftProps[],
-    lenguage: String,
+    lenguage: string,
     setConfigInfo: React.Dispatch<React.SetStateAction<ConfigInfo>>,
     setCompanysInfo: React.Dispatch<React.SetStateAction<EmployerProps[]>>,
     setShifts: React.Dispatch<React.SetStateAction<ShiftProps[]>>,
-    setLenguage: React.Dispatch<React.SetStateAction<String>>
+    setLenguage: React.Dispatch<React.SetStateAction<string>>
 }
 

@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from 'react'
 import { StyleSheet, Text, TextInput, TouchableOpacity, View, Modal, Platform, Alert } from 'react-native'
 import { Link, useParams } from 'react-router-native'
+import { ShiftProps } from '../types'
 import Constants from "expo-constants"
+import { Picker } from '@react-native-picker/picker'
+import Icon from 'react-native-vector-icons/AntDesign'
+import DatePicker from 'react-native-date-picker'
 
 import useCalendar from '../hooks/useCalendar'
+import translations from "../lenguages/lenguages.json"
 import theme from '../theme/theme'
-import DatePicker from 'react-native-date-picker'
 import { firstLetterUpper, formattedMinutes, formattedMinutesNumber, textDay } from '../utils'
-import Icon from 'react-native-vector-icons/AntDesign'
-import { Picker } from '@react-native-picker/picker'
-import { ShiftProps } from '../types'
 import Slider from '../components/Atoms/Slider'
 import ButtonSmall from '../components/Atoms/Buttons/ButtonSmall'
 import Button from '../components/Atoms/Buttons/Button'
 
 export default function EditShift() {
-  const { companysInfo, shifts, setShifts} = useCalendar()
+  const { companysInfo, shifts, setShifts, lenguage} = useCalendar()
 
   const params = useParams()
   const pressedDate = new Date(params.date!)
@@ -54,6 +55,7 @@ export default function EditShift() {
   const [modalOpen, setModalOpen] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
 
+  //called when pressing on default entry, exit or break. Sets data to open de correct modal and edit the correct info
   const selectedTime = () => {
     switch(timeType) {
       case "entrada": 
@@ -70,6 +72,7 @@ export default function EditShift() {
     }
   }
 
+  //takes the new time when changing entry, exit or break. and sets the new data
   const changeConfigInfo = (newDate: Date | null) => {
     if(timeType === "entrada") {
       setShiftEntry(newDate!)
@@ -88,6 +91,7 @@ export default function EditShift() {
     setTimeType("")
   }
   
+  //calculates the worked hours and checks or inconsistencies
   useEffect (() => {
     if(shiftEntryEdit !== null && shiftExitEdit !== null) {
       const difMonth = shiftExitEdit!.getMonth() !== shiftEntryEdit!.getMonth()
@@ -137,17 +141,16 @@ export default function EditShift() {
       setWorkedHours(null)
       setWorkedMinutes(null)
     }
-
-
   }, [shiftEntryEdit, shiftExitEdit, shiftBreakEdit])
 
+  //calls the alert when trying to delete entry, exit or break time
   const showAlert = () => {
     Alert.alert(
       '',
-      `¿seguro deseas eliminar la hora de ${timeType}?` ,
+      translations.timeDeleteAlert.find(i => i.lenguage === lenguage)?.text,
       [
         {
-          text: 'Cancel',
+          text: translations.cancel.find(i => i.lenguage === lenguage)?.text,
           style: 'cancel'
         },
         {
@@ -162,6 +165,16 @@ export default function EditShift() {
     )
   }
 
+  //sets the modal title
+  const modalTitle = () => {
+    switch(timeType) {
+      case "entrada": return translations.entryHour.find(i => i.lenguage === lenguage)?.text
+      case "salida": return translations.exitHour.find(i => i.lenguage === lenguage)?.text
+      case "descanso": return translations.break.find(i => i.lenguage === lenguage)?.text
+    }
+  }
+
+  //saves the new edited info when submiting
   const handleEditShift = () => {
     const editedShift: ShiftProps = {
       key: `${shiftEntryEdit}${employerEdit}`,
@@ -188,12 +201,14 @@ export default function EditShift() {
     setShifts(updatedshifts)
   }
 
+  //calls the alert if there is something wrong or missing in the input data
   const checkInfo = () => {
-    if (employerEdit === "" && !shiftEntryEdit) {setMissing("Empleador y entrada son obligatorios")}
-    if (employerEdit === "" && shiftEntryEdit) {setMissing("Empleador es obligatorio")}
-    if (employerEdit !== "" && !shiftEntryEdit) {setMissing("Entrada es obligatorio")}
+    if (employerEdit === "" && !shiftEntryEdit) {setMissing(translations.noEntryEmployerAlert.find(i => i.lenguage === lenguage)?.text!)}
+    if (employerEdit === "" && shiftEntryEdit) {setMissing(translations.noEmployerAlert.find(i => i.lenguage === lenguage)?.text!)}
+    if (employerEdit !== "" && !shiftEntryEdit) {setMissing(translations.noEntryAlert.find(i => i.lenguage === lenguage)?.text!)}
   }
 
+  //checks there is no repeted shifts
   useEffect(() => {
     const currentExcluded = shifts.filter (shift => shift.key !== key)
     if (currentExcluded.find(shift => 
@@ -204,7 +219,7 @@ export default function EditShift() {
       shift.shiftEntry.getHours() === shiftEntryEdit?.getHours() &&
       shift.shiftEntry.getMinutes() === shiftEntryEdit?.getMinutes()
     )) {
-      setMissing("La entrada ya existe para este empleador")
+      setMissing(translations.repetedShiftAlert.find(i => i.lenguage === lenguage)?.text!)
       setBlockSubmit(true)
     } else {
       setMissing("")
@@ -227,22 +242,22 @@ export default function EditShift() {
       </Link>
 
       <View>
-        <Text style={styles.textoConf}>Editar Turno</Text>
+        <Text style={styles.textoConf}>{translations.editShifts.find(i => i.lenguage === lenguage)?.text} {firstLetterUpper(pressedDate.toLocaleDateString(lenguage, {month: 'short'}))} / {pressedDate.toLocaleDateString(lenguage, {day:"numeric"})}</Text>
       </View>
 
       <View style={styles.empleador}>
         <View style={styles.line}>
-          <Text style={styles.textLine}>Empleador:</Text>
+          <Text style={styles.textLine}>{translations.employer.find(i => i.lenguage === lenguage)?.text}:</Text>
           
           <View style={styles.pickerContainer}>
             <Picker
               selectedValue={employerEdit}
               onValueChange={newValue => setEmployer(newValue)}
               style={styles.picker}
-              accessibilityLabel='Seleccionar Empleador'
+              accessibilityLabel={translations.selectEmployer.find(i => i.lenguage === lenguage)?.text}
               mode='dropdown'
               >
-                <Picker.Item style={styles.pickerItem} label='Seleccionar Empleador' value="" enabled={false}/>
+                <Picker.Item style={styles.pickerItem} label={translations.selectEmployer.find(i => i.lenguage === lenguage)?.text} value="" enabled={false}/>
               {companysInfo.map(employer => 
                 <Picker.Item style={styles.pickerItem} label={employer.name} value={employer.name} key={employer.name}/>
               )}
@@ -255,7 +270,7 @@ export default function EditShift() {
           style={styles.line}
           onPress={() => {setTimeType("entrada"), setModalOpen(true)}}
         >
-          <Text style={styles.textLine}>Entrada:</Text>
+          <Text style={styles.textLine}>{translations.entryHour.find(i => i.lenguage === lenguage)?.text}:</Text>
           <View >
             <Text style={styles.textLine}>{shiftEntryEdit ? `${shiftEntryEdit.getHours()}:${formattedMinutes(shiftEntryEdit)}` : "-"}</Text>
           </View>
@@ -266,12 +281,12 @@ export default function EditShift() {
           style={styles.line}
           onPress={() => {setTimeType("salida"), setModalOpen(true)}}
         >
-          <Text style={styles.textLine}>Salida:</Text>
+          <Text style={styles.textLine}>{translations.exitHour.find(i => i.lenguage === lenguage)?.text}:</Text>
           <View >
             <Text style={styles.textLine}>
               {shiftExitEdit && shiftEntryEdit ?
                 (shiftExitEdit?.getDate() !== shiftEntryEdit?.getDate() ? 
-                  `${firstLetterUpper(shiftExitEdit!.toLocaleDateString('es-ES', {month: 'short'}))} ${shiftExitEdit?.getDate()} (${textDay(shiftExitEdit!)})  ` : "") 
+                  `${firstLetterUpper(shiftExitEdit!.toLocaleDateString(lenguage, {month: 'short'}))} ${shiftExitEdit?.getDate()} (${textDay(shiftExitEdit!, lenguage)})  ` : "") 
                 : ""
               }
               {shiftExitEdit ? `${shiftExitEdit.getHours()}:${formattedMinutes(shiftExitEdit)}` : "-"}
@@ -284,19 +299,19 @@ export default function EditShift() {
           style={styles.line}
           onPress={() => {setTimeType("descanso"), setModalOpen(true)}}
         >
-          <Text style={styles.textLine}>Descanso:</Text>
+          <Text style={styles.textLine}>{translations.break.find(i => i.lenguage === lenguage)?.text}:</Text>
           <View >
             <Text style={styles.textLine}>{shiftBreakEdit ? `${shiftBreakEdit.getHours()}:${formattedMinutes(shiftBreakEdit)}` : "0"}</Text>
           </View>
         </TouchableOpacity>
         
         <View style={styles.line}>
-          <Text style={styles.textLine}>Horas trabajadas:</Text>
+          <Text style={styles.textLine}>{translations.workedHours.find(i => i.lenguage === lenguage)?.text}:</Text>
           <Text style={styles.textLine}>{workedHoursEdit !== null && workedMinutesEdit !== null ? `${workedHoursEdit}:${formattedMinutesNumber(workedMinutesEdit!)}` : "-"}</Text>
         </View>
         
         <View style={styles.lineLeft}>
-          <Text style={styles.textLine}>Pagado</Text>
+          <Text style={styles.textLine}>{translations.paid.find(i => i.lenguage === lenguage)?.text}</Text>
           <Slider setValue={setPaid} value={paidEdit} />
         </View>
         
@@ -306,7 +321,7 @@ export default function EditShift() {
           style={styles.textInput}
           multiline = {true}
           numberOfLines = {2}
-          placeholder='Nota'
+          placeholder={translations.note.find(i => i.lenguage === lenguage)?.text}
           maxLength={70}
           scrollEnabled={true}
         />
@@ -321,7 +336,7 @@ export default function EditShift() {
         <View style={styles.modalContainer}>
           <View style={styles.modal}>
             <View style={styles.modalTitleContainer}>
-              <Text style={styles.modalTitle}>{timeType === "descanso" ? "Descanso" : `Horario de ${timeType}`}</Text>
+              <Text style={styles.modalTitle}>{modalTitle()}</Text>
               {showDelete && <Icon 
                 style={styles.delete}
                 name='delete' 
@@ -336,7 +351,7 @@ export default function EditShift() {
               mode={timeType === "salida" ? "datetime" : 'time'}
               minimumDate={shiftEntryEdit && timeType === "salida" ? shiftEntryEdit : pressedDate}
               maximumDate={timeType === "entrada" && shiftExitEdit ? shiftExitEdit : new Date(pressedDate!.getFullYear(), pressedDate!.getMonth(), pressedDate!.getDate() + 2, 23, 59)}
-              locale='es'
+              locale={lenguage}
               date={date!}
               onDateChange={setDate}
               dividerColor={theme.colors.verdeBase}
@@ -345,10 +360,10 @@ export default function EditShift() {
 
             <View style={styles.modalButtons}>
               <TouchableOpacity activeOpacity={0.7} onPress={() => {setModalOpen(false), setTimeType("")}}>
-                <Text style={styles.modalButton}>Cancelar</Text>
+                <Text style={styles.modalButton}>{translations.cancel.find(i => i.lenguage === lenguage)?.text}</Text>
               </TouchableOpacity>
               <TouchableOpacity activeOpacity={0.7} onPress={() => {setModalOpen(false), changeConfigInfo(date)}}>
-                <Text style={styles.modalButton}>Guardar</Text>
+                <Text style={styles.modalButton}>{translations.save.find(i => i.lenguage === lenguage)?.text}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -367,7 +382,7 @@ export default function EditShift() {
           to={`/calendar/shifts/${pressedDate}`} 
           color={theme.colors.verdeBoton}
         >
-          <Text style={styles.textoBoton}>Guardar cambios</Text>
+          <Text style={styles.textoBoton}>{translations.saveChanges.find(i => i.lenguage === lenguage)?.text}</Text>
         </Button>
       </TouchableOpacity>
     </View>

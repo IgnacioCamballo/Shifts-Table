@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
 import { Text, ScrollView, StyleSheet, View} from 'react-native'
 import { useParams } from 'react-router-native'
+
+import useCalendar from '../hooks/useCalendar'
+import translations from "../lenguages/lenguages.json"
 import { ShiftProps } from '../types'
 import { firstLetterUpper, textDay } from '../utils'
 import theme from '../theme/theme'
-import useCalendar from '../hooks/useCalendar'
 import Shift from '../components/Molecules/Shift'
 import SwiftArrows from '../components/Molecules/SwiftArrows'
 import Icon from 'react-native-vector-icons/AntDesign'
@@ -15,7 +17,7 @@ export default function Shifts() {
   const params = useParams()
   const pressedDate = params.date!
 
-  const {shifts} = useCalendar()
+  const {shifts, lenguage} = useCalendar()
 
   const [date, setDate] = useState(new Date(pressedDate))
 
@@ -37,17 +39,17 @@ export default function Shifts() {
           color={theme.colors.negro} 
           size={17}
         />
-        <Text style={styles.textLine}>Atras</Text>
+        <Text style={styles.textLine}>{translations.back.find(i => i.lenguage === lenguage)?.text}</Text>
       </TransparentButton>
 
       <SwiftArrows 
         leftAction={prevDay} 
-        text={`${firstLetterUpper(date.toLocaleDateString('es-ES', {month: 'short'}))} / ${date.toLocaleDateString('es-ES', {day:"numeric"})} (${textDay(date)})`}
+        text={`${firstLetterUpper(date.toLocaleDateString(lenguage, {month: 'short'}))} / ${date.toLocaleDateString(lenguage, {day:"numeric"})} (${textDay(date, lenguage)})`}
         rightAction={nextDay} 
       />
 
       <Button margintop={12} to={`/calendar/shifts/${date}/newShift`} color={theme.colors.verdeBoton}>
-        <Text style={styles.textoBoton}>Registrar Turno</Text>
+        <Text style={styles.textoBoton}>{translations.createNewShift.find(i => i.lenguage === lenguage)?.text}</Text>
       </Button>
 
       <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>

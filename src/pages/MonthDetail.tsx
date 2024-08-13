@@ -1,22 +1,21 @@
 import React, { useEffect, useState } from 'react'
-import { Text, TouchableOpacity, View, StyleSheet, Animated, ScrollView } from 'react-native'
+import { Text, TouchableOpacity, View, StyleSheet, ScrollView } from 'react-native'
 import { useParams } from 'react-router-native'
-import { firstLetterUpper, formattedMinutes, textDay} from '../utils'
-import theme from '../theme/theme'
-import { Dimensions } from 'react-native'
 import { Picker } from '@react-native-picker/picker'
 import Icon from 'react-native-vector-icons/AntDesign'
+
 import useCalendar from '../hooks/useCalendar'
+import translations from "../lenguages/lenguages.json"
+import theme from '../theme/theme'
+import { firstLetterUpper, formattedMinutes, textDay} from '../utils'
 import SwiftArrows from '../components/Molecules/SwiftArrows'
 import TransparentButton from '../components/Atoms/Buttons/ButtonTransparent'
-
-let screenWidth = Dimensions.get("window").width
 
 export default function MonthDetail() {
   const param = useParams()
   const month = param.month
 
-  const {shifts} = useCalendar()
+  const {shifts, lenguage} = useCalendar()
 
   const [currentDay, setCurrentDay] = useState(new Date(month!))
   const [employer, setEmployer] = useState("Todos")
@@ -38,6 +37,7 @@ export default function MonthDetail() {
     setCurrentDay(newDate)
   };
 
+  //Calculates the total worked hours of the month
   function findWorkedHours() {
     let initialHours = 0
     const totalMinutes = monthlyShiftsFilteredPayment.reduce((total, shift) => {
@@ -55,18 +55,20 @@ export default function MonthDetail() {
     return(`${totalMinutes === 0 ? totalHours : (totalHours + totalMinutes/60).toFixed(2)}Hs`);
   }
 
+  //Gets the entry hour and exit hour and date for every shift showed
   function entryExitHours(entry: Date, exit: Date | null) {
     const monthText = (exit && entry ?
       (exit?.getDate() !== entry?.getDate() ? 
-        `(${firstLetterUpper(exit!.toLocaleDateString('es-ES', {month: 'short'}))}/${exit?.getDate()})` : "") 
+        `(${firstLetterUpper(exit!.toLocaleDateString(lenguage, {month: 'short'}))}/${exit?.getDate()})` : "") 
       : ""
     )
 
     const exitHours = (exit ? `${exit.getHours()}:${formattedMinutes(exit)}` : "")
 
-    return(`${entry.getHours()}:${formattedMinutes(entry)} - ${exitHours} ${monthText}`)
+    return(`${entry.getHours()}:${formattedMinutes(entry)} - ${monthText}${exitHours}`)
   }
 
+  //Calculates worked hours in any shift showed
   function calculateHours(entry: Date, exit: Date | null, shiftBreak: Date | null) {
     if(entry !== null && exit !== null) {
       const difMonth = exit!.getMonth() !== entry!.getMonth()
@@ -107,6 +109,7 @@ export default function MonthDetail() {
     }
   }
 
+  //Sets the list of employers of every month used to filter by employer
   useEffect(() => {
     const copyList = [...employersList]
     if(!monthlyShifts){
@@ -129,28 +132,28 @@ export default function MonthDetail() {
           color={theme.colors.negro} 
           size={17}
         />
-        <Text style={[styles.textLine, {fontWeight: 500}]}>Atras</Text>
+        <Text style={[styles.textLine, {fontWeight: 500}]}>{translations.back.find(i => i.lenguage === lenguage)?.text}</Text>
       </TransparentButton>
       
       <SwiftArrows 
         leftAction={prevMonth} 
-        text={`${firstLetterUpper(currentDay.toLocaleDateString('es-ES', { month: 'long' }))} / ${currentDay.toLocaleDateString('es-ES', { year: '2-digit' })}`}
+        text={`${firstLetterUpper(currentDay.toLocaleDateString(lenguage, { month: 'long' }))} / ${currentDay.toLocaleDateString(lenguage, { year: '2-digit' })}`}
         rightAction={nextMonth} 
       />
 
       <View style={styles.employersContainer}>
         <View style={[styles.line, {borderBottomWidth: 0, paddingBottom: 0}]}>
-          <Text style={styles.textLine}>Empleador:</Text>
+          <Text style={styles.textLine}>{translations.employer.find(i => i.lenguage === lenguage)?.text}:</Text>
           
           <View style={styles.pickerContainer}>
             <Picker
               selectedValue={employer}
               onValueChange={newValue => setEmployer(newValue)}
               style={styles.picker}
-              accessibilityLabel='Seleccionar Empleador'
+              accessibilityLabel={translations.selectEmployer.find(i => i.lenguage === lenguage)?.text}
               mode='dropdown'
               >
-                <Picker.Item style={styles.pickerItem} label='Todos' value="Todos"/>
+                <Picker.Item style={styles.pickerItem} label={translations.all.find(i => i.lenguage === lenguage)?.text} value="Todos"/>
               {employersList.map(employer => 
                 <Picker.Item style={styles.pickerItem} label={employer} value={employer} key={employer}/>
               )}
@@ -160,13 +163,13 @@ export default function MonthDetail() {
       </View>
       
       <View style={styles.selector}>
-        <Text style={styles.textLine}>Dias:</Text>
+        <Text style={styles.textLine}>{translations.days.find(i => i.lenguage === lenguage)?.text}:</Text>
         <View style={styles.flexRow}>
           <TouchableOpacity style={styles.outerCircle} onPress={() => setShownDays("Todos")}>
             <View style={[styles.innerCircle, shownDays === "Todos" ? styles.bgBlack : {}]}></View>
           </TouchableOpacity>
 
-          <Text style={styles.textSelector}>Todos</Text>
+          <Text style={styles.textSelector}>{translations.all.find(i => i.lenguage === lenguage)?.text}</Text>
         </View>
 
         <View style={styles.flexRow}>
@@ -174,7 +177,7 @@ export default function MonthDetail() {
             <View style={[styles.innerCircle2, shownDays === "Pagos" ? styles.bgBlack : {}]}></View>
           </TouchableOpacity>
 
-          <Text style={styles.textSelector}>Pagos</Text>
+          <Text style={styles.textSelector}>{translations.isPaid.find(i => i.lenguage === lenguage)?.text}</Text>
         </View>
 
         <View style={styles.flexRow}>
@@ -182,21 +185,21 @@ export default function MonthDetail() {
             <View style={[styles.innerCircle3, shownDays === "Inpagos" ? styles.bgBlack : {}]}></View>
           </TouchableOpacity>
 
-          <Text style={styles.textSelector}>Inpagos</Text>
+          <Text style={styles.textSelector}>{translations.unPaid.find(i => i.lenguage === lenguage)?.text}</Text>
         </View>
       </View>
 
-      <Text style={styles.TotalHours}>Total de horas: {findWorkedHours()}</Text>
+      <Text style={styles.TotalHours}>{translations.totalHours.find(i => i.lenguage === lenguage)?.text}: {findWorkedHours()}</Text>
 
       <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
         {monthlyShiftsFilteredPayment.map(shift => (
           <View key={shift.key} style={styles.line}>
-            <View style={[styles.flexRow, {gap: 2}]}>
-              <Text style={styles.textLine}>{textDay(shift.shiftEntry)}/</Text>
-              <Text style={[styles.textLine, {width: 50}]}>{shift.shiftEntry.getDate()}</Text>
+            <View style={[styles.flexRow, {gap: 2, width: 50}]}>
+              <Text style={styles.textLine}>{textDay(shift.shiftEntry, lenguage)}/</Text>
+              <Text style={styles.textLine}>{shift.shiftEntry.getDate()}</Text>
             </View>
             <Text style={styles.textLine}>{entryExitHours(shift.shiftEntry, shift.shiftExit)}</Text>
-            <Text style={[styles.textLine, {width: 80, textAlign:"right"}]}>{calculateHours(shift.shiftEntry, shift.shiftExit, shift.shiftBreak)}</Text>
+            <Text style={[styles.textLine, {width: 70, textAlign:"right"}]}>{calculateHours(shift.shiftEntry, shift.shiftExit, shift.shiftBreak)}</Text>
           </View>
         ))}
       </ScrollView>

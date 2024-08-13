@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { StyleSheet, Text, TextInput, TouchableOpacity, View, Modal, Platform, Alert, ScrollView } from 'react-native'
 import { Link, Navigate, useParams } from 'react-router-native'
-import Constants from "expo-constants"
-
-import useCalendar from '../hooks/useCalendar'
-import theme from '../theme/theme'
 import DatePicker from 'react-native-date-picker'
-import { firstLetterUpper, formattedMinutes, formattedMinutesNumber, textDay } from '../utils'
+import Constants from "expo-constants"
 import Icon from 'react-native-vector-icons/AntDesign'
 import { Picker } from '@react-native-picker/picker'
 import { ShiftProps } from '../types'
+
+import useCalendar from '../hooks/useCalendar'
+import translations from "../lenguages/lenguages.json"
+import theme from '../theme/theme'
+import { firstLetterUpper, formattedMinutes, formattedMinutesNumber, textDay } from '../utils'
 import Slider from '../components/Atoms/Slider'
 import ButtonSmall from '../components/Atoms/Buttons/ButtonSmall'
 import Button from '../components/Atoms/Buttons/Button'
@@ -18,7 +19,7 @@ export default function NewShift() {
   const params = useParams()
   const pressedDate = new Date(params.date!)
 
-  const {configInfo, companysInfo, shifts, setShifts} = useCalendar()
+  const {configInfo, companysInfo, shifts, setShifts, lenguage} = useCalendar()
 
   const [employer, setEmployer] = useState("")
   const [shiftEntry, setShiftEntry] = useState<Date | null>(configInfo.entry ? new Date(pressedDate.getFullYear(), pressedDate.getMonth(), pressedDate.getDate() ,configInfo.entry?.getHours(), configInfo.entry?.getMinutes()) : null)
@@ -37,6 +38,7 @@ export default function NewShift() {
   const [modalOpen, setModalOpen] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
 
+  //Called when pressing on default entry, exit or break. Sets data to open de correct modal and edit the correct info
   const selectedTime = () => {
     switch(timeType) {
       case "entrada": 
@@ -53,6 +55,7 @@ export default function NewShift() {
     }
   }
 
+  //Takes the new default time when changing default entry, exit or break. and sets the new data
   const changeConfigInfo = (newDate: Date | null) => {
     if(timeType === "entrada") {
       setShiftEntry(newDate!)
@@ -71,6 +74,7 @@ export default function NewShift() {
     setTimeType("")
   }
   
+  //Calculates the worked hours and checks or inconsistencies
   useEffect (() => {
     if(shiftEntry !== null && shiftExit !== null) {
       const difMonth = shiftExit!.getMonth() !== shiftEntry!.getMonth()
@@ -120,17 +124,16 @@ export default function NewShift() {
       setWorkedHours(null)
       setWorkedMinutes(null)
     }
-
-
   }, [shiftEntry, shiftExit, shiftBreak])
 
+  //Calls the alert when trying to delete entry, exit or break time  
   const showAlert = () => {
     Alert.alert(
       '',
-      `¿seguro deseas eliminar la hora de ${timeType}?` ,
+      translations.timeDeleteAlert.find(i => i.lenguage === lenguage)?.text,
       [
         {
-          text: 'Cancel',
+          text: translations.cancel.find(i => i.lenguage === lenguage)?.text,
           style: 'cancel'
         },
         {
@@ -145,6 +148,16 @@ export default function NewShift() {
     )
   }
 
+  //sets the modal title
+  const modalTitle = () => {
+    switch(timeType) {
+      case "entrada": return translations.entryHour.find(i => i.lenguage === lenguage)?.text
+      case "salida": return translations.exitHour.find(i => i.lenguage === lenguage)?.text
+      case "descanso": return translations.break.find(i => i.lenguage === lenguage)?.text
+    }
+  }
+
+  //Saves the new shift info when submiting  
   const handleSaveShift = () => {
     const newShift: ShiftProps = {
       key: `${shiftEntry}${employer}`,
@@ -164,12 +177,14 @@ export default function NewShift() {
     setShifts(updatedshifts)
   }
 
+  //Calls the alert if there is something wrong or missing in the input data
   const checkInfo = () => {
-    if (employer === "" && !shiftEntry) {setMissing("Empleador y entrada son obligatorios")}
-    if (employer === "" && shiftEntry) {setMissing("Empleador es obligatorio")}
-    if (employer !== "" && !shiftEntry) {setMissing("Entrada es obligatorio")}
+    if (employer === "" && !shiftEntry) {setMissing(translations.noEntryEmployerAlert.find(i => i.lenguage === lenguage)?.text!)}
+    if (employer === "" && shiftEntry) {setMissing(translations.noEmployerAlert.find(i => i.lenguage === lenguage)?.text!)}
+    if (employer !== "" && !shiftEntry) {setMissing(translations.noEntryAlert.find(i => i.lenguage === lenguage)?.text!)}
   }
 
+  //Checks the shift is not repeted
   useEffect(() => {
     if (shifts.find(shift => 
       shift.employer === employer && 
@@ -179,7 +194,7 @@ export default function NewShift() {
       shift.shiftEntry.getHours() === shiftEntry?.getHours() &&
       shift.shiftEntry.getMinutes() === shiftEntry?.getMinutes()
     )) {
-      setMissing("La entrada ya existe para este empleador")
+      setMissing(translations.repetedShiftAlert.find(i => i.lenguage === lenguage)?.text!)
       setBlockSubmit(true)
     } else {
       setMissing("")
@@ -204,26 +219,26 @@ export default function NewShift() {
 
       <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
         <View>
-          <Text style={styles.textoConf}>Nuevo Turno {firstLetterUpper(pressedDate.toLocaleDateString('es-ES', {month: 'short'}))} / {pressedDate.toLocaleDateString('es-ES', {day:"numeric"})}</Text>
+          <Text style={styles.textoConf}>{translations.newShift.find(i => i.lenguage === lenguage)?.text} {firstLetterUpper(pressedDate.toLocaleDateString('es-ES', {month: 'short'}))} / {pressedDate.toLocaleDateString('es-ES', {day:"numeric"})}</Text>
         </View>
 
         <View style={styles.empleador}>
           <View style={styles.line}>
-            <Text style={styles.textLine}>Empleador:</Text>
+            <Text style={styles.textLine}>{translations.employer.find(i => i.lenguage === lenguage)?.text}:</Text>
             
             <View style={styles.pickerContainer}>
               <Picker
                 selectedValue={employer}
                 onValueChange={newValue => setEmployer(newValue)}
                 style={styles.picker}
-                accessibilityLabel='Seleccionar Empleador'
+                accessibilityLabel={translations.selectEmployer.find(i => i.lenguage === lenguage)?.text}
                 mode='dropdown'
                 >
-                  <Picker.Item style={styles.pickerItem} label='Seleccionar Empleador' value="" enabled={false}/>
+                  <Picker.Item style={styles.pickerItem} label={translations.selectEmployer.find(i => i.lenguage === lenguage)?.text} value="" enabled={false}/>
                   {companysInfo.map(employer => 
                     <Picker.Item style={styles.pickerItem} label={employer.name} value={employer.name} key={employer.name}/>
                   )}
-                  <Picker.Item style={styles.pickerItem} label='+ Crear nuevo empleador' value="newEmployer"/>
+                  <Picker.Item style={styles.pickerItem} label={`+ ${translations.createNewEmployer.find(i => i.lenguage === lenguage)?.text}`} value="newEmployer"/>
               </Picker>
             </View>
           </View>
@@ -235,7 +250,7 @@ export default function NewShift() {
             style={styles.line}
             onPress={() => {setTimeType("entrada"), setModalOpen(true)}}
             >
-            <Text style={styles.textLine}>Entrada:</Text>
+            <Text style={styles.textLine}>{translations.entryHour.find(i => i.lenguage === lenguage)?.text}:</Text>
             <View >
               <Text style={styles.textLine}>{shiftEntry ? `${shiftEntry.getHours()}:${formattedMinutes(shiftEntry)}` : "-"}</Text>
             </View>
@@ -246,12 +261,12 @@ export default function NewShift() {
             style={styles.line}
             onPress={() => {setTimeType("salida"), setModalOpen(true)}}
             >
-            <Text style={styles.textLine}>Salida:</Text>
+            <Text style={styles.textLine}>{translations.exitHour.find(i => i.lenguage === lenguage)?.text}:</Text>
             <View >
               <Text style={styles.textLine}>
                 {shiftExit && shiftEntry ?
                   (shiftExit?.getDate() !== shiftEntry?.getDate() ? 
-                  `${firstLetterUpper(shiftExit!.toLocaleDateString('es-ES', {month: 'short'}))} ${shiftExit?.getDate()} (${textDay(shiftExit!)})  ` : "") 
+                  `${firstLetterUpper(shiftExit!.toLocaleDateString(lenguage, {month: 'short'}))} ${shiftExit?.getDate()} (${textDay(shiftExit!, lenguage)})  ` : "") 
                   : ""
                 }
                 {shiftExit ? `${shiftExit.getHours()}:${formattedMinutes(shiftExit)}` : "-"}
@@ -264,19 +279,19 @@ export default function NewShift() {
             style={styles.line}
             onPress={() => {setTimeType("descanso"), setModalOpen(true)}}
             >
-            <Text style={styles.textLine}>Descanso:</Text>
+            <Text style={styles.textLine}>{translations.break.find(i => i.lenguage === lenguage)?.text}:</Text>
             <View >
               <Text style={styles.textLine}>{shiftBreak ? `${shiftBreak.getHours()}:${formattedMinutes(shiftBreak)}` : "0"}</Text>
             </View>
           </TouchableOpacity>
           
           <View style={styles.line}>
-            <Text style={styles.textLine}>Horas trabajadas:</Text>
+            <Text style={styles.textLine}>{translations.workedHours.find(i => i.lenguage === lenguage)?.text}:</Text>
             <Text style={styles.textLine}>{workedHours !== null && workedMinutes !== null ? `${workedHours}:${formattedMinutesNumber(workedMinutes!)}` : "-"}</Text>
           </View>
           
           <View style={styles.lineLeft}>
-            <Text style={styles.textLine}>Pagado</Text>
+            <Text style={styles.textLine}>{translations.paid.find(i => i.lenguage === lenguage)?.text}</Text>
             <Slider setValue={setPaid} value={paid} />
           </View>
           
@@ -286,7 +301,7 @@ export default function NewShift() {
             style={styles.textInput}
             multiline = {true}
             numberOfLines = {2}
-            placeholder='Nota'
+            placeholder={translations.note.find(i => i.lenguage === lenguage)?.text}
             maxLength={70}
             scrollEnabled={true}
             />
@@ -301,7 +316,7 @@ export default function NewShift() {
           <View style={styles.modalContainer}>
             <View style={styles.modal}>
               <View style={styles.modalTitleContainer}>
-                <Text style={styles.modalTitle}>{timeType === "descanso" ? "Descanso" : `Horario de ${timeType}`}</Text>
+                <Text style={styles.modalTitle}>{modalTitle()}</Text>
                 {showDelete && <Icon 
                   style={styles.delete}
                   name='delete' 
@@ -316,7 +331,7 @@ export default function NewShift() {
                 mode={timeType === "salida" ? "datetime" : 'time'}
                 minimumDate={shiftEntry && timeType === "salida" ? shiftEntry : pressedDate}
                 maximumDate={timeType === "entrada" && shiftExit ? shiftExit : new Date(pressedDate!.getFullYear(), pressedDate!.getMonth(), pressedDate!.getDate() + 2, 23, 59)}
-                locale='es'
+                locale={lenguage}
                 date={date!}
                 onDateChange={setDate}
                 dividerColor={theme.colors.verdeBase}
@@ -325,10 +340,10 @@ export default function NewShift() {
 
               <View style={styles.modalButtons}>
                 <TouchableOpacity activeOpacity={0.7} onPress={() => {setModalOpen(false), setTimeType("")}}>
-                  <Text style={styles.modalButton}>Cancelar</Text>
+                  <Text style={styles.modalButton}>{translations.cancel.find(i => i.lenguage === lenguage)?.text}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity activeOpacity={0.7} onPress={() => {setModalOpen(false), changeConfigInfo(date)}}>
-                  <Text style={styles.modalButton}>Guardar</Text>
+                  <Text style={styles.modalButton}>{translations.save.find(i => i.lenguage === lenguage)?.text}</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -347,7 +362,7 @@ export default function NewShift() {
             to={`/calendar/shifts/${pressedDate}`} 
             color={theme.colors.verdeBoton}
             >
-              <Text style={styles.textoBoton}>Registrar Turno</Text>
+              <Text style={styles.textoBoton}>{translations.createNewShift.find(i => i.lenguage === lenguage)?.text}</Text>
             </Button>
         </TouchableOpacity>
       </ScrollView>

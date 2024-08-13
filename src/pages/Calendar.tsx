@@ -18,11 +18,13 @@ import { firstLetterUpper, weekdays } from '../utils';
 import SwiftArrows from '../components/Molecules/SwiftArrows';
 import { DayProps } from '../types';
 import RenderDayCalendar from '../components/Atoms/RenderDayCalendar';
+import useCalendar from '../hooks/useCalendar';
 
 let screenWidth = Dimensions.get("window").width
-let lenguage = "es"
 
 export default function Calendar() {
+  const {lenguage} = useCalendar()
+
   const [currentDay, setCurrentDay] = useState(new Date());
   const [monthdays, setMonthDays] = useState<DayProps[]>([])
   const [nav, setNav] = useState(false)
@@ -150,7 +152,7 @@ export default function Calendar() {
     <View style={styles.container}>
       <SwiftArrows 
         leftAction={prevMonth} 
-        text={`${firstLetterUpper(currentDay.toLocaleDateString('es-ES', { month: 'long' }))}`}
+        text={`${firstLetterUpper(currentDay.toLocaleDateString(lenguage, { month: 'long' }))}`}
         rightAction={nextMonth} 
       />
 

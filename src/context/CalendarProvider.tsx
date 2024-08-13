@@ -12,7 +12,7 @@ const CalendarProvider = ({ children }: props) => {
   const [configInfo, setConfigInfo] = useState<ConfigInfo>({ entry: null, exit: null, configBreak: null })
   const [companysInfo, setCompanysInfo] = useState<EmployerProps[]>([])
   const [shifts, setShifts] = useState<ShiftProps[]>([])
-  const [lenguage, setLenguage] = useState<String>("es")
+  const [lenguage, setLenguage] = useState<string>("es")
 
   const getConfigStorage = async () => {
     try {

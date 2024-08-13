@@ -2,6 +2,8 @@ import { View, Text, StyleSheet } from "react-native";
 import { Link } from "react-router-native";
 import IonIcon from "react-native-vector-icons/Ionicons"
 import theme from "../../../theme/theme";
+import translations from "../../../lenguages/lenguages.json";
+import useCalendar from "../../../hooks/useCalendar";
 
 type LogoConfigProps = {
   to: string,
@@ -9,12 +11,14 @@ type LogoConfigProps = {
 }
 
 export default function LogoConfig({to, pathName}: LogoConfigProps) {
+  const {lenguage} = useCalendar()
+
   return (
     <Link to={to} activeOpacity={0.7} underlayColor="none">
       <View style={styles.menuItem}>
         <View style={[styles.border, pathName.startsWith("/config") ? styles.borderBlack : {}]}>
           <IonIcon name='settings-outline' size={30}  color={pathName.startsWith("/config") ? theme.colors.azulClaro : theme.colors.negro}/>
-          <Text>Totales</Text>
+          <Text>{translations.settings.find(i => i.lenguage === lenguage)?.text}</Text>
         </View>
       </View>
     </Link>

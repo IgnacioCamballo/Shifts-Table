@@ -9,6 +9,7 @@ import { formattedMinutes } from '../utils'
 import Icon from 'react-native-vector-icons/AntDesign';
 import { Picker } from '@react-native-picker/picker'
 import Button from '../components/Atoms/Buttons/Button'
+import translations from "../lenguages/lenguages.json"
 
 export default function Config() {
   const {
@@ -26,6 +27,7 @@ export default function Config() {
   const [modalOpen, setModalOpen] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
 
+  //called when pressing on default entry, exit or break. Sets data to open de correct modal and edit the correct info
   const selectedTime = () => {
     switch(timeType) {
       case "entrada": 
@@ -42,6 +44,7 @@ export default function Config() {
     }
   }
 
+  //takes the new default time when changing default entry, exit or break. and sets the new data
   const changeConfigInfo = (newDate: Date | null) => {
     if(timeType === "entrada") {
       const configDateChanged = {
@@ -70,13 +73,23 @@ export default function Config() {
     setTimeType("")
   }
 
+  //sets the modal title
+  const modalTitle = () => {
+    switch(timeType) {
+      case "entrada": return translations.entryHour.find(i => i.lenguage === lenguage)?.text
+      case "salida": return translations.exitHour.find(i => i.lenguage === lenguage)?.text
+      case "descanso": return translations.break.find(i => i.lenguage === lenguage)?.text
+    }
+  }
+
+  //alert called when deleting default entry, exit or break
   const showAlert = () => {
     Alert.alert(
       '',
-      `¿seguro deseas eliminar la hora de ${timeType}?`,
+      translations.defaultDeleteAlert.find(i => i.lenguage === lenguage)?.text,
       [
         {
-          text: 'Cancel',
+          text: translations.cancel.find(i => i.lenguage === lenguage)?.text,
           style: 'cancel'
         },
         {
@@ -95,7 +108,7 @@ export default function Config() {
     <View style={styles.container}>
       <View style={styles.configGeneral}>
         <View style={styles.tituloConf}>
-          <Text style={styles.textoConf}>Idioma</Text>
+          <Text style={styles.textoConf}>{translations.lenguage.find(i => i.lenguage === lenguage)?.text}</Text>
         </View>
 
         <View style={styles.pickerContainer}>
@@ -103,7 +116,7 @@ export default function Config() {
               selectedValue={lenguage}
               onValueChange={newValue => setLenguage(newValue)}
               style={styles.picker}
-              accessibilityLabel='Seleccionar Empleador'
+              accessibilityLabel={translations.selectLenguage.find(i => i.lenguage === lenguage)?.text}
               mode='dropdown'
               >
                 <Picker.Item style={styles.pickerItem} label='Español' value="es"/>
@@ -115,7 +128,7 @@ export default function Config() {
 
       <View style={styles.configGeneral}>
         <View style={styles.tituloConf}>
-          <Text style={styles.textoConf}>Configuracion Predeterminada</Text>
+          <Text style={styles.textoConf}>{translations.defaultHours.find(i => i.lenguage === lenguage)?.text}</Text>
         </View>
 
         <View>
@@ -124,7 +137,7 @@ export default function Config() {
             style={styles.line}
             onPress={() => {setTimeType("entrada"), setModalOpen(true)}}
           >
-            <Text style={styles.textLine}>Hora de entrada:</Text>
+            <Text style={styles.textLine}>{translations.entryHour.find(i => i.lenguage === lenguage)?.text}:</Text>
             <View >
               <Text style={styles.textLine}>{config.entry ? `${config.entry.getHours()}:${formattedMinutes(config.entry)}` : "-"}</Text>
             </View>
@@ -135,7 +148,7 @@ export default function Config() {
             style={styles.line}
             onPress={() => {setTimeType("salida"), setModalOpen(true)}}
           >
-            <Text style={styles.textLine}>Hora de salida:</Text>
+            <Text style={styles.textLine}>{translations.exitHour.find(i => i.lenguage === lenguage)?.text}:</Text>
             <View >
               <Text style={styles.textLine}>{config.exit ? `${config.exit.getHours()}:${formattedMinutes(config.exit)}` : "-"}</Text>
             </View>
@@ -146,7 +159,7 @@ export default function Config() {
             style={styles.line}
             onPress={() => {setTimeType("descanso"), setModalOpen(true)}}
           >
-            <Text style={styles.textLine}>Descanso:</Text>
+            <Text style={styles.textLine}>{translations.break.find(i => i.lenguage === lenguage)?.text}:</Text>
             <View >
               <Text style={styles.textLine}>
                 {config.configBreak === null || 
@@ -169,7 +182,7 @@ export default function Config() {
         <View style={styles.modalContainer}>
           <View style={styles.modal}>
             <View style={styles.modalTitleContainer}>
-              <Text style={styles.modalTitle}>{timeType === "descanso" ? "Descanso" : `Horario de ${timeType}`}</Text>
+              <Text style={styles.modalTitle}>{modalTitle()}</Text>
               {showDelete && <Icon 
                 style={styles.delete}
                 name='delete' 
@@ -191,10 +204,10 @@ export default function Config() {
 
             <View style={styles.modalButtons}>
               <TouchableOpacity activeOpacity={0.7} onPress={() => {setModalOpen(false), setTimeType("")}}>
-                <Text style={styles.modalButton}>Cancelar</Text>
+                <Text style={styles.modalButton}>{translations.cancel.find(i => i.lenguage === lenguage)?.text}</Text>
               </TouchableOpacity>
               <TouchableOpacity activeOpacity={0.7} onPress={() => {setModalOpen(false), changeConfigInfo(date)}}>
-                <Text style={styles.modalButton}>Guardar</Text>
+                <Text style={styles.modalButton}>{translations.save.find(i => i.lenguage === lenguage)?.text}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -203,11 +216,11 @@ export default function Config() {
 
       <View style={styles.empleadores}>
         <View>
-          <Text style={styles.textoConf}>Empleadores</Text>
+          <Text style={styles.textoConf}>{translations.employers.find(i => i.lenguage === lenguage)?.text}</Text>
         </View>
         
         <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
-          {companysInfo.length === 0 ? <Text style={styles.textNotEmployers}>Aún no hay empleadores</Text> : 
+          {companysInfo.length === 0 ? <Text style={styles.textNotEmployers}>{translations.noEmployersYet.find(i => i.lenguage === lenguage)?.text}</Text> : 
             companysInfo.map(employer => (
               <Employer key={employer.name} employer={employer}/>
             ))
@@ -215,7 +228,7 @@ export default function Config() {
         </ScrollView>
         
         <Button margintop={20} to='/config/newEmployer' color={theme.colors.verdeBoton}>
-          <Text style={styles.textoBoton}>Registrar Empleador</Text>
+          <Text style={styles.textoBoton}>{translations.createNewEmployer.find(i => i.lenguage === lenguage)?.text}</Text>
         </Button>
       </View>
     </View>

@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { Text, View, StyleSheet } from 'react-native'
-import theme from '../theme/theme'
-import { firstLetterUpper, formattedMinutesNumber } from '../utils'
-import { Picker } from '@react-native-picker/picker'
-import useCalendar from '../hooks/useCalendar'
 import { Link, useParams } from 'react-router-native'
+import { Picker } from '@react-native-picker/picker'
+
+import useCalendar from '../hooks/useCalendar'
+import translations from "../lenguages/lenguages.json"
+import { firstLetterUpper, formattedMinutesNumber } from '../utils'
+import theme from '../theme/theme'
 import SwiftArrows from '../components/Molecules/SwiftArrows'
 import ButtonSmall from '../components/Atoms/Buttons/ButtonSmall'
 
@@ -12,7 +14,7 @@ export default function Totals() {
   const param = useParams()
   const currentMonth = param.month ? new Date(param.month) : new Date()
 
-  const {shifts} = useCalendar()
+  const {shifts, lenguage} = useCalendar()
 
   const [currentDay, setCurrentDay] = useState(currentMonth);
   const [employersList, setEmployersList] = useState<string[]>([])
@@ -87,6 +89,7 @@ export default function Totals() {
     setUnpaidHours(`${totalHours}:${formattedMinutesNumber(totalMinutes)}`);
   }
 
+  //Creates an array with the employers on the shifts of that month used in the employer filter
   useEffect(() => {
     const copyList = [...employersList]
     if(!monthlyShifts){
@@ -101,6 +104,7 @@ export default function Totals() {
     setEmployersList(copyList)
   }, [currentDay])
 
+  //call the functions to update the info when month or employer filter change
   useEffect(() => {
     findWorkedDays()
     findWorkedHours()
@@ -123,23 +127,23 @@ export default function Totals() {
     <View style={styles.container}>
       <SwiftArrows 
         leftAction={prevMonth} 
-        text={`${firstLetterUpper(currentDay.toLocaleDateString('es-ES', { month: 'long' }))} / ${currentDay.toLocaleDateString('es-ES', { year: '2-digit' })}`}
+        text={`${firstLetterUpper(currentDay.toLocaleDateString(lenguage, { month: 'long' }))} / ${currentDay.toLocaleDateString(lenguage, { year: '2-digit' })}`}
         rightAction={nextMonth} 
       />
 
       <View style={styles.employersContainer}>
         <View style={styles.line}>
-          <Text style={styles.textLine}>Empleador:</Text>
+          <Text style={styles.textLine}>{translations.employer.find(i => i.lenguage === lenguage)?.text}:</Text>
           
           <View style={styles.pickerContainer}>
             <Picker
               selectedValue={employer}
               onValueChange={newValue => setEmployer(newValue)}
               style={styles.picker}
-              accessibilityLabel='Seleccionar Empleador'
+              accessibilityLabel={translations.selectEmployer.find(i => i.lenguage === lenguage)?.text}
               mode='dropdown'
               >
-                <Picker.Item style={styles.pickerItem} label='Todos' value="Todos"/>
+                <Picker.Item style={styles.pickerItem} label={translations.all.find(i => i.lenguage === lenguage)?.text} value="Todos"/>
               {employersList.map(employer => 
                 <Picker.Item style={styles.pickerItem} label={employer} value={employer} key={employer}/>
               )}
@@ -149,39 +153,39 @@ export default function Totals() {
       </View>
 
       <View style={styles.line}>
-        <Text style={styles.textLine}>Dias trabajados:</Text>
+        <Text style={styles.textLine}>{translations.workedDays.find(i => i.lenguage === lenguage)?.text}:</Text>
         <View style={styles.botonVer}>
           <Text style={styles.textLine}>{workedDays}</Text>
           <Link to={`/totalsDetail/${currentDay}/`} activeOpacity={0.8} underlayColor="none">
             <ButtonSmall color={theme.colors.verdeBoton}>
-              <Text style={styles.textButtonSmall}>Ver detalle</Text>
+              <Text style={styles.textButtonSmall}>{translations.seeDetail.find(i => i.lenguage === lenguage)?.text}</Text>
             </ButtonSmall>
           </Link>
         </View>
       </View>
       
       <View style={styles.line}>
-        <Text style={styles.textLine}>Horas trabajadas:</Text>
+        <Text style={styles.textLine}>{translations.workedHours.find(i => i.lenguage === lenguage)?.text}:</Text>
         <Text style={styles.textLine}>{workedHours}</Text>
       </View>
       
       <View style={styles.line}>
-        <Text style={styles.textLine}>Salario total:</Text>
+        <Text style={styles.textLine}>{translations.totalSalary.find(i => i.lenguage === lenguage)?.text}:</Text>
         <Text style={styles.textLine}>${salary.toFixed(2)}</Text>
       </View>
       
       <View style={styles.line}>
-        <Text style={styles.textLine}>Pagado:</Text>
+        <Text style={styles.textLine}>{translations.paid.find(i => i.lenguage === lenguage)?.text}:</Text>
         <Text style={styles.textLine}>${salaryPaid}</Text>
       </View>
       
       <View style={styles.line}>
-        <Text style={styles.textLine}>Horas pendientes de pago:</Text>
+        <Text style={styles.textLine}>{translations.unpaidHours.find(i => i.lenguage === lenguage)?.text}:</Text>
         <Text style={styles.textLine}>{unpaidHours}</Text>
       </View>
       
       <View style={styles.line}>
-        <Text style={styles.textLine}>Salario pendiente:</Text>
+        <Text style={styles.textLine}>{translations.unpaidSalary.find(i => i.lenguage === lenguage)?.text}:</Text>
         <Text style={styles.textLine}>${salary - salaryPaid === 0 ? "0" : (salary - salaryPaid).toFixed(2)}</Text>
       </View>
     </View>
@@ -228,6 +232,7 @@ const styles = StyleSheet.create({
     gap: 12
   },
   textButtonSmall: {
+    marginTop: 2,
     fontSize: theme.fontSizes.F20,
     fontWeight: "500",
     lineHeight: theme.fontSizes.F20
