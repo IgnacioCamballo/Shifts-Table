@@ -19,11 +19,12 @@ import SwiftArrows from '../components/Molecules/SwiftArrows';
 import { DayProps } from '../types';
 import RenderDayCalendar from '../components/Atoms/RenderDayCalendar';
 import useCalendar from '../hooks/useCalendar';
+import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 
 let screenWidth = Dimensions.get("window").width
 
 export default function Calendar() {
-  const {lenguage} = useCalendar()
+  const {lenguage, addsInitialized} = useCalendar()
 
   const [currentDay, setCurrentDay] = useState(new Date());
   const [monthdays, setMonthDays] = useState<DayProps[]>([])
@@ -182,6 +183,18 @@ export default function Calendar() {
           </View>
         </Animated.ScrollView>
       </GestureDetector>
+
+      {addsInitialized && (
+        <View style={styles.banner}>
+        <BannerAd 
+          size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+          unitId="ca-app-pub-3940256099942544/9214589741"
+          requestOptions={{
+            requestNonPersonalizedAdsOnly: true
+          }}
+          />
+        </View>
+      )}
     </View>
   );
 };
@@ -251,5 +264,12 @@ const styles = StyleSheet.create({
     color: theme.colors.negro,
     fontSize: theme.fontSizes.F18,
     fontWeight: "400"
+  },
+  banner:{
+    height: 70, 
+    position: 'absolute',
+    justifyContent: "center", 
+    alignContent: "center", 
+    bottom: 80
   }
 });

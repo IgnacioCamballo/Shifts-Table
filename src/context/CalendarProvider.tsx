@@ -1,5 +1,6 @@
 import { useState, createContext, useEffect } from "react"
 import { CalendarContextProps, ConfigInfo, EmployerProps, ShiftProps } from "../types"
+import mobileAds, { MobileAds } from 'react-native-google-mobile-ads';
 import AsyncStorage from "@react-native-async-storage/async-storage"
 
 interface props {
@@ -13,6 +14,19 @@ const CalendarProvider = ({ children }: props) => {
   const [companysInfo, setCompanysInfo] = useState<EmployerProps[]>([])
   const [shifts, setShifts] = useState<ShiftProps[]>([])
   const [lenguage, setLenguage] = useState<string>("es")
+  const [addsInitialized, setAddsInitialized] = useState(false)
+
+  useEffect(() => {
+    const addsInit = async () => {
+      try {
+        await MobileAds().initialize()
+        setAddsInitialized(true)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    addsInit()
+  }, [])
 
   const getConfigStorage = async () => {
     try {
@@ -107,7 +121,6 @@ const CalendarProvider = ({ children }: props) => {
 
   useEffect(() => {
     AsyncStorage.setItem("lenguage", JSON.stringify(lenguage))
-    console.log(lenguage)
   }, [lenguage])
 
   return (
@@ -117,6 +130,7 @@ const CalendarProvider = ({ children }: props) => {
         companysInfo,
         shifts,
         lenguage,
+        addsInitialized,
         setConfigInfo,
         setCompanysInfo,
         setShifts,

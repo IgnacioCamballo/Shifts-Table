@@ -39,6 +39,7 @@ export type CalendarContextProps = {
     companysInfo: EmployerProps[],
     shifts: ShiftProps[],
     lenguage: string,
+    addsInitialized: boolean,
     setConfigInfo: React.Dispatch<React.SetStateAction<ConfigInfo>>,
     setCompanysInfo: React.Dispatch<React.SetStateAction<EmployerProps[]>>,
     setShifts: React.Dispatch<React.SetStateAction<ShiftProps[]>>,

@@ -12,12 +12,13 @@ import SwiftArrows from '../components/Molecules/SwiftArrows'
 import Icon from 'react-native-vector-icons/AntDesign'
 import TransparentButton from '../components/Atoms/Buttons/ButtonTransparent'
 import Button from '../components/Atoms/Buttons/Button'
+import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads'
 
 export default function Shifts() {
   const params = useParams()
   const pressedDate = params.date!
 
-  const {shifts, lenguage} = useCalendar()
+  const {shifts, lenguage, addsInitialized} = useCalendar()
 
   const [date, setDate] = useState(new Date(pressedDate))
 
@@ -60,6 +61,18 @@ export default function Shifts() {
           )
         }
       </ScrollView>
+
+      {addsInitialized && (
+        <View style={styles.banner}>
+        <BannerAd 
+          size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+          unitId={TestIds.ADAPTIVE_BANNER}
+          requestOptions={{
+            requestNonPersonalizedAdsOnly: true
+          }}
+          />
+        </View>
+      )}
     </View>
   )
 }
@@ -85,5 +98,12 @@ const styles = StyleSheet.create({
   textLine: {
     fontSize: theme.fontSizes.F18,
     fontWeight: '500'
+  },
+  banner:{
+    height: 70, 
+    position: 'absolute',
+    justifyContent: "center", 
+    alignContent: "center", 
+    bottom: 80
   }
 })

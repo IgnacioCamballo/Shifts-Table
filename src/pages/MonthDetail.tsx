@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Text, TouchableOpacity, View, StyleSheet, ScrollView } from 'react-native'
 import { useParams } from 'react-router-native'
 import { Picker } from '@react-native-picker/picker'
+import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads'
 import Icon from 'react-native-vector-icons/AntDesign'
 
 import useCalendar from '../hooks/useCalendar'
@@ -15,7 +16,7 @@ export default function MonthDetail() {
   const param = useParams()
   const month = param.month
 
-  const {shifts, lenguage} = useCalendar()
+  const {shifts, lenguage, addsInitialized} = useCalendar()
 
   const [currentDay, setCurrentDay] = useState(new Date(month!))
   const [employer, setEmployer] = useState("Todos")
@@ -131,7 +132,7 @@ export default function MonthDetail() {
           name="doubleleft" 
           color={theme.colors.negro} 
           size={17}
-        />
+          />
         <Text style={[styles.textLine, {fontWeight: 500}]}>{translations.back.find(i => i.lenguage === lenguage)?.text}</Text>
       </TransparentButton>
       
@@ -139,7 +140,7 @@ export default function MonthDetail() {
         leftAction={prevMonth} 
         text={`${firstLetterUpper(currentDay.toLocaleDateString(lenguage, { month: 'long' }))} / ${currentDay.toLocaleDateString(lenguage, { year: '2-digit' })}`}
         rightAction={nextMonth} 
-      />
+        />
 
       <View style={styles.employersContainer}>
         <View style={[styles.line, {borderBottomWidth: 0, paddingBottom: 0}]}>
@@ -203,6 +204,18 @@ export default function MonthDetail() {
           </View>
         ))}
       </ScrollView>
+
+      {addsInitialized && (
+        <View style={styles.banner}>
+        <BannerAd 
+          size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+          unitId={TestIds.ADAPTIVE_BANNER}
+          requestOptions={{
+            requestNonPersonalizedAdsOnly: true
+          }}
+          />
+        </View>
+      )}
     </View>
   )
 }
@@ -295,11 +308,18 @@ const styles = StyleSheet.create({
     borderRadius: 4
   },
   scrollView:{
-    maxHeight: theme.heigth.monthDetailScrollView
+    height: theme.heigth.monthDetailScrollView
   },
   link: {
     position: "absolute",
     top: -32,
     left: 12
+  },
+  banner:{
+    height: 70, 
+    position: 'absolute',
+    justifyContent: "center", 
+    alignContent: "center", 
+    bottom: -66
   }
 })

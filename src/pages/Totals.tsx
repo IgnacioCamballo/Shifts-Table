@@ -9,12 +9,13 @@ import { firstLetterUpper, formattedMinutesNumber } from '../utils'
 import theme from '../theme/theme'
 import SwiftArrows from '../components/Molecules/SwiftArrows'
 import ButtonSmall from '../components/Atoms/Buttons/ButtonSmall'
+import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads'
 
 export default function Totals() {
   const param = useParams()
   const currentMonth = param.month ? new Date(param.month) : new Date()
 
-  const {shifts, lenguage} = useCalendar()
+  const {shifts, lenguage, addsInitialized} = useCalendar()
 
   const [currentDay, setCurrentDay] = useState(currentMonth);
   const [employersList, setEmployersList] = useState<string[]>([])
@@ -156,11 +157,11 @@ export default function Totals() {
         <Text style={styles.textLine}>{translations.workedDays.find(i => i.lenguage === lenguage)?.text}:</Text>
         <View style={styles.botonVer}>
           <Text style={styles.textLine}>{workedDays}</Text>
-          <Link to={`/totalsDetail/${currentDay}/`} activeOpacity={0.8} underlayColor="none">
+          {workedDays !== 0 && <Link to={`/totalsDetail/${currentDay}/`} activeOpacity={0.8} underlayColor="none">
             <ButtonSmall color={theme.colors.verdeBoton}>
               <Text style={styles.textButtonSmall}>{translations.seeDetail.find(i => i.lenguage === lenguage)?.text}</Text>
             </ButtonSmall>
-          </Link>
+          </Link>}
         </View>
       </View>
       
@@ -188,6 +189,18 @@ export default function Totals() {
         <Text style={styles.textLine}>{translations.unpaidSalary.find(i => i.lenguage === lenguage)?.text}:</Text>
         <Text style={styles.textLine}>${salary - salaryPaid === 0 ? "0" : (salary - salaryPaid).toFixed(2)}</Text>
       </View>
+
+      {addsInitialized && (
+        <View style={styles.banner}>
+        <BannerAd 
+          size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+          unitId={TestIds.ADAPTIVE_BANNER}
+          requestOptions={{
+            requestNonPersonalizedAdsOnly: true
+          }}
+          />
+        </View>
+      )}
     </View>
   )
 }
@@ -236,5 +249,12 @@ const styles = StyleSheet.create({
     fontSize: theme.fontSizes.F20,
     fontWeight: "500",
     lineHeight: theme.fontSizes.F20
+  },
+  banner:{
+    height: 70, 
+    position: 'absolute',
+    justifyContent: "center", 
+    alignContent: "center", 
+    bottom: 80
   }
 })
