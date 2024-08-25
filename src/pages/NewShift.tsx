@@ -259,6 +259,7 @@ export default function NewShift() {
           <TouchableOpacity 
             activeOpacity={0.8} 
             style={styles.line}
+            disabled={shiftEntry === null}
             onPress={() => {setTimeType("salida"), setModalOpen(true)}}
             >
             <Text style={styles.textLine}>{translations.exitHour.find(i => i.lenguage === lenguage)?.text}:</Text>
@@ -513,9 +514,7 @@ const styles = StyleSheet.create ({
     fontSize: 18,
     color: "black"
   },
-  scrollView: {
-    maxHeight: theme.heigth.shiftScrollView,
-  },
+  scrollView: {},
   textoBoton: {
     fontSize: theme.fontSizes.F18,
     fontWeight: "500"    

@@ -194,7 +194,7 @@ export default function Totals() {
         <View style={styles.banner}>
         <BannerAd 
           size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-          unitId={TestIds.ADAPTIVE_BANNER}
+          unitId={theme.banners.totals}
           requestOptions={{
             requestNonPersonalizedAdsOnly: true
           }}

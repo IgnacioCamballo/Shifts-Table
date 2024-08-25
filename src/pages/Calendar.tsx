@@ -189,7 +189,7 @@ export default function Calendar() {
         <View style={styles.banner}>
         <BannerAd 
           size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-          unitId="ca-app-pub-3940256099942544/9214589741"
+          unitId={theme.banners.calendar}
           requestOptions={{
             requestNonPersonalizedAdsOnly: true
           }}

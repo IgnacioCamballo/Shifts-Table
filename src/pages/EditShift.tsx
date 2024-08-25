@@ -279,6 +279,7 @@ export default function EditShift() {
         <TouchableOpacity 
           activeOpacity={0.8} 
           style={styles.line}
+          disabled={shiftEntry === null}
           onPress={() => {setTimeType("salida"), setModalOpen(true)}}
         >
           <Text style={styles.textLine}>{translations.exitHour.find(i => i.lenguage === lenguage)?.text}:</Text>

@@ -1,4 +1,4 @@
-package com.android
+package com.shiftstable
 
 import android.os.Build
 import android.os.Bundle

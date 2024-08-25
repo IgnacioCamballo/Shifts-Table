@@ -209,7 +209,7 @@ export default function MonthDetail() {
         <View style={styles.banner}>
         <BannerAd 
           size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-          unitId={TestIds.ADAPTIVE_BANNER}
+          unitId={theme.banners.detail}
           requestOptions={{
             requestNonPersonalizedAdsOnly: true
           }}
