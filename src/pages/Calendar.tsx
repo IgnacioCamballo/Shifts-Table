@@ -3,8 +3,7 @@ import {
   View, 
   Text, 
   StyleSheet, 
-  Dimensions,
-  TouchableOpacity
+  Dimensions
 } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { 
@@ -14,13 +13,14 @@ import Animated, {
   withSequence, 
   withTiming 
 } from 'react-native-reanimated';
+import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
+
 import theme from '../theme/theme';
 import { firstLetterUpper, weekdays } from '../utils';
 import SwiftArrows from '../components/Molecules/SwiftArrows';
 import { DayProps } from '../types';
 import RenderDayCalendar from '../components/Atoms/RenderDayCalendar';
 import useCalendar from '../hooks/useCalendar';
-import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 
 let screenWidth = Dimensions.get("window").width
 

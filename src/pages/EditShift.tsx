@@ -142,7 +142,7 @@ export default function EditShift() {
       setWorkedMinutes(null)
     }
   }, [shiftEntryEdit, shiftExitEdit, shiftBreakEdit])
-
+  
   //calls the alert when trying to delete entry, exit or break time
   const showAlert = () => {
     Alert.alert(
@@ -164,7 +164,7 @@ export default function EditShift() {
       }
     )
   }
-
+  
   //sets the modal title
   const modalTitle = () => {
     switch(timeType) {
@@ -186,9 +186,9 @@ export default function EditShift() {
       workedHours: workedHoursEdit,
       workedMinutes: workedMinutesEdit,
       paid: paidEdit,
-      salary: workedHours ? 
+      salary: workedHoursEdit ? 
         companysInfo.some(company => company.name === employerEdit) 
-        ? (workedHours + workedMinutes!/60) * companysInfo.find(company => company.name === employer)!.wage 
+        ? (workedHoursEdit + workedMinutesEdit!/60) * companysInfo.find(company => company.name === employerEdit)!.wage 
         : salary 
       : null,
       color: companysInfo.some(company => company.name === employerEdit)
