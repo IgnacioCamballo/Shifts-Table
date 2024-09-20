@@ -38,9 +38,13 @@ export default function Config() {
         setDate(config.exit ? config.exit : new Date())
         setShowDelete(config.exit ? true : false)
         break
-      case "descanso":
-        setDate(config.configBreak ? config.configBreak : new Date(0))
-        setShowDelete(config.configBreak ? true : false)
+      case "descansoEntrada":
+        setDate(config.configBreakEntry ? config.configBreakEntry : new Date())
+        setShowDelete(config.configBreakEntry ? true : false)
+        break
+      case "descansoSalida":
+        setDate(config.configBreakExit ? config.configBreakEntry! : new Date())
+        setShowDelete(config.configBreakExit ? true : false)
     }
   }
 
@@ -49,24 +53,35 @@ export default function Config() {
     if(timeType === "entrada") {
       const configDateChanged = {
         entry: newDate,
-        exit: config.exit ? config.exit : null,
-        configBreak: config.configBreak ? config.configBreak : null
+        exit: config.exit || null,
+        configBreakEntry: config.configBreakEntry || null,
+        configBreakExit: config.configBreakExit || null
       }
       setConfigInfo(configDateChanged)
     }
     if(timeType === "salida") {
       const configDateChanged = {
-        entry: config.entry ? config.entry : null,
+        entry: config.entry || null,
         exit: newDate,
-        configBreak: config.configBreak ? config.configBreak : null
+        configBreakEntry: config.configBreakEntry || null,
+        configBreakExit: config.configBreakExit || null
       }
       setConfigInfo(configDateChanged)
     }
-    if(timeType === "descanso") {
+    if(timeType === "descansoEntrada") {
       const configDateChanged = {
         entry: config.entry ? config.entry : null,
         exit: config.exit ? config.exit : null,
-        configBreak: newDate
+        configBreakEntry: newDate,
+        configBreakExit: config.configBreakExit || null      }
+      setConfigInfo(configDateChanged)
+    } 
+    if(timeType === "descansoSalida") {
+      const configDateChanged = {
+        entry: config.entry ? config.entry : null,
+        exit: config.exit ? config.exit : null,
+        configBreakEntry: config.configBreakEntry || null,
+        configBreakExit: newDate      
       }
       setConfigInfo(configDateChanged)
     } 
@@ -78,7 +93,8 @@ export default function Config() {
     switch(timeType) {
       case "entrada": return translations.entryHour.find(i => i.lenguage === lenguage)?.text
       case "salida": return translations.exitHour.find(i => i.lenguage === lenguage)?.text
-      case "descanso": return translations.break.find(i => i.lenguage === lenguage)?.text
+      case "descansoEntrada": return translations.breakStart.find(i => i.lenguage === lenguage)?.text
+      case "descansoSalida": return translations.breakEnd.find(i => i.lenguage === lenguage)?.text
     }
   }
 
@@ -153,21 +169,28 @@ export default function Config() {
               <Text style={styles.textLine}>{config.exit ? `${config.exit.getHours()}:${formattedMinutes(config.exit)}` : "-"}</Text>
             </View>
           </TouchableOpacity>
-
+          
           <TouchableOpacity 
             activeOpacity={0.8} 
             style={styles.line}
-            onPress={() => {setTimeType("descanso"), setModalOpen(true)}}
+            disabled={config.entry === null || undefined}
+            onPress={() => {setTimeType("descansoEntrada"), setModalOpen(true)}}
           >
-            <Text style={styles.textLine}>{translations.break.find(i => i.lenguage === lenguage)?.text}:</Text>
+            <Text style={styles.textLine}>{translations.breakStart.find(i => i.lenguage === lenguage)?.text}:</Text>
             <View >
-              <Text style={styles.textLine}>
-                {config.configBreak === null || 
-                  (config.configBreak.getHours() === 0 && config.configBreak.getMinutes() === 0) 
-                  ? "0" 
-                  : `${config.configBreak?.getHours()}:${formattedMinutes(config.configBreak)}`
-                }
-              </Text>
+              <Text style={styles.textLine}>{config.configBreakEntry ? `${config.configBreakEntry.getHours()}:${formattedMinutes(config.configBreakEntry)}` : "-"}</Text>
+            </View>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            activeOpacity={0.8} 
+            style={styles.line}
+            disabled={config.configBreakEntry === null || undefined}
+            onPress={() => {setTimeType("descansoSalida"), setModalOpen(true)}}
+          >
+            <Text style={styles.textLine}>{translations.breakEnd.find(i => i.lenguage === lenguage)?.text}:</Text>
+            <View >
+              <Text style={styles.textLine}>{config.configBreakExit ? `${config.configBreakExit.getHours()}:${formattedMinutes(config.configBreakExit)}` : "-"}</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -222,7 +245,7 @@ export default function Config() {
         <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
           {companysInfo.length === 0 ? <Text style={styles.textNotEmployers}>{translations.noEmployersYet.find(i => i.lenguage === lenguage)?.text}</Text> : 
             companysInfo.map(employer => (
-              <Employer key={employer.name} employer={employer}/>
+              <Employer key={employer.key} employer={employer}/>
             ))
           }
         </ScrollView>

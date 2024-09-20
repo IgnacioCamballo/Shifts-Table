@@ -10,19 +10,12 @@ import translations from "../../lenguages/lenguages.json"
 export default function Employer({ employer }: { employer: EmployerProps }) {
   const { companysInfo, setCompanysInfo, lenguage } = useCalendar()
 
-  const { name, wage, color } = employer
-
-  const dynamicStyles = {
-    color: {
-      ...styles.color,
-      backgroundColor: `${color}`
-    }
-  }
+  const { name, wage, color, key } = employer
 
   const showAlert = () => {
     Alert.alert(
       '',
-      translations.employerDeleteAlert.find(i => i.lenguage === lenguage)?.text,
+      `${translations.employerDeleteAlert.find(i => i.lenguage === lenguage)?.text} ${name}?`,
       [
         {
           text: translations.cancel.find(i => i.lenguage === lenguage)?.text,
@@ -41,7 +34,7 @@ export default function Employer({ employer }: { employer: EmployerProps }) {
   }
 
   const handleDeleteEmployer = () => {
-    const filtered = companysInfo.filter(employer => employer.name !== name)
+    const filtered = companysInfo.filter(employer => employer.key !== key)
     setCompanysInfo(filtered)
   }
 
@@ -60,11 +53,11 @@ export default function Employer({ employer }: { employer: EmployerProps }) {
       <View style={styles.line}>
         <View style={styles.contColor}>
           <Text style={styles.textLine}>{translations.color.find(i => i.lenguage === lenguage)?.text}:</Text>
-          <View style={dynamicStyles.color}></View>
+          <View style={[styles.color, {backgroundColor: color}]}></View>
         </View>
         <EditDeletButtons 
           DeleteAlert={showAlert} 
-          link={`/config/editEmployer/${companysInfo.findIndex(employer => employer.name === name)}`}
+          link={`/config/editEmployer/${key}`}
         />
       </View>
     </View>

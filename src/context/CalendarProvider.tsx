@@ -1,6 +1,6 @@
 import { useState, createContext, useEffect } from "react"
 import { CalendarContextProps, ConfigInfo, EmployerProps, ShiftProps } from "../types"
-import mobileAds, { MobileAds } from 'react-native-google-mobile-ads';
+import { MobileAds } from 'react-native-google-mobile-ads';
 import AsyncStorage from "@react-native-async-storage/async-storage"
 
 interface props {

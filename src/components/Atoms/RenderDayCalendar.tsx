@@ -33,8 +33,8 @@ export default function RenderDayCalendar({item, currentDay, pressedDate, nav, o
       <View style={shadowed ? styles.dayContainerEmpty : styles.dayContainer}>
         {nav && <Navigate to={`/calendar/shifts/${pressedDate}`}/>}
         {shadowed === true ? <View></View> : colorShifts.map(shiftColor => 
-          <View key={shiftColor.key} style={[styles.coloredShiftBox, {backgroundColor: companysInfo.some(employer => employer.name === shiftColor.employer) ? companysInfo.find(employer => employer.name === shiftColor.employer)!.color : shiftColor.color}]}>
-            <Text style={styles.coloredShiftText}>{shiftColor.short}</Text>
+          <View key={shiftColor.key} style={[styles.coloredShiftBox, {backgroundColor: companysInfo.some(employer => employer.key === shiftColor.employer) ? companysInfo.find(employer => employer.key === shiftColor.employer)!.color : shiftColor.color}]}>
+            <Text style={styles.coloredShiftText}>{companysInfo.some(employer => employer.key === shiftColor.employer) ? companysInfo.find(employer => employer.key === shiftColor.employer)!.short : shiftColor.short}</Text>
           </View>
         )}
         <Text style={shadowed ? styles.emptyDayText : [styles.dayText, isCurrentDay && styles.selectedDayText]}>{day.toLocaleString()}</Text>
@@ -76,7 +76,11 @@ const styles = StyleSheet.create({
   coloredShiftBox: {
     flex:1,
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
+    borderTopColor: theme.colors.gris,
+    borderBottomColor: theme.colors.gris,
+    borderTopWidth:0.5,
+    borderBottomWidth: 0.5
   },
   coloredShiftText: {
     color: theme.colors.negro,

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, Text, TextInput, TouchableOpacity, View, Modal, Platform } from 'react-native'
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, Modal, Platform, Alert } from 'react-native'
 import ColorPicker, { HueSlider, Panel1, Preview, returnedResults } from 'reanimated-color-picker'
 import { Link, useParams } from 'react-router-native'
 import Constants from "expo-constants"
@@ -15,9 +15,9 @@ export default function EditEmployer() {
   const { companysInfo, setCompanysInfo, lenguage } = useCalendar()
 
   const params = useParams()
-  const employerIndex = params.employer!
-  const employer = companysInfo[parseInt(employerIndex)]
-  const {name, short, color, wage} = employer
+  const employerId = params.employer!
+  const employer = companysInfo.find(emp => emp.key === parseInt(employerId))
+  const {name, short, color, wage, key} = employer!
 
   const [inputName, setInputName] = useState(name)
   const [shortName, setShortName] = useState(short)
@@ -27,13 +27,6 @@ export default function EditEmployer() {
   const [repeatedName, setRepeatedName] = useState(false)
   const [modal, setModal] = useState(false)
   const [tempColor, setTempColor] = useState(color)
-
-  const dynamicStyles = {
-    color: {
-      ...styles.color,
-      backgroundColor: `${defColor}`
-    }
-  }
 
   //checks for repeted names
   useEffect(() => {
@@ -53,16 +46,34 @@ export default function EditEmployer() {
     setTempColor(hexColor)
   }
 
+  //alert called when wage is changed
+  const wageChangedAlert = () => {
+    salary !== wage.toString() && 
+    Alert.alert(
+      '',
+      `${translations.wageChangeAlert.find(i => i.lenguage === lenguage)?.text}`,
+      [
+        {
+          text: 'OK',
+          style: 'cancel'
+        },
+      ]
+    )
+  }
+
   //saves the edited emplyer info
   const handleSaveEmployer = () => {
+    const employerIndex = companysInfo.findIndex(emp => emp.key === key)
+
     const newEmployer: EmployerProps = {
+      key: key,
       name: inputName,
       short: shortName,
       wage: parseInt(salary),
       color: defColor
     }
     const updatedCompanys = [...companysInfo]
-    updatedCompanys.splice(parseInt(employerIndex), 1, newEmployer)
+    updatedCompanys.splice(employerIndex, 1, newEmployer)
     setCompanysInfo(updatedCompanys)
   }
 
@@ -120,6 +131,7 @@ export default function EditEmployer() {
               style={styles.textLine}
               inputMode='numeric'
               keyboardType='numeric'
+              onEndEditing={wageChangedAlert}
               onChangeText={setSalary}
               value={salary}
               placeholder="0"
@@ -131,8 +143,8 @@ export default function EditEmployer() {
         <View style={styles.line}>
           <View style={styles.contColor}>
             <Text style={styles.textLine}>{translations.color.find(i => i.lenguage === lenguage)?.text}:</Text>
-            
-            <TouchableOpacity onPress={() => setModal(true)} style={dynamicStyles.color}/>
+
+            <TouchableOpacity onPress={() => setModal(true)} style={[styles.color,, {backgroundColor: defColor}]}/>
           </View>
         </View>
       </View>

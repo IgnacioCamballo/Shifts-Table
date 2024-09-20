@@ -15,12 +15,12 @@ export default function Totals() {
   const param = useParams()
   const currentMonth = param.month ? new Date(param.month) : new Date()
 
-  const {shifts, lenguage, addsInitialized} = useCalendar()
+  const {shifts, lenguage, addsInitialized, companysInfo} = useCalendar()
 
   const [currentDay, setCurrentDay] = useState(currentMonth);
-  const [employersList, setEmployersList] = useState<string[]>([])
+  const [employersList, setEmployersList] = useState<number[]>([])
 
-  const [employer, setEmployer] = useState("Todos")
+  const [employer, setEmployer] = useState(0)
   const [workedDays, setWorkedDays] = useState(0)
   const [workedHours, setWorkedHours] = useState("")
   const [salary, setSalary] = useState(0)
@@ -28,7 +28,7 @@ export default function Totals() {
   const [unpaidHours, setUnpaidHours] = useState("")
 
   const monthlyShifts = shifts.filter(shift => shift.shiftEntry.getFullYear() === currentDay.getFullYear() && shift.shiftEntry.getMonth() === currentDay.getMonth())
-  const monthlyShiftsFiltered = employer === "Todos" ? monthlyShifts : monthlyShifts.filter(shift => shift.employer === employer)
+  const monthlyShiftsFiltered = employer === 0 ? monthlyShifts : monthlyShifts.filter(shift => shift.employer === employer)
 
   function findWorkedDays() {
     let dayscounter = 0
@@ -144,9 +144,9 @@ export default function Totals() {
               accessibilityLabel={translations.selectEmployer.find(i => i.lenguage === lenguage)?.text}
               mode='dropdown'
               >
-                <Picker.Item style={styles.pickerItem} label={translations.all.find(i => i.lenguage === lenguage)?.text} value="Todos"/>
+                <Picker.Item style={styles.pickerItem} label={translations.all.find(i => i.lenguage === lenguage)?.text} value={0}/>
               {employersList.map(employer => 
-                <Picker.Item style={styles.pickerItem} label={employer} value={employer} key={employer}/>
+                <Picker.Item style={styles.pickerItem} label={companysInfo.find(emp => emp.key === employer)!.name} value={employer} key={employer}/>
               )}
             </Picker>
           </View>

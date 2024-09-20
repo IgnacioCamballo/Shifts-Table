@@ -9,7 +9,7 @@ import EditDeletButtons from './EditDeletButtons'
 import translations from "../../lenguages/lenguages.json"
 
 export default function Shift({shift}: {shift: ShiftProps}) {
-  const {shifts, setShifts, lenguage} = useCalendar()
+  const {shifts, companysInfo, setShifts, lenguage} = useCalendar()
 
   const {key, employer, paid, shiftEntry, shiftExit, shiftBreak, workedHours, workedMinutes} = shift
 
@@ -53,7 +53,7 @@ export default function Shift({shift}: {shift: ShiftProps}) {
     <View style={styles.empleador}>
       <View style={styles.line}>
         <Text style={styles.textLine}>{translations.employer.find(i => i.lenguage === lenguage)?.text}:</Text>
-        <Text style={styles.textLine}>{employer}</Text>
+        <Text style={styles.textLine}>{companysInfo.find(emp => emp.key === employer)?.name}</Text>
       </View>
 
       <View style={styles.line}>

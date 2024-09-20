@@ -29,6 +29,8 @@ export default function EditShift() {
     key, 
     note, 
     paid, 
+    shiftBreakEntry,
+    shiftBreakExit,
     shiftBreak, 
     shiftEntry, 
     shiftExit, 
@@ -38,9 +40,11 @@ export default function EditShift() {
     color
   } = editingShift!
 
-  const [employerEdit, setEmployer] = useState(employer)
+  const [employerEdit, setEmployer] = useState(companysInfo.find(emp => emp.key === employer)!.name)
   const [shiftEntryEdit, setShiftEntry] = useState<Date | null>(shiftEntry)
   const [shiftExitEdit, setShiftExit] = useState<Date | null>(shiftExit ? shiftExit : null)
+  const [shiftBreakEntryEdit, setShiftBreakEntry] = useState<Date | null>(shiftBreakEntry ? shiftBreakEntry : null)
+  const [shiftBreakExitEdit, setShiftBreakExit] = useState<Date | null>(shiftBreakExit ? shiftBreakExit : null)
   const [shiftBreakEdit, setShiftBreak] = useState<Date | null>(shiftBreak ? shiftBreak : null)
   const [workedHoursEdit, setWorkedHours] = useState<number | null>(workedHours ? workedHours : null)
   const [workedMinutesEdit, setWorkedMinutes] = useState<number | null>(workedMinutes ? workedMinutes : null)
@@ -66,9 +70,12 @@ export default function EditShift() {
         setDate(shiftExitEdit ? shiftExitEdit : (shiftEntryEdit ? shiftEntryEdit : pressedDate))
         setShowDelete(shiftExitEdit ? true : false)
         break
-      case "descanso":
-        setDate(shiftBreakEdit ? shiftBreakEdit : pressedDate)
-        setShowDelete(shiftBreakEdit ? true : false)
+      case "descansoEntrada":
+        setDate(shiftBreakEntry ? shiftBreakEntry : pressedDate)
+        setShowDelete(shiftBreakEntry ? true : false)
+      case "descansoSalida":
+        setDate(shiftBreakExit ? shiftBreakExit : pressedDate)
+        setShowDelete(shiftBreakExit ? true : false)
     }
   }
 
@@ -85,11 +92,46 @@ export default function EditShift() {
         }
       }
     }
-    if(timeType === "descanso") {    
-      setShiftBreak(newDate!)
+    if(timeType === "descansoEntrada") {    
+      setShiftBreakEntry(newDate!)
+    }
+    if(timeType === "descansoSalida") {    
+      setShiftBreakExit(newDate!)
     }
     setTimeType("")
   }
+
+  //calculates break
+  useEffect(() => {
+    if(shiftBreakEntryEdit && shiftBreakExitEdit) {
+      const difMonth = shiftBreakExitEdit.getMonth() !== shiftBreakEntryEdit.getMonth()
+      const daysInMonth = new Date(pressedDate.getFullYear(), pressedDate.getMonth() + 1, 0).getDate();
+
+      const dayDiference = shiftBreakExitEdit!.getDate() - shiftBreakEntryEdit!.getDate()    
+      const minutes = ((shiftBreakExitEdit!.getMinutes() < shiftBreakEntryEdit!.getMinutes()) ?
+        shiftBreakExitEdit!.getMinutes() + (60 - shiftEntry!.getMinutes()):
+        shiftBreakExitEdit!.getMinutes() - shiftEntry!.getMinutes()
+      ) 
+      // minutes is the break minutes
+      if(dayDiference === 0) {
+        const hours = (
+          shiftBreakExitEdit!.getHours() - shiftBreakEntryEdit!.getHours()  
+          - (shiftBreakExitEdit!.getMinutes() < shiftBreakEntryEdit!.getMinutes() ? 1 : 0) 
+        )
+        setShiftBreak(new Date(pressedDate.getFullYear(), pressedDate.getMonth(), pressedDate.getDay(), hours, minutes))
+      } else {
+        const hours = (
+          (24 - shiftBreakEntryEdit!.getHours()) 
+          - (shiftBreakExitEdit!.getMinutes() < shiftBreakEntryEdit!.getMinutes() ? 1 : 0) 
+          + (difMonth ? 24 * ((daysInMonth - shiftBreakEntryEdit!.getDate()) + (shiftBreakExitEdit!.getDate() -1)) : 24 * (dayDiference - 1)) 
+          + shiftBreakExitEdit!.getHours()
+        ) 
+        setShiftBreak(new Date(pressedDate.getFullYear(), pressedDate.getMonth(), pressedDate.getDay(), hours, minutes))
+      }
+    } else {
+      setShiftBreak(null)
+    }
+  }, [shiftBreakEntryEdit, shiftBreakExitEdit])
   
   //calculates the worked hours and checks or inconsistencies
   useEffect (() => {
@@ -170,7 +212,8 @@ export default function EditShift() {
     switch(timeType) {
       case "entrada": return translations.entryHour.find(i => i.lenguage === lenguage)?.text
       case "salida": return translations.exitHour.find(i => i.lenguage === lenguage)?.text
-      case "descanso": return translations.break.find(i => i.lenguage === lenguage)?.text
+      case "descansoEntrada": return translations.breakStart.find(i => i.lenguage === lenguage)?.text
+      case "descansoSalida": return translations.breakEnd.find(i => i.lenguage === lenguage)?.text
     }
   }
 
@@ -178,11 +221,13 @@ export default function EditShift() {
   const handleEditShift = () => {
     const editedShift: ShiftProps = {
       key: `${shiftEntryEdit}${employerEdit}`,
-      employer: employerEdit, 
+      employer: companysInfo.find(emp => emp.name === employerEdit)!.key, 
       short: companysInfo.find(company => company.name === employerEdit)!.short,
       shiftEntry: shiftEntryEdit!, 
       shiftExit: shiftExitEdit, 
       shiftBreak: shiftBreakEdit, 
+      shiftBreakEntry: shiftBreakEntryEdit, 
+      shiftBreakExit: shiftBreakExitEdit, 
       workedHours: workedHoursEdit,
       workedMinutes: workedMinutesEdit,
       paid: paidEdit,
@@ -192,7 +237,7 @@ export default function EditShift() {
         : salary 
       : null,
       color: companysInfo.some(company => company.name === employerEdit)
-        ? companysInfo.find(company => company.name === employer)!.color
+        ? companysInfo.find(company => company.name === employerEdit)!.color
         : color,
       note: noteEdit
     }
@@ -212,7 +257,7 @@ export default function EditShift() {
   useEffect(() => {
     const currentExcluded = shifts.filter (shift => shift.key !== key)
     if (currentExcluded.find(shift => 
-      shift.employer === employerEdit && 
+      shift.key === `${shiftEntry}${employerEdit}` && 
       shift.shiftEntry.getFullYear() === shiftEntryEdit?.getFullYear() &&
       shift.shiftEntry.getMonth() === shiftEntryEdit?.getMonth() &&
       shift.shiftEntry.getDate() === shiftEntryEdit?.getDate() &&
@@ -298,11 +343,24 @@ export default function EditShift() {
         <TouchableOpacity 
           activeOpacity={0.8} 
           style={styles.line}
-          onPress={() => {setTimeType("descanso"), setModalOpen(true)}}
-        >
-          <Text style={styles.textLine}>{translations.break.find(i => i.lenguage === lenguage)?.text}:</Text>
+          disabled={shiftEntry === null}
+          onPress={() => {setTimeType("descansoEntrada"), setModalOpen(true)}}
+          >
+          <Text style={styles.textLine}>{translations.breakStart.find(i => i.lenguage === lenguage)?.text}:</Text>
           <View >
-            <Text style={styles.textLine}>{shiftBreakEdit ? `${shiftBreakEdit.getHours()}:${formattedMinutes(shiftBreakEdit)}` : "0"}</Text>
+            <Text style={styles.textLine}>{shiftBreakEntry ? `${shiftBreakEntry.getHours()}:${formattedMinutes(shiftBreakEntry)}` : "-"}</Text>
+          </View>
+        </TouchableOpacity>
+        
+        <TouchableOpacity    
+          activeOpacity={0.8} 
+          style={styles.line}
+          disabled={shiftBreakEntry === null}
+          onPress={() => {setTimeType("descansoSalida"), setModalOpen(true)}}
+          >
+          <Text style={styles.textLine}>{translations.breakEnd.find(i => i.lenguage === lenguage)?.text}:</Text>
+          <View >
+            <Text style={styles.textLine}>{shiftBreakExit ? `${shiftBreakExit.getHours()}:${formattedMinutes(shiftBreakExit)}` : "-"}</Text>
           </View>
         </TouchableOpacity>
         

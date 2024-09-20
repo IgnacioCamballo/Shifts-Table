@@ -1,5 +1,6 @@
 
 export type EmployerProps = {
+    key: number,
     name: string,
     short: string,
     wage: number,
@@ -8,11 +9,13 @@ export type EmployerProps = {
 
 export type ShiftProps = {
     key: string,
-    employer: string,
+    employer: number,
     short: string,
     shiftEntry: Date,
     shiftExit: Date | null,
     shiftBreak: Date | null,
+    shiftBreakEntry: Date | null,
+    shiftBreakExit: Date | null,
     workedHours: number | null,
     workedMinutes: number | null,
     paid: boolean,
@@ -24,7 +27,8 @@ export type ShiftProps = {
 export type ConfigInfo = {
     entry: Date | null,
     exit: Date | null,
-    configBreak: Date | null
+    configBreakEntry: Date | null,
+    configBreakExit: Date | null
 }
 
 export type DayProps = {

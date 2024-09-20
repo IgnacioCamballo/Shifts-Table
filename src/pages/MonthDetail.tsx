@@ -16,15 +16,15 @@ export default function MonthDetail() {
   const param = useParams()
   const month = param.month
 
-  const {shifts, lenguage, addsInitialized} = useCalendar()
+  const {shifts, lenguage, addsInitialized, companysInfo} = useCalendar()
 
   const [currentDay, setCurrentDay] = useState(new Date(month!))
-  const [employer, setEmployer] = useState("Todos")
+  const [employer, setEmployer] = useState(0)
   const [shownDays, setShownDays] = useState("Todos")
-  const [employersList, setEmployersList] = useState<string[]>([])
+  const [employersList, setEmployersList] = useState<number[]>([])
 
   const monthlyShifts = shifts.filter(shift => shift.shiftEntry.getFullYear() === currentDay.getFullYear() && shift.shiftEntry.getMonth() === currentDay.getMonth())
-  const monthlyShiftsFiltered = employer === "Todos" ? monthlyShifts : monthlyShifts.filter(shift => shift.employer === employer)
+  const monthlyShiftsFiltered = employer === 0 ? monthlyShifts : monthlyShifts.filter(shift => shift.employer === employer)
   const monthlyShiftsFilteredPayment = shownDays === "Todos" ? monthlyShiftsFiltered : shownDays === "Pagos" ? monthlyShiftsFiltered.filter(shift => shift.paid === true) : monthlyShiftsFiltered.filter(shift => shift.paid === false)
   monthlyShiftsFilteredPayment.sort((a, b)=> a.shiftEntry.getDate() - b.shiftEntry.getDate())
 
@@ -154,9 +154,9 @@ export default function MonthDetail() {
               accessibilityLabel={translations.selectEmployer.find(i => i.lenguage === lenguage)?.text}
               mode='dropdown'
               >
-                <Picker.Item style={styles.pickerItem} label={translations.all.find(i => i.lenguage === lenguage)?.text} value="Todos"/>
+                <Picker.Item style={styles.pickerItem} label={translations.all.find(i => i.lenguage === lenguage)?.text} value={0}/>
               {employersList.map(employer => 
-                <Picker.Item style={styles.pickerItem} label={employer} value={employer} key={employer}/>
+                <Picker.Item style={styles.pickerItem} label={companysInfo.find(emp => emp.key === employer)!.name} value={employer} key={employer}/>
               )}
             </Picker>
           </View>

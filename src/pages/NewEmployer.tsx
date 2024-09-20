@@ -52,6 +52,7 @@ export default function NewEmployer() {
   //Saves the new employer
   const handleSaveEmployer = () => {
     const newEmployer: EmployerProps = {
+      key: new Date().getTime(),
       name: inputName,
       short: shortName,
       wage: parseInt(salary),

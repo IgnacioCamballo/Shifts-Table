@@ -24,7 +24,9 @@ export default function NewShift() {
   const [employer, setEmployer] = useState("")
   const [shiftEntry, setShiftEntry] = useState<Date | null>(configInfo.entry ? new Date(pressedDate.getFullYear(), pressedDate.getMonth(), pressedDate.getDate() ,configInfo.entry?.getHours(), configInfo.entry?.getMinutes()) : null)
   const [shiftExit, setShiftExit] = useState<Date | null>(configInfo.exit ? new Date(pressedDate.getFullYear(), pressedDate.getMonth(), pressedDate.getDate() ,configInfo.exit?.getHours(), configInfo.exit?.getMinutes()): null)
-  const [shiftBreak, setShiftBreak] = useState(configInfo.configBreak)
+  const [shiftBreakEntry, setShiftBreakEntry] = useState<Date | null>(null)
+  const [shiftBreakExit, setShiftBreakExit] = useState<Date | null>(null)
+  const [shiftBreak, setShiftBreak] = useState<Date | null>(null)
   const [workedHours, setWorkedHours] = useState<number | null>(null)
   const [workedMinutes, setWorkedMinutes] = useState<number | null>(null)
   const [paid, setPaid] = useState(false)
@@ -38,7 +40,7 @@ export default function NewShift() {
   const [modalOpen, setModalOpen] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
 
-  //Called when pressing on default entry, exit or break. Sets data to open de correct modal and edit the correct info
+  //Called when pressing on entry, exit or break. Sets data to open de correct modal and edit the correct info
   const selectedTime = () => {
     switch(timeType) {
       case "entrada": 
@@ -49,9 +51,12 @@ export default function NewShift() {
         setDate(shiftExit ? shiftExit : (shiftEntry ? shiftEntry : pressedDate))
         setShowDelete(shiftExit ? true : false)
         break
-      case "descanso":
-        setDate(shiftBreak ? shiftBreak : pressedDate)
-        setShowDelete(shiftBreak ? true : false)
+      case "descansoEntrada":
+        setDate(shiftBreakEntry ? shiftBreakEntry : pressedDate)
+        setShowDelete(shiftBreakEntry ? true : false)
+      case "descansoSalida":
+        setDate(shiftBreakExit ? shiftBreakExit : pressedDate)
+        setShowDelete(shiftBreakExit ? true : false)
     }
   }
 
@@ -64,15 +69,50 @@ export default function NewShift() {
       setShiftExit(newDate!)
       if (newDate !== null) {
         if (newDate!.getDate() === shiftEntry!.getDate() && (newDate!.getHours() < shiftEntry!.getHours() || (newDate!.getHours() === shiftEntry!.getHours() && newDate!.getMinutes() < shiftEntry!.getMinutes()))) {
-          setShiftEntry(null!)
+          setShiftEntry(null)
         }
       }
     }
-    if(timeType === "descanso") {    
-      setShiftBreak(newDate!)
+    if(timeType === "descansoEntrada") {    
+      setShiftBreakEntry(newDate!)
+    }
+    if(timeType === "descansoSalida") {    
+      setShiftBreakExit(newDate!)
     }
     setTimeType("")
   }
+
+  //calculates break
+  useEffect(() => {
+    if(shiftBreakEntry && shiftBreakExit) {
+      const difMonth = shiftBreakExit.getMonth() !== shiftBreakEntry.getMonth()
+      const daysInMonth = new Date(pressedDate.getFullYear(), pressedDate.getMonth() + 1, 0).getDate();
+
+      const dayDiference = shiftBreakExit!.getDate() - shiftBreakEntry!.getDate()    
+      const minutes = ((shiftBreakExit!.getMinutes() < shiftBreakEntry!.getMinutes()) ?
+        shiftBreakExit!.getMinutes() + (60 - shiftEntry!.getMinutes()):
+        shiftBreakExit!.getMinutes() - shiftEntry!.getMinutes()
+      ) 
+      // minutes is the break minutes
+      if(dayDiference === 0) {
+        const hours = (
+          shiftBreakExit!.getHours() - shiftBreakEntry!.getHours()  
+          - (shiftBreakExit!.getMinutes() < shiftBreakEntry!.getMinutes() ? 1 : 0) 
+        )
+        setShiftBreak(new Date(pressedDate.getFullYear(), pressedDate.getMonth(), pressedDate.getDay(), hours, minutes))
+      } else {
+        const hours = (
+          (24 - shiftBreakEntry!.getHours()) 
+          - (shiftBreakExit!.getMinutes() < shiftBreakEntry!.getMinutes() ? 1 : 0) 
+          + (difMonth ? 24 * ((daysInMonth - shiftBreakEntry!.getDate()) + (shiftBreakExit!.getDate() -1)) : 24 * (dayDiference - 1)) 
+          + shiftBreakExit!.getHours()
+        ) 
+        setShiftBreak(new Date(pressedDate.getFullYear(), pressedDate.getMonth(), pressedDate.getDay(), hours, minutes))
+      }
+    } else {
+      setShiftBreak(null)
+    }
+  }, [shiftBreakEntry, shiftBreakExit])
   
   //Calculates the worked hours and checks or inconsistencies
   useEffect (() => {
@@ -153,7 +193,8 @@ export default function NewShift() {
     switch(timeType) {
       case "entrada": return translations.entryHour.find(i => i.lenguage === lenguage)?.text
       case "salida": return translations.exitHour.find(i => i.lenguage === lenguage)?.text
-      case "descanso": return translations.break.find(i => i.lenguage === lenguage)?.text
+      case "descansoEntrada": return translations.breakStart.find(i => i.lenguage === lenguage)?.text
+      case "descansoSalida": return translations.breakEnd.find(i => i.lenguage === lenguage)?.text
     }
   }
 
@@ -161,11 +202,13 @@ export default function NewShift() {
   const handleSaveShift = () => {
     const newShift: ShiftProps = {
       key: `${shiftEntry}${employer}`,
-      employer: employer,
+      employer: companysInfo.find(emp => emp.name === employer)!.key,
       short: companysInfo.find(company => company.name === employer)!.short,
       shiftEntry: shiftEntry!, 
       shiftExit: shiftExit, 
       shiftBreak: shiftBreak, 
+      shiftBreakEntry: shiftBreakEntry, 
+      shiftBreakExit: shiftBreakExit, 
       workedHours: workedHours,
       workedMinutes: workedMinutes,
       paid: paid,
@@ -187,7 +230,7 @@ export default function NewShift() {
   //Checks the shift is not repeted
   useEffect(() => {
     if (shifts.find(shift => 
-      shift.employer === employer && 
+      shift.key === `${shiftEntry}${employer}` && 
       shift.shiftEntry.getFullYear() === shiftEntry?.getFullYear() &&
       shift.shiftEntry.getMonth() === shiftEntry?.getMonth() &&
       shift.shiftEntry.getDate() === shiftEntry?.getDate() &&
@@ -278,11 +321,24 @@ export default function NewShift() {
           <TouchableOpacity 
             activeOpacity={0.8} 
             style={styles.line}
-            onPress={() => {setTimeType("descanso"), setModalOpen(true)}}
+            disabled={shiftEntry === null}
+            onPress={() => {setTimeType("descansoEntrada"), setModalOpen(true)}}
             >
-            <Text style={styles.textLine}>{translations.break.find(i => i.lenguage === lenguage)?.text}:</Text>
+            <Text style={styles.textLine}>{translations.breakStart.find(i => i.lenguage === lenguage)?.text}:</Text>
             <View >
-              <Text style={styles.textLine}>{shiftBreak ? `${shiftBreak.getHours()}:${formattedMinutes(shiftBreak)}` : "0"}</Text>
+              <Text style={styles.textLine}>{shiftBreakEntry ? `${shiftBreakEntry.getHours()}:${formattedMinutes(shiftBreakEntry)}` : "-"}</Text>
+            </View>
+          </TouchableOpacity>
+          
+          <TouchableOpacity    
+            activeOpacity={0.8} 
+            style={styles.line}
+            disabled={shiftBreakEntry === null}
+            onPress={() => {setTimeType("descansoSalida"), setModalOpen(true)}}
+            >
+            <Text style={styles.textLine}>{translations.breakEnd.find(i => i.lenguage === lenguage)?.text}:</Text>
+            <View >
+              <Text style={styles.textLine}>{shiftBreakExit ? `${shiftBreakExit.getHours()}:${formattedMinutes(shiftBreakExit)}` : "-"}</Text>
             </View>
           </TouchableOpacity>
           
@@ -329,14 +385,14 @@ export default function NewShift() {
               
               <DatePicker 
                 theme='light'
-                mode={timeType === "salida" ? "datetime" : 'time'}
-                minimumDate={shiftEntry && timeType === "salida" ? shiftEntry : pressedDate}
-                maximumDate={timeType === "entrada" && shiftExit ? shiftExit : new Date(pressedDate!.getFullYear(), pressedDate!.getMonth(), pressedDate!.getDate() + 2, 23, 59)}
+                mode={timeType !== "entrada" ? "datetime" : 'time'}
+                minimumDate={shiftEntry && timeType !== "entrada" ? shiftBreakEntry && timeType === "descansoSalida" ? shiftBreakEntry : shiftEntry : pressedDate}
+                maximumDate={timeType === "entrada" && shiftExit ? shiftExit : shiftExit && timeType === "descansoSalida" || "descansoEntrada" ? shiftExit! : new Date(pressedDate!.getFullYear(), pressedDate!.getMonth(), pressedDate!.getDate() + 2, 23, 59)}
                 locale={lenguage}
                 date={date!}
                 onDateChange={setDate}
                 dividerColor={theme.colors.verdeBase}
-                is24hourSource={timeType === "descanso" ? "locale" : "device"}
+                is24hourSource="device"
                 />
 
               <View style={styles.modalButtons}>
