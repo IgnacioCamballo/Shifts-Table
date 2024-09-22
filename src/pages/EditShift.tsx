@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, Text, TextInput, TouchableOpacity, View, Modal, Platform, Alert } from 'react-native'
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, Modal, Platform, Alert, ScrollView } from 'react-native'
 import { Link, useParams } from 'react-router-native'
 import { ShiftProps } from '../types'
 import Constants from "expo-constants"
@@ -286,164 +286,166 @@ export default function EditShift() {
         </ButtonSmall>
       </Link>
 
-      <View>
-        <Text style={styles.textoConf}>{translations.editShifts.find(i => i.lenguage === lenguage)?.text} {firstLetterUpper(pressedDate.toLocaleDateString(lenguage, {month: 'short'}))} / {pressedDate.toLocaleDateString(lenguage, {day:"numeric"})}</Text>
-      </View>
+      <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
+        <View>
+          <Text style={styles.textoConf}>{translations.editShifts.find(i => i.lenguage === lenguage)?.text} {firstLetterUpper(pressedDate.toLocaleDateString(lenguage, {month: 'short'}))} / {pressedDate.toLocaleDateString(lenguage, {day:"numeric"})}</Text>
+        </View>
 
-      <View style={styles.empleador}>
-        <View style={styles.line}>
-          <Text style={styles.textLine}>{translations.employer.find(i => i.lenguage === lenguage)?.text}:</Text>
+        <View style={styles.empleador}>
+          <View style={styles.line}>
+            <Text style={styles.textLine}>{translations.employer.find(i => i.lenguage === lenguage)?.text}:</Text>
+            
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={employerEdit}
+                onValueChange={newValue => setEmployer(newValue)}
+                style={styles.picker}
+                accessibilityLabel={translations.selectEmployer.find(i => i.lenguage === lenguage)?.text}
+                mode='dropdown'
+                >
+                  <Picker.Item style={styles.pickerItem} label={translations.selectEmployer.find(i => i.lenguage === lenguage)?.text} value="" enabled={false}/>
+                {companysInfo.map(employer => 
+                  <Picker.Item style={styles.pickerItem} label={employer.name} value={employer.name} key={employer.name}/>
+                )}
+              </Picker>
+            </View>
+          </View>
+
+          <TouchableOpacity 
+            activeOpacity={0.8} 
+            style={styles.line}
+            onPress={() => {setTimeType("entrada"), setModalOpen(true)}}
+          >
+            <Text style={styles.textLine}>{translations.entryHour.find(i => i.lenguage === lenguage)?.text}:</Text>
+            <View >
+              <Text style={styles.textLine}>{shiftEntryEdit ? `${shiftEntryEdit.getHours()}:${formattedMinutes(shiftEntryEdit)}` : "-"}</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            activeOpacity={0.8} 
+            style={styles.line}
+            disabled={shiftEntry === null}
+            onPress={() => {setTimeType("salida"), setModalOpen(true)}}
+          >
+            <Text style={styles.textLine}>{translations.exitHour.find(i => i.lenguage === lenguage)?.text}:</Text>
+            <View >
+              <Text style={styles.textLine}>
+                {shiftExitEdit && shiftEntryEdit ?
+                  (shiftExitEdit?.getDate() !== shiftEntryEdit?.getDate() ? 
+                    `${firstLetterUpper(shiftExitEdit!.toLocaleDateString(lenguage, {month: 'short'}))} ${shiftExitEdit?.getDate()} (${textDay(shiftExitEdit!, lenguage)})  ` : "") 
+                  : ""
+                }
+                {shiftExitEdit ? `${shiftExitEdit.getHours()}:${formattedMinutes(shiftExitEdit)}` : "-"}
+              </Text>
+            </View>
+          </TouchableOpacity>
           
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={employerEdit}
-              onValueChange={newValue => setEmployer(newValue)}
-              style={styles.picker}
-              accessibilityLabel={translations.selectEmployer.find(i => i.lenguage === lenguage)?.text}
-              mode='dropdown'
-              >
-                <Picker.Item style={styles.pickerItem} label={translations.selectEmployer.find(i => i.lenguage === lenguage)?.text} value="" enabled={false}/>
-              {companysInfo.map(employer => 
-                <Picker.Item style={styles.pickerItem} label={employer.name} value={employer.name} key={employer.name}/>
-              )}
-            </Picker>
-          </View>
-        </View>
-
-        <TouchableOpacity 
-          activeOpacity={0.8} 
-          style={styles.line}
-          onPress={() => {setTimeType("entrada"), setModalOpen(true)}}
-        >
-          <Text style={styles.textLine}>{translations.entryHour.find(i => i.lenguage === lenguage)?.text}:</Text>
-          <View >
-            <Text style={styles.textLine}>{shiftEntryEdit ? `${shiftEntryEdit.getHours()}:${formattedMinutes(shiftEntryEdit)}` : "-"}</Text>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          activeOpacity={0.8} 
-          style={styles.line}
-          disabled={shiftEntry === null}
-          onPress={() => {setTimeType("salida"), setModalOpen(true)}}
-        >
-          <Text style={styles.textLine}>{translations.exitHour.find(i => i.lenguage === lenguage)?.text}:</Text>
-          <View >
-            <Text style={styles.textLine}>
-              {shiftExitEdit && shiftEntryEdit ?
-                (shiftExitEdit?.getDate() !== shiftEntryEdit?.getDate() ? 
-                  `${firstLetterUpper(shiftExitEdit!.toLocaleDateString(lenguage, {month: 'short'}))} ${shiftExitEdit?.getDate()} (${textDay(shiftExitEdit!, lenguage)})  ` : "") 
-                : ""
-              }
-              {shiftExitEdit ? `${shiftExitEdit.getHours()}:${formattedMinutes(shiftExitEdit)}` : "-"}
-            </Text>
-          </View>
-        </TouchableOpacity>
-        
-        <TouchableOpacity 
-          activeOpacity={0.8} 
-          style={styles.line}
-          disabled={shiftEntry === null}
-          onPress={() => {setTimeType("descansoEntrada"), setModalOpen(true)}}
-          >
-          <Text style={styles.textLine}>{translations.breakStart.find(i => i.lenguage === lenguage)?.text}:</Text>
-          <View >
-            <Text style={styles.textLine}>{shiftBreakEntry ? `${shiftBreakEntry.getHours()}:${formattedMinutes(shiftBreakEntry)}` : "-"}</Text>
-          </View>
-        </TouchableOpacity>
-        
-        <TouchableOpacity    
-          activeOpacity={0.8} 
-          style={styles.line}
-          disabled={shiftBreakEntry === null}
-          onPress={() => {setTimeType("descansoSalida"), setModalOpen(true)}}
-          >
-          <Text style={styles.textLine}>{translations.breakEnd.find(i => i.lenguage === lenguage)?.text}:</Text>
-          <View >
-            <Text style={styles.textLine}>{shiftBreakExit ? `${shiftBreakExit.getHours()}:${formattedMinutes(shiftBreakExit)}` : "-"}</Text>
-          </View>
-        </TouchableOpacity>
-        
-        <View style={styles.line}>
-          <Text style={styles.textLine}>{translations.workedHours.find(i => i.lenguage === lenguage)?.text}:</Text>
-          <Text style={styles.textLine}>{workedHoursEdit !== null && workedMinutesEdit !== null ? `${workedHoursEdit}:${formattedMinutesNumber(workedMinutesEdit!)}` : "-"}</Text>
-        </View>
-        
-        <View style={styles.lineLeft}>
-          <Text style={styles.textLine}>{translations.paid.find(i => i.lenguage === lenguage)?.text}</Text>
-          <Slider setValue={setPaid} value={paidEdit} />
-        </View>
-        
-        <TextInput 
-          value={noteEdit}
-          onChangeText={setNote}
-          style={styles.textInput}
-          multiline = {true}
-          numberOfLines = {2}
-          placeholder={translations.note.find(i => i.lenguage === lenguage)?.text}
-          maxLength={70}
-          scrollEnabled={true}
-        />
-      </View>
-
-      <Modal
-        visible={modalOpen}
-        onShow={selectedTime}
-        transparent={true}
-        animationType="fade"
-        >
-        <View style={styles.modalContainer}>
-          <View style={styles.modal}>
-            <View style={styles.modalTitleContainer}>
-              <Text style={styles.modalTitle}>{modalTitle()}</Text>
-              {showDelete && <Icon 
-                style={styles.delete}
-                name='delete' 
-                color={theme.colors.rojoBin} 
-                size={20}
-                onPress={() => {showAlert()}}
-              />}
+          <TouchableOpacity 
+            activeOpacity={0.8} 
+            style={styles.line}
+            disabled={shiftEntry === null}
+            onPress={() => {setTimeType("descansoEntrada"), setModalOpen(true)}}
+            >
+            <Text style={styles.textLine}>{translations.breakStart.find(i => i.lenguage === lenguage)?.text}:</Text>
+            <View >
+              <Text style={styles.textLine}>{shiftBreakEntry ? `${shiftBreakEntry.getHours()}:${formattedMinutes(shiftBreakEntry)}` : "-"}</Text>
             </View>
-             
-            <DatePicker 
-              theme='light'
-              mode={timeType === "salida" ? "datetime" : 'time'}
-              minimumDate={shiftEntryEdit && timeType === "salida" ? shiftEntryEdit : pressedDate}
-              maximumDate={timeType === "entrada" && shiftExitEdit ? shiftExitEdit : new Date(pressedDate!.getFullYear(), pressedDate!.getMonth(), pressedDate!.getDate() + 2, 23, 59)}
-              locale={lenguage}
-              date={date!}
-              onDateChange={setDate}
-              dividerColor={theme.colors.verdeBase}
-              is24hourSource={timeType === "descanso" ? "locale" : "device"}
-            />
+          </TouchableOpacity>
+          
+          <TouchableOpacity    
+            activeOpacity={0.8} 
+            style={styles.line}
+            disabled={shiftBreakEntry === null}
+            onPress={() => {setTimeType("descansoSalida"), setModalOpen(true)}}
+            >
+            <Text style={styles.textLine}>{translations.breakEnd.find(i => i.lenguage === lenguage)?.text}:</Text>
+            <View >
+              <Text style={styles.textLine}>{shiftBreakExit ? `${shiftBreakExit.getHours()}:${formattedMinutes(shiftBreakExit)}` : "-"}</Text>
+            </View>
+          </TouchableOpacity>
+          
+          <View style={styles.line}>
+            <Text style={styles.textLine}>{translations.workedHours.find(i => i.lenguage === lenguage)?.text}:</Text>
+            <Text style={styles.textLine}>{workedHoursEdit !== null && workedMinutesEdit !== null ? `${workedHoursEdit}:${formattedMinutesNumber(workedMinutesEdit!)}` : "-"}</Text>
+          </View>
+          
+          <View style={styles.lineLeft}>
+            <Text style={styles.textLine}>{translations.paid.find(i => i.lenguage === lenguage)?.text}</Text>
+            <Slider setValue={setPaid} value={paidEdit} />
+          </View>
+          
+          <TextInput 
+            value={noteEdit}
+            onChangeText={setNote}
+            style={styles.textInput}
+            multiline = {true}
+            numberOfLines = {2}
+            placeholder={translations.note.find(i => i.lenguage === lenguage)?.text}
+            maxLength={70}
+            scrollEnabled={true}
+          />
+        </View>
 
-            <View style={styles.modalButtons}>
-              <TouchableOpacity activeOpacity={0.7} onPress={() => {setModalOpen(false), setTimeType("")}}>
-                <Text style={styles.modalButton}>{translations.cancel.find(i => i.lenguage === lenguage)?.text}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity activeOpacity={0.7} onPress={() => {setModalOpen(false), changeConfigInfo(date)}}>
-                <Text style={styles.modalButton}>{translations.save.find(i => i.lenguage === lenguage)?.text}</Text>
-              </TouchableOpacity>
+        <Modal
+          visible={modalOpen}
+          onShow={selectedTime}
+          transparent={true}
+          animationType="fade"
+          >
+          <View style={styles.modalContainer}>
+            <View style={styles.modal}>
+              <View style={styles.modalTitleContainer}>
+                <Text style={styles.modalTitle}>{modalTitle()}</Text>
+                {showDelete && <Icon 
+                  style={styles.delete}
+                  name='delete' 
+                  color={theme.colors.rojoBin} 
+                  size={20}
+                  onPress={() => {showAlert()}}
+                />}
+              </View>
+              
+              <DatePicker 
+                theme='light'
+                mode={timeType === "salida" ? "datetime" : 'time'}
+                minimumDate={shiftEntryEdit && timeType === "salida" ? shiftEntryEdit : pressedDate}
+                maximumDate={timeType === "entrada" && shiftExitEdit ? shiftExitEdit : new Date(pressedDate!.getFullYear(), pressedDate!.getMonth(), pressedDate!.getDate() + 2, 23, 59)}
+                locale={lenguage}
+                date={date!}
+                onDateChange={setDate}
+                dividerColor={theme.colors.verdeBase}
+                is24hourSource={timeType === "descanso" ? "locale" : "device"}
+              />
+
+              <View style={styles.modalButtons}>
+                <TouchableOpacity activeOpacity={0.7} onPress={() => {setModalOpen(false), setTimeType("")}}>
+                  <Text style={styles.modalButton}>{translations.cancel.find(i => i.lenguage === lenguage)?.text}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity activeOpacity={0.7} onPress={() => {setModalOpen(false), changeConfigInfo(date)}}>
+                  <Text style={styles.modalButton}>{translations.save.find(i => i.lenguage === lenguage)?.text}</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
 
-      {missing &&
-        <Text style={styles.textAlert}>{missing}</Text>
-      }
+        {missing &&
+          <Text style={styles.textAlert}>{missing}</Text>
+        }
 
-      <TouchableOpacity style={styles.boton} onPress={() => checkInfo()}>
-        <Button 
-          margintop={20}
-          press={() => handleEditShift()}
-          block={employerEdit === "" || !shiftEntryEdit || blockSubmit ? true : false}
-          to={`/calendar/shifts/${pressedDate}`} 
-          color={theme.colors.verdeBoton}
-        >
-          <Text style={styles.textoBoton}>{translations.saveChanges.find(i => i.lenguage === lenguage)?.text}</Text>
-        </Button>
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.boton} onPress={() => checkInfo()}>
+          <Button 
+            margintop={20}
+            press={() => handleEditShift()}
+            block={employerEdit === "" || !shiftEntryEdit || blockSubmit ? true : false}
+            to={`/calendar/shifts/${pressedDate}`} 
+            color={theme.colors.verdeBoton}
+          >
+            <Text style={styles.textoBoton}>{translations.saveChanges.find(i => i.lenguage === lenguage)?.text}</Text>
+          </Button>
+        </TouchableOpacity>
+      </ScrollView>
     </View>
   )
 }
@@ -451,7 +453,7 @@ export default function EditShift() {
 const styles = StyleSheet.create ({
   container: {
     padding: 8,
-    marginTop: 100
+    marginTop: 60
   },
   textoConf: {
     alignSelf: "center",
@@ -461,7 +463,7 @@ const styles = StyleSheet.create ({
   },
   botonCerrar: {
     position: "absolute",
-    top: -80,
+    top: -40,
     right: 20,
     width: "auto"
   },
@@ -520,7 +522,8 @@ const styles = StyleSheet.create ({
     textAlignVertical: "center"
   },
   boton: {
-    marginTop: -20
+    marginTop: -20,
+    marginBottom: 10
   },
   modalContainer: {
     flex: 1,
@@ -599,5 +602,8 @@ const styles = StyleSheet.create ({
     fontSize: theme.fontSizes.F20,
     fontWeight: "500",
     lineHeight: theme.fontSizes.F20
+  },
+  scrollView: {
+    maxHeight: theme.heigth.shiftNewEditScrollView
   }
 })

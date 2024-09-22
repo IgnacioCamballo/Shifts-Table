@@ -430,7 +430,7 @@ export default function NewShift() {
 const styles = StyleSheet.create ({
   container: {
     padding: 8,
-    marginTop: 100
+    marginTop: 60
   },
   textoConf: {
     alignSelf: "center",
@@ -440,7 +440,7 @@ const styles = StyleSheet.create ({
   },
   botonCerrar: {
     position: "absolute",
-    top: -80,
+    top: -40,
     right: 20,
     width: "auto"
   },
@@ -499,7 +499,8 @@ const styles = StyleSheet.create ({
     textAlignVertical: "center"
   },
   boton: {
-    marginTop: -20
+    marginTop: -20,
+    marginBottom: 10
   },
   modalContainer: {
     flex: 1,
@@ -570,7 +571,9 @@ const styles = StyleSheet.create ({
     fontSize: 18,
     color: "black"
   },
-  scrollView: {},
+  scrollView: {
+    maxHeight: theme.heigth.shiftNewEditScrollView
+  },
   textoBoton: {
     fontSize: theme.fontSizes.F18,
     fontWeight: "500"    
