@@ -10,7 +10,7 @@ interface props {
 const CalendarContext = createContext<CalendarContextProps>({} as CalendarContextProps)
 
 const CalendarProvider = ({ children }: props) => {
-  const [configInfo, setConfigInfo] = useState<ConfigInfo>({ entry: null, exit: null, configBreak: null })
+  const [configInfo, setConfigInfo] = useState<ConfigInfo>({ entry: null, exit: null, configBreakEntry: null, configBreakExit: null })
   const [companysInfo, setCompanysInfo] = useState<EmployerProps[]>([])
   const [shifts, setShifts] = useState<ShiftProps[]>([])
   const [lenguage, setLenguage] = useState<string>("es")
@@ -36,7 +36,8 @@ const CalendarProvider = ({ children }: props) => {
         const config: ConfigInfo = {
           entry: parsed.entry === null ? null : new Date(parsed.entry),
           exit: parsed.exit === null ? null : new Date(parsed.exit),
-          configBreak: parsed.configBreak === null ? null : new Date(parsed.configBreak)
+          configBreakEntry: parsed.configBreakEntry === null ? null : new Date(parsed.configBreakEntry),
+          configBreakExit: parsed.configBreakExit === null ? null : new Date(parsed.configBreakEntry)
         }
         setConfigInfo(config)
       }
@@ -70,6 +71,8 @@ const CalendarProvider = ({ children }: props) => {
             shiftEntry: new Date(shift.shiftEntry),
             shiftExit: shift.shiftExit ? new Date(shift.shiftExit) : null,
             shiftBreak: shift.shiftBreak ? new Date(shift.shiftBreak) : null,
+            shiftBreakEntry: shift.shiftBreakEntry ? new Date(shift.shiftBreakEntry) : null,
+            shiftBreakExit: shift.shiftBreakExit ? new Date(shift.shiftBreakExit) : null,
             workedHours: shift.workedHours,
             workedMinutes: shift.workedMinutes,
             paid: shift.paid,

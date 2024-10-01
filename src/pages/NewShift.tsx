@@ -429,8 +429,9 @@ export default function NewShift() {
 
 const styles = StyleSheet.create ({
   container: {
-    padding: 8,
-    marginTop: 60
+    flex: 1,
+    paddingHorizontal: 8,
+    justifyContent: "center"
   },
   textoConf: {
     alignSelf: "center",
@@ -440,7 +441,7 @@ const styles = StyleSheet.create ({
   },
   botonCerrar: {
     position: "absolute",
-    top: -40,
+    top: 20,
     right: 20,
     width: "auto"
   },
@@ -467,7 +468,7 @@ const styles = StyleSheet.create ({
     gap: 20
   },
   textLine: {
-    fontSize: theme.fontSizes.F20,
+    fontSize: theme.fontSizes.F18,
     fontWeight: '400',
     textAlign: "right"
   },
@@ -572,7 +573,7 @@ const styles = StyleSheet.create ({
     color: "black"
   },
   scrollView: {
-    maxHeight: theme.heigth.shiftNewEditScrollView
+    maxHeight: theme.heigth.shiftNewEditScrollView,
   },
   textoBoton: {
     fontSize: theme.fontSizes.F18,
