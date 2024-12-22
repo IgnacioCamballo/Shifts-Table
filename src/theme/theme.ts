@@ -43,11 +43,11 @@ const theme = {
         // detail: "ca-app-pub-4926030013898312/4565563096",
         // shifts: "ca-app-pub-4926030013898312/8504808104",
         // totals: "ca-app-pub-4926030013898312/7191726433"
-        //the bottom ones are test ads
-        calendar: "ca-app-pub-3940256099942544/9214589741",
-        detail: "ca-app-pub-3940256099942544/9214589741",
-        shifts: "ca-app-pub-3940256099942544/9214589741",
-        totals: "ca-app-pub-3940256099942544/9214589741"
+        // the bottom ones are test ads
+         calendar: "ca-app-pub-3940256099942544/9214589741",
+         detail: "ca-app-pub-3940256099942544/9214589741",
+         shifts: "ca-app-pub-3940256099942544/9214589741",
+         totals: "ca-app-pub-3940256099942544/9214589741"
     }
 }
 
