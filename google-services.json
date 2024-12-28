@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "430204474425",
+    "project_id": "shifts-table",
+    "storage_bucket": "shifts-table.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:430204474425:android:d1a4e8e6ddf1c1ce0e69e8",
+        "android_client_info": {
+          "package_name": "com.shiftstable"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHx1B5plgIIDs8eJ9fu4-k0GiHR7MxYy0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

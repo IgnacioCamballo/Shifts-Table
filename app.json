@@ -2,6 +2,7 @@
   "expo": {
     "name": "shifts-table",
     "slug": "shifts-table",
+    "owner": "ignaciocamballo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.jpg",
@@ -19,25 +20,30 @@
         "foregroundImage": "./assets/icon.jpg",
         "backgroundColor": "#ffffff"
       },
-      
+      "googleServicesFile": "./google-services.json",
       "package": "com.shiftstable"
     },
+    "extra": {
+      "eas": {
+        "projectId": "968dc7b3-ab52-4e39-a056-846429f84d9d"
+      }
+    },
     "plugins": [
+      "@react-native-firebase/app",
+      "@react-native-firebase/crashlytics",
       [
         "expo-dev-launcher",
         {
           "launchMode": "most-recent"
         }
+      ],
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-4926030013898312~7320718360",
+          "iosAppId": "ca-app-pub-4926030013898312~8140812186"
+        }
       ]
-    ],
-    "extra": {
-      "eas": {
-        "projectId": "968dc7b3-ab52-4e39-a056-846429f84d9d"
-      }
-    }
-  },
-  "react-native-google-mobile-ads": {
-    "android_app_id": "ca-app-pub-4926030013898312~9221423165",
-    "ios_app_id": "ca-app-pub-4926030013898312~8828441423"
+    ]
   }
 }

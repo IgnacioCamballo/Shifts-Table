@@ -5,17 +5,22 @@ import { Link, useParams } from 'react-router-native'
 import Constants from "expo-constants"
 
 import { EmployerProps } from '../types'
-import translations from "../lenguages/lenguages.json"
 import useCalendar from '../hooks/useCalendar'
 import theme from '../theme/theme'
 import ButtonSmall from '../components/Atoms/Buttons/ButtonSmall'
 import Button from '../components/Atoms/Buttons/Button'
+import { translate } from '../utils'
 
 export default function NewEmployer() {
   const params = useParams()
   const pressedDate = params.date
 
   const { companysInfo, setCompanysInfo, lenguage } = useCalendar()
+  
+  //this way avoid of calling useCalendar in utils and translate can be used inside if functions
+  function translateFn(text:string){
+    return translate({text, lenguage})
+  }
 
   const [inputName, setInputName] = useState("")
   const [shortName, setShortName] = useState("")
@@ -76,38 +81,38 @@ export default function NewEmployer() {
       </Link>
 
       <View>
-        <Text style={styles.textoConf}>{translations.newEmployer.find(i => i.lenguage === lenguage)?.text}</Text>
+        <Text style={styles.textoConf}>{translateFn("newEmployer")}</Text>
       </View>
 
       <View style={styles.empleador}>
         <View style={styles.line}>
-          <Text style={styles.textLine}>{translations.name.find(i => i.lenguage === lenguage)?.text}:</Text>
+          <Text style={styles.textLine}>{translateFn("name")}:</Text>
           
           <TextInput
             style={styles.textLine}
             onChangeText={setInputName}
             value={inputName}
             maxLength={25}
-            placeholder={translations.placeholderName.find(i => i.lenguage === lenguage)?.text}
+            placeholder={translateFn("placeholderName")}
             placeholderTextColor={theme.colors.grisMedio}
           />
         </View>
 
         <View style={styles.line}>
-          <Text style={styles.textLine}>{translations.shortName.find(i => i.lenguage === lenguage)?.text}:</Text>
+          <Text style={styles.textLine}>{translateFn("shortName")}:</Text>
           
           <TextInput
             style={styles.textLine}
             onChangeText={setShortName}
             value={shortName}
             maxLength={3}
-            placeholder={translations.placeholderShortName.find(i => i.lenguage === lenguage)?.text}
+            placeholder={translateFn("placeholderShortName")}
             placeholderTextColor={theme.colors.grisMedio}
           />
         </View>
 
         <View style={styles.line}>
-          <Text style={styles.textLine}>{translations.hourlyWage.find(i => i.lenguage === lenguage)?.text}:</Text>
+          <Text style={styles.textLine}>{translateFn("hourlyWage")}:</Text>
           
           <View style={styles.row}>
             <Text style={styles.textLine}>$ </Text>
@@ -126,7 +131,7 @@ export default function NewEmployer() {
 
         <View style={styles.line}>
           <View style={styles.contColor}>
-            <Text style={styles.textLine}>{translations.color.find(i => i.lenguage === lenguage)?.text}:</Text>
+            <Text style={styles.textLine}>{translateFn("color")}:</Text>
             
             <TouchableOpacity onPress={() => setModal(true)} style={dynamicStyles.color}/>
           </View>
@@ -157,7 +162,7 @@ export default function NewEmployer() {
                   activeOpacity={0.7}
                   onPress={() => {setModal(false), setTempColor(defColor)}}
                 >
-                  <Text style={styles.botonText}>{translations.cancel.find(i => i.lenguage === lenguage)?.text}</Text>
+                  <Text style={styles.botonText}>{translateFn("cancel")}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity 
@@ -165,7 +170,7 @@ export default function NewEmployer() {
                   activeOpacity={0.7}
                   onPress={() => {setModal(false), setDefColor(tempColor)}}
                 >
-                  <Text style={styles.botonText}>{translations.save.find(i => i.lenguage === lenguage)?.text}</Text>
+                  <Text style={styles.botonText}>{translateFn("save")}</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -180,11 +185,11 @@ export default function NewEmployer() {
         to={pressedDate === undefined ? '/config' : `/calendar/shifts/${pressedDate}/newShift`} 
         color={theme.colors.verdeBoton}
       >
-        <Text style={styles.textoBoton}>{translations.createEmployer.find(i => i.lenguage === lenguage)?.text}</Text>
+        <Text style={styles.textoBoton}>{translateFn("createEmployer")}</Text>
       </Button>
 
       {repeatedName &&
-        <Text style={styles.textAlert}>{translations.repeatedNameAlert.find(i => i.lenguage === lenguage)?.text}</Text>
+        <Text style={styles.textAlert}>{translateFn("repeatedNameAlert")}</Text>
       }
     </View>
   )

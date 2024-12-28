@@ -3,21 +3,26 @@ import { View, StyleSheet, Text } from 'react-native'
 import { Platform } from 'react-native';
 import theme from '../theme/theme';
 import { useLocation } from 'react-router-native';
-import translations from "../lenguages/lenguages.json"
 import useCalendar from '../hooks/useCalendar';
+import { translate } from '../utils';
 
 function NombreLayout () {
   const {pathname} = useLocation()
   const {lenguage} = useCalendar()
 
-  if(pathname === "/") return translations.calendar.find(i => i.lenguage === lenguage)?.text
-  if(pathname.startsWith("/calendar/shifts/")) return translations.shifts.find(i => i.lenguage === lenguage)?.text
-  if(pathname === "/totals") return translations.totals.find(i => i.lenguage === lenguage)?.text
-  if(pathname.startsWith("/totals/")) return translations.totals.find(i => i.lenguage === lenguage)?.text
-  if(pathname.startsWith("/totalsDetail/")) return translations.workedDays.find(i => i.lenguage === lenguage)?.text
-  if(pathname === "/config") return translations.settings.find(i => i.lenguage === lenguage)?.text
-  if(pathname === "/config/newEmployer") return translations.createEmployer.find(i => i.lenguage === lenguage)?.text
-  if(pathname.startsWith("/config/editEmployer/")) return translations.editEmployer.find(i => i.lenguage === lenguage)?.text
+  //this way avoid of calling useCalendar in utils and translate can be used inside if functions
+  function translateFn(text:string){
+    return translate({text, lenguage})
+  }
+
+  if(pathname === "/") return translateFn("calendar")
+  if(pathname.startsWith("/calendar/shifts/")) return translateFn("shifts")
+  if(pathname === "/totals") return translateFn("totals")
+  if(pathname.startsWith("/totals/")) return translateFn("totals")
+  if(pathname.startsWith("/totalsDetail/")) return translateFn("workedDays")
+  if(pathname === "/config") return translateFn("settings")
+  if(pathname === "/config/newEmployer") return translateFn("createEmployer")
+  if(pathname.startsWith("/config/editEmployer/")) return translateFn("editEmployer")
 }
 
 export default function LayoutHeader() {

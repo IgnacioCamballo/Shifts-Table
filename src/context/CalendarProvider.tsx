@@ -1,7 +1,9 @@
-import { useState, createContext, useEffect } from "react"
-import { CalendarContextProps, ConfigInfo, EmployerProps, ShiftProps } from "../types"
+import React, { useState, createContext, useEffect } from "react"
 import { MobileAds } from 'react-native-google-mobile-ads';
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import firestore from "@react-native-firebase/firestore"
+
+import { CalendarContextProps, ConfigInfo, EmployerProps, ShiftProps } from "../types"
 
 interface props {
   children: JSX.Element | JSX.Element[]
@@ -10,12 +12,16 @@ interface props {
 const CalendarContext = createContext<CalendarContextProps>({} as CalendarContextProps)
 
 const CalendarProvider = ({ children }: props) => {
-  const [configInfo, setConfigInfo] = useState<ConfigInfo>({ entry: null, exit: null, configBreakEntry: null, configBreakExit: null })
+  const [configInfo, setConfigInfo] = useState<ConfigInfo>({} as ConfigInfo)
   const [companysInfo, setCompanysInfo] = useState<EmployerProps[]>([])
   const [shifts, setShifts] = useState<ShiftProps[]>([])
   const [lenguage, setLenguage] = useState<string>("es")
   const [addsInitialized, setAddsInitialized] = useState(false)
 
+  //Gets User profile from firestore database
+  const userCollection = firestore().collection("Users").doc("userID")
+
+  //Initializes adds
   useEffect(() => {
     const addsInit = async () => {
       try {
@@ -28,7 +34,7 @@ const CalendarProvider = ({ children }: props) => {
     addsInit()
   }, [])
 
-  const getConfigStorage = async () => {
+  const getConfigStoraged = async () => {
     try {
       const storagedConfig = await AsyncStorage.getItem("config")
       if (storagedConfig !== null) {
@@ -46,7 +52,7 @@ const CalendarProvider = ({ children }: props) => {
     }
   }
 
-  const getCompanysStorage = async () => {
+  const getCompanysStoraged = async () => {
     try {
       const storagedCompanys = await AsyncStorage.getItem('companys')
       if (storagedCompanys !== null) {
@@ -58,7 +64,7 @@ const CalendarProvider = ({ children }: props) => {
     }
   }
   
-  const getShiftsStorage = async () => {
+  const getShiftsStoraged = async () => {
     try {
       const storagedShifts = await AsyncStorage?.getItem('shifts')
       if (storagedShifts !== null) {
@@ -89,7 +95,7 @@ const CalendarProvider = ({ children }: props) => {
     }
   }
 
-  const getLenguageStorage = async () => {
+  const getLenguageStoraged = async () => {
     try {
       const storagedLenguage = await AsyncStorage.getItem('lenguage')
       if (storagedLenguage !== null) {
@@ -104,10 +110,10 @@ const CalendarProvider = ({ children }: props) => {
   }
   
   useEffect(() => {
-    getLenguageStorage()
-    getConfigStorage()
-    getCompanysStorage()
-    getShiftsStorage()
+    getLenguageStoraged()
+    getConfigStoraged()
+    getCompanysStoraged()
+    getShiftsStoraged()
   }, [])
 
   useEffect(() => {

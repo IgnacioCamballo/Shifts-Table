@@ -6,9 +6,8 @@ import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads'
 import Icon from 'react-native-vector-icons/AntDesign'
 
 import useCalendar from '../hooks/useCalendar'
-import translations from "../lenguages/lenguages.json"
 import theme from '../theme/theme'
-import { firstLetterUpper, formattedMinutes, textDay} from '../utils'
+import { firstLetterUpper, formattedMinutes, textDay, translate} from '../utils'
 import SwiftArrows from '../components/Molecules/SwiftArrows'
 import TransparentButton from '../components/Atoms/Buttons/ButtonTransparent'
 
@@ -17,6 +16,11 @@ export default function MonthDetail() {
   const month = param.month
 
   const {shifts, lenguage, addsInitialized, companysInfo} = useCalendar()
+
+  //this way avoid of calling useCalendar in utils and translate can be used inside if functions
+  function translateFn(text:string){
+    return translate({text, lenguage})
+  }
 
   const [currentDay, setCurrentDay] = useState(new Date(month!))
   const [employer, setEmployer] = useState(0)
@@ -133,7 +137,7 @@ export default function MonthDetail() {
           color={theme.colors.negro} 
           size={17}
           />
-        <Text style={[styles.textLine, {fontWeight: 500}]}>{translations.back.find(i => i.lenguage === lenguage)?.text}</Text>
+        <Text style={[styles.textLine, {fontWeight: 500}]}>{translateFn("back")}</Text>
       </TransparentButton>
       
       <SwiftArrows 
@@ -144,17 +148,17 @@ export default function MonthDetail() {
 
       <View style={styles.employersContainer}>
         <View style={[styles.line, {borderBottomWidth: 0, paddingBottom: 0}]}>
-          <Text style={styles.textLine}>{translations.employer.find(i => i.lenguage === lenguage)?.text}:</Text>
+          <Text style={styles.textLine}>{translateFn("employer")}:</Text>
           
           <View style={styles.pickerContainer}>
             <Picker
               selectedValue={employer}
               onValueChange={newValue => setEmployer(newValue)}
               style={styles.picker}
-              accessibilityLabel={translations.selectEmployer.find(i => i.lenguage === lenguage)?.text}
+              accessibilityLabel={translateFn("selectEmployer")}
               mode='dropdown'
               >
-                <Picker.Item style={styles.pickerItem} label={translations.all.find(i => i.lenguage === lenguage)?.text} value={0}/>
+                <Picker.Item style={styles.pickerItem} label={translateFn("all")} value={0}/>
               {employersList.map(employer => 
                 <Picker.Item style={styles.pickerItem} label={companysInfo.find(emp => emp.key === employer)!.name} value={employer} key={employer}/>
               )}
@@ -164,13 +168,13 @@ export default function MonthDetail() {
       </View>
       
       <View style={styles.selector}>
-        <Text style={styles.textLine}>{translations.days.find(i => i.lenguage === lenguage)?.text}:</Text>
+        <Text style={styles.textLine}>{translateFn("days")}:</Text>
         <View style={styles.flexRow}>
           <TouchableOpacity style={styles.outerCircle} onPress={() => setShownDays("Todos")}>
             <View style={[styles.innerCircle, shownDays === "Todos" ? styles.bgBlack : {}]}></View>
           </TouchableOpacity>
 
-          <Text style={styles.textSelector}>{translations.all.find(i => i.lenguage === lenguage)?.text}</Text>
+          <Text style={styles.textSelector}>{translateFn("all")}</Text>
         </View>
 
         <View style={styles.flexRow}>
@@ -178,7 +182,7 @@ export default function MonthDetail() {
             <View style={[styles.innerCircle2, shownDays === "Pagos" ? styles.bgBlack : {}]}></View>
           </TouchableOpacity>
 
-          <Text style={styles.textSelector}>{translations.isPaid.find(i => i.lenguage === lenguage)?.text}</Text>
+          <Text style={styles.textSelector}>{translateFn("isPaid")}</Text>
         </View>
 
         <View style={styles.flexRow}>
@@ -186,11 +190,11 @@ export default function MonthDetail() {
             <View style={[styles.innerCircle3, shownDays === "Inpagos" ? styles.bgBlack : {}]}></View>
           </TouchableOpacity>
 
-          <Text style={styles.textSelector}>{translations.unPaid.find(i => i.lenguage === lenguage)?.text}</Text>
+          <Text style={styles.textSelector}>{translateFn("unPaid")}</Text>
         </View>
       </View>
 
-      <Text style={styles.TotalHours}>{translations.totalHours.find(i => i.lenguage === lenguage)?.text}: {findWorkedHours()}</Text>
+      <Text style={styles.TotalHours}>{translateFn("totalHours")}: {findWorkedHours()}</Text>
 
       <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
         {monthlyShiftsFilteredPayment.map(shift => (

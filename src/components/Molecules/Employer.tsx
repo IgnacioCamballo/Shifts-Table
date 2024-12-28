@@ -4,21 +4,26 @@ import theme from '../../theme/theme'
 import { EmployerProps } from '../../types'
 import useCalendar from '../../hooks/useCalendar'
 import EditDeletButtons from './EditDeletButtons'
-import translations from "../../lenguages/lenguages.json"
+import { translate } from '../../utils'
 
 
 export default function Employer({ employer }: { employer: EmployerProps }) {
   const { companysInfo, setCompanysInfo, lenguage } = useCalendar()
+
+  //this way avoid of calling useCalendar in utils and translate can be used inside if functions
+  function translateFn(text:string){
+    return translate({text, lenguage})
+  }
 
   const { name, wage, color, key } = employer
 
   const showAlert = () => {
     Alert.alert(
       '',
-      `${translations.employerDeleteAlert.find(i => i.lenguage === lenguage)?.text} ${name}?`,
+      `${translateFn("employerDeleteAlert")} ${name}?`,
       [
         {
-          text: translations.cancel.find(i => i.lenguage === lenguage)?.text,
+          text: translateFn("cancel"),
           style: 'cancel'
         },
         {
@@ -41,18 +46,18 @@ export default function Employer({ employer }: { employer: EmployerProps }) {
   return (
     <View style={styles.empleador}>
       <View style={styles.line}>
-        <Text style={styles.textLine}>{translations.name.find(i => i.lenguage === lenguage)?.text}:</Text>
+        <Text style={styles.textLine}>{translateFn("name")}:</Text>
         <Text style={styles.textLine}>{name}</Text>
       </View>
 
       <View style={styles.line}>
-        <Text style={styles.textLine}>{translations.hourlyWage.find(i => i.lenguage === lenguage)?.text}:</Text>
+        <Text style={styles.textLine}>{translateFn("hourlyWage")}:</Text>
         <Text style={styles.textLine}>{`$ ${wage}`}</Text>
       </View>
 
       <View style={styles.line}>
         <View style={styles.contColor}>
-          <Text style={styles.textLine}>{translations.color.find(i => i.lenguage === lenguage)?.text}:</Text>
+          <Text style={styles.textLine}>{translateFn("color")}:</Text>
           <View style={[styles.color, {backgroundColor: color}]}></View>
         </View>
         <EditDeletButtons 

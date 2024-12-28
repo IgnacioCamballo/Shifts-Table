@@ -18,6 +18,8 @@ export type ShiftProps = {
     shiftBreakExit: Date | null,
     workedHours: number | null,
     workedMinutes: number | null,
+    isHourlyRate?: boolean,
+    wage?: number | null,
     paid: boolean,
     salary: number | null,
     color: string,

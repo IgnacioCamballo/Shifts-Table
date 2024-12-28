@@ -3,9 +3,8 @@ import { Text, ScrollView, StyleSheet, View} from 'react-native'
 import { useParams } from 'react-router-native'
 
 import useCalendar from '../hooks/useCalendar'
-import translations from "../lenguages/lenguages.json"
 import { ShiftProps } from '../types'
-import { firstLetterUpper, textDay } from '../utils'
+import { firstLetterUpper, textDay, translate } from '../utils'
 import theme from '../theme/theme'
 import Shift from '../components/Molecules/Shift'
 import SwiftArrows from '../components/Molecules/SwiftArrows'
@@ -19,6 +18,11 @@ export default function Shifts() {
   const pressedDate = params.date!
 
   const {shifts, lenguage, addsInitialized} = useCalendar()
+
+  //this way avoid of calling useCalendar in utils and translate can be used inside if functions
+  function translateFn(text:string){
+    return translate({text, lenguage})
+  }
 
   const [date, setDate] = useState(new Date(pressedDate))
 
@@ -40,7 +44,7 @@ export default function Shifts() {
           color={theme.colors.negro} 
           size={17}
         />
-        <Text style={styles.textLine}>{translations.back.find(i => i.lenguage === lenguage)?.text}</Text>
+        <Text style={styles.textLine}>{translateFn("back")}</Text>
       </TransparentButton>
 
       <SwiftArrows 
@@ -50,7 +54,7 @@ export default function Shifts() {
       />
 
       <Button margintop={12} to={`/calendar/shifts/${date}/newShift`} color={theme.colors.verdeBoton}>
-        <Text style={styles.textoBoton}>{translations.createNewShift.find(i => i.lenguage === lenguage)?.text}</Text>
+        <Text style={styles.textoBoton}>{translateFn("createNewShift")}</Text>
       </Button>
 
       <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>

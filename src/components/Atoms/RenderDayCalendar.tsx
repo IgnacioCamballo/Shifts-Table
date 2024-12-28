@@ -4,6 +4,7 @@ import useCalendar from "../../hooks/useCalendar"
 import { DayProps } from "../../types"
 import theme from "../../theme/theme"
 import { Dimensions } from "react-native"
+import React from "react"
 
 type RenderDayCalendarProps = {
   item : DayProps,
@@ -33,7 +34,7 @@ export default function RenderDayCalendar({item, currentDay, pressedDate, nav, o
       <View style={shadowed ? styles.dayContainerEmpty : styles.dayContainer}>
         {nav && <Navigate to={`/calendar/shifts/${pressedDate}`}/>}
         {shadowed === true ? <View></View> : colorShifts.map(shiftColor => 
-          <View key={shiftColor.key} style={[styles.coloredShiftBox, {backgroundColor: companysInfo.some(employer => employer.key === shiftColor.employer) ? companysInfo.find(employer => employer.key === shiftColor.employer)!.color : shiftColor.color}]}>
+          <View key={shiftColor.key} style={[styles.coloredShiftBox, {backgroundColor: companysInfo.find(employer => employer.key === shiftColor.employer)?.color || shiftColor.color}]}>
             <Text style={styles.coloredShiftText}>{companysInfo.some(employer => employer.key === shiftColor.employer) ? companysInfo.find(employer => employer.key === shiftColor.employer)!.short : shiftColor.short}</Text>
           </View>
         )}

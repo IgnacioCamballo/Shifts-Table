@@ -1,3 +1,4 @@
+import React from 'react';
 import { NativeRouter } from 'react-router-native';
 import Main from './src/pages/Main';
 import { CalendarProvider } from './src/context/CalendarProvider';

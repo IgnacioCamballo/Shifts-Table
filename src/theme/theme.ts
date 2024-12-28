@@ -5,7 +5,7 @@ let screenHeight = Dimensions.get("window").height
 
 const theme = {
     colors: {
-        verdeBase: "#517481",
+        verdeBase: "#3C819A",
         verdeOscuro: "#3D5B0D",
         verdeMedio: "#AFD839",
         verdeBoton: "#6CAE75",
@@ -19,7 +19,7 @@ const theme = {
         rojoBin: "#A30000",
         rojo: "red",
         rojoClaro: "#EA7E7E",
-        azulClaro: "#6392A3",
+        azulClaro: "#C9DDE0",
         slider: "#397B63"
     },
     fontSizes: {
@@ -36,7 +36,8 @@ const theme = {
         configScrollView: (screenHeight - Constants.statusBarHeight - 540),
         shiftScrollView: (screenHeight - Constants.statusBarHeight - 300),
         monthDetailScrollView: (screenHeight - Constants.statusBarHeight - 340),
-        shiftNewEditScrollView: (screenHeight - Constants.statusBarHeight - 200)
+        shiftNewEditScrollView: (screenHeight - Constants.statusBarHeight - 200),
+        noFooterNoHeader: (screenHeight - Constants.statusBarHeight - 110)
     },
     banners: {
         // calendar: "ca-app-pub-4926030013898312/2502969552",

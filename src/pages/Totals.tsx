@@ -4,8 +4,7 @@ import { Link, useParams } from 'react-router-native'
 import { Picker } from '@react-native-picker/picker'
 
 import useCalendar from '../hooks/useCalendar'
-import translations from "../lenguages/lenguages.json"
-import { firstLetterUpper, formattedMinutesNumber } from '../utils'
+import { firstLetterUpper, formattedMinutesNumber, translate } from '../utils'
 import theme from '../theme/theme'
 import SwiftArrows from '../components/Molecules/SwiftArrows'
 import ButtonSmall from '../components/Atoms/Buttons/ButtonSmall'
@@ -16,6 +15,11 @@ export default function Totals() {
   const currentMonth = param.month ? new Date(param.month) : new Date()
 
   const {shifts, lenguage, addsInitialized, companysInfo} = useCalendar()
+
+  //this way avoid of calling useCalendar in utils and translate can be used inside if functions
+  function translateFn(text:string){
+    return translate({text, lenguage})
+  }
 
   const [currentDay, setCurrentDay] = useState(currentMonth);
   const [employersList, setEmployersList] = useState<number[]>([])
@@ -134,17 +138,17 @@ export default function Totals() {
 
       <View style={styles.employersContainer}>
         <View style={styles.line}>
-          <Text style={styles.textLine}>{translations.employer.find(i => i.lenguage === lenguage)?.text}:</Text>
+          <Text style={styles.textLine}>{translateFn("employer")}:</Text>
           
           <View style={styles.pickerContainer}>
             <Picker
               selectedValue={employer}
               onValueChange={newValue => setEmployer(newValue)}
               style={styles.picker}
-              accessibilityLabel={translations.selectEmployer.find(i => i.lenguage === lenguage)?.text}
+              accessibilityLabel={translateFn("selectEmployer")}
               mode='dropdown'
               >
-                <Picker.Item style={styles.pickerItem} label={translations.all.find(i => i.lenguage === lenguage)?.text} value={0}/>
+                <Picker.Item style={styles.pickerItem} label={translateFn("all")} value={0}/>
               {employersList.map(employer => 
                 <Picker.Item style={styles.pickerItem} label={companysInfo.find(emp => emp.key === employer)!.name} value={employer} key={employer}/>
               )}
@@ -154,39 +158,39 @@ export default function Totals() {
       </View>
 
       <View style={styles.line}>
-        <Text style={styles.textLine}>{translations.workedDays.find(i => i.lenguage === lenguage)?.text}:</Text>
+        <Text style={styles.textLine}>{translateFn("workedDays")}:</Text>
         <View style={styles.botonVer}>
           <Text style={styles.textLine}>{workedDays}</Text>
           {workedDays !== 0 && <Link to={`/totalsDetail/${currentDay}/`} activeOpacity={0.8} underlayColor="none">
             <ButtonSmall color={theme.colors.verdeBoton}>
-              <Text style={styles.textButtonSmall}>{translations.seeDetail.find(i => i.lenguage === lenguage)?.text}</Text>
+              <Text style={styles.textButtonSmall}>{translateFn("seeDetail")}</Text>
             </ButtonSmall>
           </Link>}
         </View>
       </View>
       
       <View style={styles.line}>
-        <Text style={styles.textLine}>{translations.workedHours.find(i => i.lenguage === lenguage)?.text}:</Text>
+        <Text style={styles.textLine}>{translateFn("workedHours")}:</Text>
         <Text style={styles.textLine}>{workedHours}</Text>
       </View>
       
       <View style={styles.line}>
-        <Text style={styles.textLine}>{translations.totalSalary.find(i => i.lenguage === lenguage)?.text}:</Text>
+        <Text style={styles.textLine}>{translateFn("totalSalary")}:</Text>
         <Text style={styles.textLine}>${salary.toFixed(2)}</Text>
       </View>
       
       <View style={styles.line}>
-        <Text style={styles.textLine}>{translations.paid.find(i => i.lenguage === lenguage)?.text}:</Text>
+        <Text style={styles.textLine}>{translateFn("paid")}:</Text>
         <Text style={styles.textLine}>${salaryPaid}</Text>
       </View>
       
       <View style={styles.line}>
-        <Text style={styles.textLine}>{translations.unpaidHours.find(i => i.lenguage === lenguage)?.text}:</Text>
+        <Text style={styles.textLine}>{translateFn("unpaidHours")}:</Text>
         <Text style={styles.textLine}>{unpaidHours}</Text>
       </View>
       
       <View style={styles.line}>
-        <Text style={styles.textLine}>{translations.unpaidSalary.find(i => i.lenguage === lenguage)?.text}:</Text>
+        <Text style={styles.textLine}>{translateFn("unpaidSalary")}:</Text>
         <Text style={styles.textLine}>${salary - salaryPaid === 0 ? "0" : (salary - salaryPaid).toFixed(2)}</Text>
       </View>
 

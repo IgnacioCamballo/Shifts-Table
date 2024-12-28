@@ -80,7 +80,7 @@
     {"lenguage": "pt", "text": "Tem certeza de que deseja remover este turno?"}
   ],
   "defaultDeleteAlert": [
-    {"lenguage": "es", "text": "¿seguro que deseas eliminar este horario predefinida?"},
+    {"lenguage": "es", "text": "¿seguro que deseas eliminar este horario predefinido?"},
     {"lenguage": "en", "text": "Are you sure you want to delete this default time?"},
     {"lenguage": "pt", "text": "Tem certeza de que deseja remover este horário padrão?"}
   ],
@@ -95,9 +95,9 @@
     {"lenguage": "pt", "text": "o nome já existe"}
   ],
   "wageChangeAlert": [
-    {"lenguage": "es", "text": "El nuevo salario no se aplicará a los turnos ya registrados, para aplicarlo se debera simplemente entrar a edicion del turno deseado y guardar cambios"},
-    {"lenguage": "en", "text": "The new salary will not be applied to the shifts already registered, to apply it you must simply enter the edit of the desired shift and save changes"},
-    {"lenguage": "pt", "text": "O novo salário não será aplicado aos turnos já cadastrados, para aplicá-lo basta entrar na edição do turno desejado e salvar as alterações"}
+    {"lenguage": "es", "text": "¿Deseas aplicar el nuevo salario a todos los turnos ya registrados con este empleador y donde el pago sea por hora?"},
+    {"lenguage": "en", "text": "Do you want to apply the new salary to all shifts already registered with this employer and where payment is hourly?"},
+    {"lenguage": "pt", "text": "Quer aplicar o novo salário a todos os turnos já registados com este empregador e em que o pagamento é à hora?"}
   ],
   "noEmployersYet": [
     {"lenguage": "es", "text": "Aún no hay empleadores registrados"},
@@ -123,6 +123,16 @@
     {"lenguage": "es", "text": "El turno ya existe para este empleador"},
     {"lenguage": "en", "text": "Shift already exist for this employer"},
     {"lenguage": "pt", "text": "O turno já existe para este empregador"}
+  ],
+  "yes": [
+    {"lenguage": "es", "text": "Si"},
+    {"lenguage": "en", "text": "Yes"},
+    {"lenguage": "pt", "text": "Sim"}
+  ],
+  "no": [
+    {"lenguage": "es", "text": "No"},
+    {"lenguage": "en", "text": "No"},
+    {"lenguage": "pt", "text": "Não"}
   ],
   "cancel": [
     {"lenguage": "es", "text": "Cancelar"},

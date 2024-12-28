@@ -3,23 +3,27 @@ import { View, Text, StyleSheet, Alert } from 'react-native'
 import theme from '../../theme/theme'
 import { ShiftProps } from '../../types'
 import useCalendar from '../../hooks/useCalendar'
-import { firstLetterUpper, formattedMinutes, formattedMinutesNumber, textDay } from '../../utils'
+import { firstLetterUpper, formattedMinutes, formattedMinutesNumber, textDay, translate } from '../../utils'
 import Slider from '../Atoms/Slider'
 import EditDeletButtons from './EditDeletButtons'
-import translations from "../../lenguages/lenguages.json"
 
 export default function Shift({shift}: {shift: ShiftProps}) {
   const {shifts, companysInfo, setShifts, lenguage} = useCalendar()
+
+  //this way avoid of calling useCalendar in utils and translate can be used inside if functions
+  function translateFn(text:string){
+    return translate({text, lenguage})
+  }
 
   const {key, employer, paid, shiftEntry, shiftExit, shiftBreak, workedHours, workedMinutes} = shift
 
   const showAlert = () => {
     Alert.alert(
       '',
-      translations.shiftDeleteAlert.find(i => i.lenguage === lenguage)?.text,
+      translateFn("shiftDeleteAlert"),
       [
         {
-          text: translations.cancel.find(i => i.lenguage === lenguage)?.text,
+          text: translateFn("cancel"),
           style: 'cancel'
         },
         {
@@ -52,17 +56,17 @@ export default function Shift({shift}: {shift: ShiftProps}) {
   return (
     <View style={styles.empleador}>
       <View style={styles.line}>
-        <Text style={styles.textLine}>{translations.employer.find(i => i.lenguage === lenguage)?.text}:</Text>
+        <Text style={styles.textLine}>{translateFn("employer")}:</Text>
         <Text style={styles.textLine}>{companysInfo.find(emp => emp.key === employer)?.name}</Text>
       </View>
 
       <View style={styles.line}>
-        <Text style={styles.textLine}>{translations.entry.find(i => i.lenguage === lenguage)?.text}:</Text>
+        <Text style={styles.textLine}>{translateFn("entry")}:</Text>
         <Text style={styles.textLine}>{shiftEntry ? `${shiftEntry.getHours()}:${formattedMinutes(shiftEntry)}` : "-"}</Text>
       </View>
 
       <View style={styles.line}>
-        <Text style={styles.textLine}>{translations.exit.find(i => i.lenguage === lenguage)?.text}:</Text>
+        <Text style={styles.textLine}>{translateFn("exit")}:</Text>
         <Text style={styles.textLine}>
           {shiftExit && shiftEntry ?
             (shiftExit?.getDate() !== shiftEntry?.getDate() ? 
@@ -74,18 +78,18 @@ export default function Shift({shift}: {shift: ShiftProps}) {
       </View>
 
       <View style={styles.line}>
-        <Text style={styles.textLine}>{translations.break.find(i => i.lenguage === lenguage)?.text}:</Text>
+        <Text style={styles.textLine}>{translateFn("break")}:</Text>
         <Text style={styles.textLine}>{shiftBreak ? `${shiftBreak.getHours()}:${formattedMinutes(shiftBreak)}` : "0"}</Text>
       </View>
 
       <View style={styles.line}>
-        <Text style={styles.textLine}>{translations.workedHours.find(i => i.lenguage === lenguage)?.text}:</Text>
+        <Text style={styles.textLine}>{translateFn("workedHours")}:</Text>
         <Text style={styles.textLine}>{workedHours !== null && workedMinutes !== null ? `${workedHours}:${formattedMinutesNumber(workedMinutes!)}` : "-"}</Text>
       </View>
 
       <View style={styles.line}>
         <View style={styles.contPago}>
-          <Text style={styles.textLine}>{translations.paid.find(i => i.lenguage === lenguage)?.text}:</Text>
+          <Text style={styles.textLine}>{translateFn("paid")}:</Text>
           <Slider setValue={setPaid} value={paid}/>
         </View>
 

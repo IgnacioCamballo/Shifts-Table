@@ -2,8 +2,9 @@ import { View, Text, StyleSheet } from "react-native";
 import { Link } from "react-router-native";
 import IonIcon from "react-native-vector-icons/Ionicons"
 import theme from "../../../theme/theme";
-import translations from "../../../lenguages/lenguages.json";
 import useCalendar from "../../../hooks/useCalendar";
+import React from "react";
+import { translate } from "../../../utils";
 
 type LogoCalendarProps = {
   to: string,
@@ -18,7 +19,7 @@ export default function LogoCalendar({to, pathName}: LogoCalendarProps) {
       <View style={styles.menuItem}>
         <View style={[styles.border, pathName === "/" || pathName.startsWith("/calendar") ? styles.borderBlack : {}]}>
           <IonIcon name='calendar-outline' size={30}  color={pathName === "/" || pathName.startsWith("/calendar") ? theme.colors.azulClaro : theme.colors.negro}/>
-          <Text>{translations.calendar.find(i => i.lenguage === lenguage)?.text}</Text>
+          <Text>{translate({text:"calendar", lenguage})}</Text>
         </View>
       </View>
     </Link>

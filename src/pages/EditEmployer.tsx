@@ -5,14 +5,19 @@ import { Link, useParams } from 'react-router-native'
 import Constants from "expo-constants"
 
 import { EmployerProps } from '../types'
-import translations from "../lenguages/lenguages.json"
-import useCalendar from '../hooks/useCalendar'
 import theme from '../theme/theme'
+import useCalendar from '../hooks/useCalendar'
 import ButtonSmall from '../components/Atoms/Buttons/ButtonSmall'
 import Button from '../components/Atoms/Buttons/Button'
+import { translate } from '../utils'
 
 export default function EditEmployer() {
-  const { companysInfo, setCompanysInfo, lenguage } = useCalendar()
+  const { companysInfo, setCompanysInfo, lenguage, shifts, setShifts} = useCalendar()
+
+  //this way avoid of calling useCalendar in utils and translate can be used inside if functions
+  function translateFn(text:string){
+    return translate({text, lenguage})
+  }
 
   const params = useParams()
   const employerId = params.employer!
@@ -25,14 +30,16 @@ export default function EditEmployer() {
   const [defColor, setDefColor] = useState(color)
 
   const [repeatedName, setRepeatedName] = useState(false)
+  const [changeWageInShifts, setChangeWageInShifts] = useState(false)
   const [modal, setModal] = useState(false)
   const [tempColor, setTempColor] = useState(color)
 
   //checks for repeted names
   useEffect(() => {
-    const repeated = companysInfo.find(employer => employer.name === inputName) !== undefined
-    if (inputName !== name) {
-        setRepeatedName(repeated)
+    if (companysInfo.some(employer => employer.name === inputName && employer.key !== key)) {
+      setRepeatedName(true)
+    } else {
+      setRepeatedName(false)
     }
   }, [inputName])
 
@@ -47,14 +54,23 @@ export default function EditEmployer() {
   }
 
   //alert called when wage is changed
-  const wageChangedAlert = () => {
-    salary !== wage.toString() && 
+  const wageChangedAlert = () => { 
     Alert.alert(
       '',
-      `${translations.wageChangeAlert.find(i => i.lenguage === lenguage)?.text}`,
+      translateFn("wageChangeAlert"),
       [
         {
-          text: 'OK',
+          text: translateFn("no"),
+          onPress: () => {
+            setChangeWageInShifts(false)
+          },
+          style: 'cancel'
+        }, 
+        {
+          text: translateFn("yes"),
+          onPress: () => {
+            setChangeWageInShifts(true)
+          },
           style: 'cancel'
         },
       ]
@@ -64,6 +80,17 @@ export default function EditEmployer() {
   //saves the edited emplyer info
   const handleSaveEmployer = () => {
     const employerIndex = companysInfo.findIndex(emp => emp.key === key)
+
+    if(changeWageInShifts) {
+      const copyShifts = [...shifts]
+      copyShifts.forEach(shift => {
+        if(shift.employer === key && shift.workedHours && shift.isHourlyRate) {
+          shift.salary = (shift.workedHours + shift.workedMinutes!/60) * parseInt(salary)
+        }  
+        return shift
+      })      
+      setShifts(copyShifts)
+    }
 
     const newEmployer: EmployerProps = {
       key: key,
@@ -91,38 +118,38 @@ export default function EditEmployer() {
       </Link>
 
       <View>
-        <Text style={styles.textoConf}>{translations.editEmployer.find(i => i.lenguage === lenguage)?.text}</Text>
+        <Text style={styles.textoConf}>{translateFn("editEmployer")}</Text>
       </View>
 
       <View style={styles.empleador}>
         <View style={styles.line}>
-          <Text style={styles.textLine}>{translations.name.find(i => i.lenguage === lenguage)?.text}:</Text>
+          <Text style={styles.textLine}>{translateFn("name")}:</Text>
           
           <TextInput
             style={styles.textLine}
             onChangeText={setInputName}
             value={inputName}
             maxLength={25}
-            placeholder={translations.placeholderName.find(i => i.lenguage === lenguage)?.text}
+            placeholder={translateFn("placeholderName")}
             placeholderTextColor={theme.colors.grisMedio}
           />
         </View>
         
         <View style={styles.line}>
-          <Text style={styles.textLine}>{translations.shortName.find(i => i.lenguage === lenguage)?.text}:</Text>
+          <Text style={styles.textLine}>{translateFn("shortName")}:</Text>
           
           <TextInput
             style={styles.textLine}
             onChangeText={setShortName}
             value={shortName}
             maxLength={3}
-            placeholder={translations.placeholderShortName.find(i => i.lenguage === lenguage)?.text}
+            placeholder={translateFn("placeholderShortName")}
             placeholderTextColor={theme.colors.grisMedio}
           />
         </View>
 
         <View style={styles.line}>
-          <Text style={styles.textLine}>{translations.hourlyWage.find(i => i.lenguage === lenguage)?.text}:</Text>
+          <Text style={styles.textLine}>{translateFn("hourlyWage")}:</Text>
           
           <View style={styles.row}>
             <Text style={styles.textLine}>$ </Text>
@@ -142,9 +169,9 @@ export default function EditEmployer() {
 
         <View style={styles.line}>
           <View style={styles.contColor}>
-            <Text style={styles.textLine}>{translations.color.find(i => i.lenguage === lenguage)?.text}:</Text>
+            <Text style={styles.textLine}>{translateFn("color")}:</Text>
 
-            <TouchableOpacity onPress={() => setModal(true)} style={[styles.color,, {backgroundColor: defColor}]}/>
+            <TouchableOpacity onPress={() => setModal(true)} style={[styles.color, {backgroundColor: defColor}]}/>
           </View>
         </View>
       </View>
@@ -173,7 +200,7 @@ export default function EditEmployer() {
                   activeOpacity={0.7}
                   onPress={() => {setModal(false), setTempColor(defColor)}}
                 >
-                  <Text style={styles.botonText}>{translations.cancel.find(i => i.lenguage === lenguage)?.text}</Text>
+                  <Text style={styles.botonText}>{translateFn("cancel")}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity 
@@ -181,7 +208,7 @@ export default function EditEmployer() {
                   activeOpacity={0.7}
                   onPress={() => {setModal(false), setDefColor(tempColor)}}
                 >
-                  <Text style={styles.botonText}>{translations.save.find(i => i.lenguage === lenguage)?.text}</Text>
+                  <Text style={styles.botonText}>{translateFn("save")}</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -195,11 +222,11 @@ export default function EditEmployer() {
         to='/config' 
         color={theme.colors.verdeBoton}
       >
-        <Text style={styles.textoBoton}>{translations.saveChanges.find(i => i.lenguage === lenguage)?.text}</Text>
+        <Text style={styles.textoBoton}>{translateFn("saveChanges")}</Text>
       </Button>
 
       {repeatedName &&
-        <Text style={styles.textAlert}>{translations.repeatedNameAlert.find(i => i.lenguage === lenguage)?.text}</Text>
+        <Text style={styles.textAlert}>{translateFn("repeatedNameAlert")}</Text>
       }
     </View>
   )
