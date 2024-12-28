@@ -169,29 +169,30 @@ export default function MonthDetail() {
       
       <View style={styles.selector}>
         <Text style={styles.textLine}>{translateFn("days")}:</Text>
-        <View style={styles.flexRow}>
-          <TouchableOpacity style={styles.outerCircle} onPress={() => setShownDays("Todos")}>
+
+        <TouchableOpacity activeOpacity={0.9} style={styles.flexRow} onPress={() => setShownDays("Todos")}>
+          <View style={styles.outerCircle}>
             <View style={[styles.innerCircle, shownDays === "Todos" ? styles.bgBlack : {}]}></View>
-          </TouchableOpacity>
+          </View>
 
           <Text style={styles.textSelector}>{translateFn("all")}</Text>
-        </View>
+        </TouchableOpacity>
 
-        <View style={styles.flexRow}>
-          <TouchableOpacity style={styles.outerCircle} onPress={() => setShownDays("Pagos")}>
+        <TouchableOpacity activeOpacity={0.9} style={styles.flexRow} onPress={() => setShownDays("Pagos")}>
+          <View style={styles.outerCircle}>
             <View style={[styles.innerCircle2, shownDays === "Pagos" ? styles.bgBlack : {}]}></View>
-          </TouchableOpacity>
+          </View>
 
           <Text style={styles.textSelector}>{translateFn("isPaid")}</Text>
-        </View>
+        </TouchableOpacity>
 
-        <View style={styles.flexRow}>
-          <TouchableOpacity style={styles.outerCircle} onPress={() => setShownDays("Inpagos")}>
+        <TouchableOpacity activeOpacity={0.9} style={styles.flexRow} onPress={() => setShownDays("Inpagos")}>
+          <View style={styles.outerCircle} >
             <View style={[styles.innerCircle3, shownDays === "Inpagos" ? styles.bgBlack : {}]}></View>
-          </TouchableOpacity>
+          </View>
 
           <Text style={styles.textSelector}>{translateFn("unPaid")}</Text>
-        </View>
+        </TouchableOpacity>
       </View>
 
       <Text style={styles.TotalHours}>{translateFn("totalHours")}: {findWorkedHours()}</Text>
@@ -272,7 +273,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     alignItems:"center",
     paddingHorizontal: 15,
-    paddingTop: 4
+    paddingTop: 4,
+    marginTop: 8
   },
   textSelector: {
     fontSize: theme.fontSizes.F16,
