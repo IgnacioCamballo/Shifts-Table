@@ -15,7 +15,7 @@ const theme = {
         grisMedio: "#BABABA",
         grisClaro: "#D2D2D2",
         grisMasClaro: "#e1e1e1",
-        blanco: "fff",
+        blanco: "#fff",
         rojoBin: "#A30000",
         rojo: "red",
         rojoClaro: "#EA7E7E",

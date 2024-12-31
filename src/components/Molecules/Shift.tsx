@@ -15,7 +15,7 @@ export default function Shift({shift}: {shift: ShiftProps}) {
     return translate({text, lenguage})
   }
 
-  const {key, employer, paid, shiftEntry, shiftExit, shiftBreak, workedHours, workedMinutes} = shift
+  const {key, employer, paid, shiftEntry, shiftExit, shiftBreak, workedHours, workedMinutes, salary} = shift
 
   const showAlert = () => {
     Alert.alert(
@@ -85,6 +85,11 @@ export default function Shift({shift}: {shift: ShiftProps}) {
       <View style={styles.line}>
         <Text style={styles.textLine}>{translateFn("workedHours")}:</Text>
         <Text style={styles.textLine}>{workedHours !== null && workedMinutes !== null ? `${workedHours}:${formattedMinutesNumber(workedMinutes!)}` : "-"}</Text>
+      </View>
+      
+      <View style={styles.line}>
+        <Text style={styles.textLine}>{translateFn("shiftSalary")}:</Text>
+        <Text style={styles.textLine}>{salary && `$ ${Math.floor(salary! * 100)/ 100}`}</Text>
       </View>
 
       <View style={styles.line}>

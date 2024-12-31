@@ -1,4 +1,5 @@
 
+
 export type EmployerProps = {
     key: number,
     name: string,
@@ -33,6 +34,18 @@ export type ConfigInfo = {
     configBreakExit: Date | null
 }
 
+export type User = {
+    _id: string,
+    userName: string,
+    password: string,
+    baseColor: string,
+    buttonsColor: string,
+    configInfo: ConfigInfo,
+    employers: EmployerProps[],
+    shifts: ShiftProps[]
+}
+
+// Used isinde front-end 
 export type DayProps = {
     key: string, 
     day: number, 

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { StyleSheet, Text, TextInput, TouchableOpacity, View, Modal, Platform, Alert, ScrollView, Animated } from 'react-native'
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, Modal, Platform, Alert, ScrollView, Animated, Dimensions } from 'react-native'
 import { Link } from 'react-router-native'
 import { Picker } from '@react-native-picker/picker'
 import DatePicker from 'react-native-date-picker'
@@ -14,6 +14,7 @@ import Slider from '../Atoms/Slider'
 import ButtonSmall from '../Atoms/Buttons/ButtonSmall'
 import Button from '../Atoms/Buttons/Button'
 import { GetBreakTime, getWorkedTime } from '../../utils/datesCompare'
+import DropDownAutoHeight from '../Molecules/DropDownAutoHeight'
 
 type ShiftFormProps = {
   isCreate: boolean,
@@ -21,6 +22,8 @@ type ShiftFormProps = {
   pressedDate: Date,
   onSubmit: (FormData: ShiftProps) => void
 }
+
+let screenWidth = Dimensions.get("window").width
 
 export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmit }: ShiftFormProps) {
   const { configInfo, companysInfo, shifts, lenguage } = useCalendar()
@@ -44,7 +47,7 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
   const [shiftBreakForm, setShiftBreakForm] = useState<Date | null>(isCreate ? null : (editingShift?.shiftBreak || null))
   const [workedHoursForm, setWorkedHoursForm] = useState<number | null>(isCreate ? null : (editingShift?.workedHours || null))
   const [workedMinutesForm, setWorkedMinutesForm] = useState<number | null>(isCreate ? null : (editingShift?.workedMinutes || null))
-  const [isHourlyRateForm, setIsHourlyRateForm] = useState(isCreate ? true : (editingShift?.isHourlyRate || true))
+  const [isHourlyRateForm, setIsHourlyRateForm] = useState<boolean>(isCreate ? true : editingShift!.isHourlyRate!)
   const [wageForm, setWageForm] = useState(editingShift?.wage || 0)
   const [salaryForm, setSalaryForm] = useState(editingShift?.salary || 0)
   const [paidForm, setPaidForm] = useState(editingShift?.paid || false)
@@ -54,14 +57,15 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
   const [missing, setMissing] = useState("")
   const [blockSubmit, setBlockSubmit] = useState(true)
 
+  //states for dropdowns
+  const [breakOpen, setBreakOpen] = useState(false)
+  const [salaryOpen, setSalaryOpen] = useState(false)
+
   //states to manage modal datepicker
   const [timeType, setTimeType] = useState("")
   const [date, setDate] = useState<Date | null>(pressedDate)
   const [modalOpen, setModalOpen] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
-
-  //states to manage the animations
-  const [breakOpen, setBreakOpen] = useState(false)
 
   useEffect(() => {
     if (employerForm > 1) {
@@ -200,7 +204,6 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
       color: companysInfo.find(company => company.key === employerForm)!.color || editingShift!.color,
       note: noteForm
     }
-
     onSubmit(FormData)
   }
 
@@ -213,20 +216,25 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
 
   //checks there is no repeted shifts
   useEffect(() => {
-    const currentExcluded = shifts.filter(shift => shift.key !== editingShift?.key)
-    if (currentExcluded.find(shift =>
-      shift.shiftEntry.getFullYear() === shiftEntryForm?.getFullYear() &&
-      shift.shiftEntry.getMonth() === shiftEntryForm?.getMonth() &&
-      shift.shiftEntry.getDate() === shiftEntryForm?.getDate() &&
-      shift.shiftEntry.getHours() === shiftEntryForm?.getHours() &&
-      shift.shiftEntry.getMinutes() === shiftEntryForm?.getMinutes()
-    )) {
-      setMissing(translateFn("repetedShiftAlert")!)
-      setBlockSubmit(true)
-    } else {
-      setMissing("")
-      setBlockSubmit(false)
+    if(employerForm) {
+      const currentExcluded = shifts.filter(shift => 
+        shift.key !== editingShift?.key &&
+        shift.shiftEntry.getFullYear() === shiftEntryForm?.getFullYear() &&
+        shift.shiftEntry.getMonth() === shiftEntryForm?.getMonth() &&
+        shift.shiftEntry.getDate() === shiftEntryForm?.getDate()
+      )
+      if (currentExcluded.some(shift => 
+        shift.employer === employerForm &&
+        shift.shiftEntry.getHours() === shiftEntryForm?.getHours() &&
+        shift.shiftEntry.getMinutes() === shiftEntryForm?.getMinutes()
+      )) {
+        setMissing(translateFn("repetedShiftAlert")!)
+        setBlockSubmit(true)  
+        return
+      }     
     }
+    setMissing("")
+    setBlockSubmit(false)
   }, [employerForm, shiftEntryForm])
 
   //sets the date picker mode
@@ -258,33 +266,36 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
     }
   }
 
-  //manage the break animations
-  const breakValue = useRef(new Animated.Value(breakOpen ? 1 : 0)).current
-  const handlePress = () => {
+  const value = useRef(new Animated.Value(isHourlyRateForm ? 0 : 1)).current
+  const handlePress = (boolean: boolean) => {
     Animated.parallel([
-      Animated.timing(breakValue, {
-        toValue: breakOpen ? 0 : 1,
-        duration: 300,
+      Animated.timing(value, {
+        toValue: boolean ? 0 : 1,
+        duration: 500,
         useNativeDriver: false,
       })
     ]).start();
-    setBreakOpen(!breakOpen);
+    setIsHourlyRateForm(boolean);
   }
-  const heightChange = {
-    maxHeight: breakValue.interpolate({
+  const colorChange = {
+    backgroundColor: value.interpolate({
       inputRange: [0, 1],
-      outputRange: [0, 200]
+      outputRange: ["#fff", theme.colors.azulClaro]
     })
   }
-  const rotateArrow = {
-    transform: [
-      {
-        rotate: breakValue.interpolate({
-          inputRange: [0, 1],
-          outputRange: ["-90deg", "0deg"]
-        })
-      }
-    ]
+  const reversecolorChange = {
+    backgroundColor: value.interpolate({
+      inputRange: [0, 1],
+      outputRange: [theme.colors.azulClaro, "#fff"]
+    })
+  }
+  const changeX = {
+    transform: [{
+      translateX: value.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, -screenWidth]
+      })
+    }]
   }
 
   return (
@@ -355,22 +366,15 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            activeOpacity={0.8}
-            style={styles.lineCenter}
-            onPress={() => handlePress()}
+          <DropDownAutoHeight
+            title={translateFn("break")!}
+            textRight={shiftBreakForm ? `${shiftBreakForm.getHours()}:${formattedMinutes(shiftBreakForm)}` : "0"}
+            duration={300}
+            maxHeight={200}
+            arrowColor={theme.colors.verdeBase}
+            isOpen={breakOpen}
+            setIsOpen={setBreakOpen}
           >
-            <Animated.View style={[rotateArrow]}>
-              <Icon
-                name="caretdown"
-                color={theme.colors.verdeBase}
-                size={20}
-              />
-            </Animated.View>
-            <Text style={styles.textLine}>{translateFn("break")}</Text>
-            <Text style={styles.break}>{shiftBreakForm ? `${shiftBreakForm.getHours()}:${formattedMinutes(shiftBreakForm)}` : "0"}</Text>
-          </TouchableOpacity>
-          <Animated.View style={[styles.heightAuto, heightChange]}>
             <TouchableOpacity
               activeOpacity={0.8}
               style={styles.line}
@@ -394,17 +398,68 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
                 <Text style={styles.textLine}>{shiftBreakExitForm ? `${shiftBreakExitForm.getHours()}:${formattedMinutes(shiftBreakExitForm)}` : "-"}</Text>
               </View>
             </TouchableOpacity>
-          </Animated.View>
+          </DropDownAutoHeight>
 
           <View style={styles.line}>
             <Text style={styles.textLine}>{translateFn("workedHours")}:</Text>
             <Text style={styles.textLine}>{(workedHoursForm !== null || undefined) && (workedMinutesForm !== null || undefined) ? `${workedHoursForm}:${formattedMinutesNumber(workedMinutesForm!)}` : "-"}</Text>
           </View>
 
-          <View style={styles.lineLeft}>
-            <Text style={styles.textLine}>{translateFn("paid")}</Text>
-            <Slider setValue={setPaidForm} value={paidForm} />
-          </View>
+          <DropDownAutoHeight
+            title={translateFn("salary")!}
+            textRight={salaryForm && !salaryOpen ? `$ ${Math.floor(salaryForm * 100)/ 100}` : ""}
+            duration={300}
+            maxHeight={200}
+            arrowColor={theme.colors.verdeBase}
+            isOpen={salaryOpen}
+            setIsOpen={setSalaryOpen}
+          >
+            <View style={[styles.line, styles.salaryPicker]}>
+              <Animated.Text onPress={() => handlePress(true)} style={[styles.textLine, styles.textHourly, reversecolorChange]}>{translateFn("hourly")}</Animated.Text>
+              <Animated.Text onPress={() => handlePress(false)} style={[styles.textLine, styles.textPerShift, colorChange]}>{translateFn("perTurn")}</Animated.Text>
+            </View>
+
+            <Animated.View style={[{ flexDirection: "row", gap: 16 }, changeX]}>
+              <View style={styles.line}>
+                <View style={styles.salaryLine}>
+                  <Text style={styles.textLine}>{translateFn("hourlyWage")}: $ </Text>
+                  <TextInput
+                    style={[styles.textLine, styles.inputBox]}
+                    inputMode='numeric'
+                    keyboardType='numeric'
+                    onChangeText={(e) => setWageForm(parseInt(e || "0"))}
+                    value={wageForm.toString()}
+                    placeholder="0"
+                    placeholderTextColor={theme.colors.grisMedio}
+                  />
+                </View>
+
+                <Text style={styles.textLine}>{translateFn("total")}: $ {Math.floor(salaryForm * 100)/ 100}</Text>
+              </View>
+
+              <View style={styles.line}>
+                <Text style={styles.textLine}>{translateFn("shiftSalary")}:</Text>
+
+                <View style={styles.salaryLine}>
+                  <Text style={styles.textLine}>$ </Text>
+                  <TextInput
+                    style={[styles.textLine, styles.inputBox]}
+                    inputMode='numeric'
+                    keyboardType='numeric'
+                    onChangeText={(e) => setSalaryForm(parseInt(e || "0"))}
+                    value={(Math.floor(salaryForm * 100)/ 100).toString()}
+                    placeholder="0"
+                    placeholderTextColor={theme.colors.grisMedio}
+                  />
+                </View>
+              </View>
+            </Animated.View>
+
+            <View style={styles.lineLeft}>
+              <Text style={styles.textLine}>{translateFn("paid")}</Text>
+              <Slider setValue={setPaidForm} value={paidForm} />
+            </View>
+          </DropDownAutoHeight>
 
           <TextInput
             value={noteForm}
@@ -476,6 +531,8 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
             <Text style={styles.textoBoton}>{isCreate ? translateFn("createNewShift") : translateFn("saveChanges")}</Text>
           </Button>
         </TouchableOpacity>
+         
+        <View style={{height: 20}}/>
       </ScrollView>
     </View>
   )
@@ -505,6 +562,7 @@ const styles = StyleSheet.create({
     marginBottom: 24
   },
   line: {
+    width: "100%",
     paddingHorizontal: 15,
     paddingVertical: 12,
     flexDirection: "row",
@@ -513,35 +571,58 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: theme.colors.grisClaro
   },
+  salaryLine: {
+    flexDirection: "row",
+    alignItems: "center"
+  },
+  salaryPicker: {
+    justifyContent: "center",
+    paddingVertical: 8,
+    paddingBottom: 0,
+    borderBottomWidth: 0
+  },
   lineLeft: {
     paddingHorizontal: 15,
     paddingVertical: 12,
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",
-    gap: 20
-  },
-  lineCenter: {
-    position: "relative",
-    paddingHorizontal: 15,
-    paddingVertical: 12,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
+    gap: 20,
     borderBottomWidth: 1,
-    borderColor: theme.colors.grisClaro,
-    gap: 12
+    borderColor: theme.colors.grisClaro
   },
   textLine: {
     fontSize: theme.fontSizes.F18,
     fontWeight: '400',
     textAlign: "right"
   },
-  break: {
-    position: "absolute",
-    right: 14,
-    fontSize: theme.fontSizes.F18,
-    fontWeight: '400'
+  inputBox: {
+    borderWidth: 0.5,
+    borderColor: theme.colors.gris,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    textAlign: "center"
+  },
+  textHourly: {
+    borderWidth: 1,
+    borderColor: theme.colors.grisClaro,
+    paddingVertical: 4,
+    paddingLeft: 12,
+    paddingRight: 10,
+    borderTopLeftRadius: 12,
+    borderBottomLeftRadius: 12,
+  },
+  bglblue: {
+    backgroundColor: theme.colors.azulClaro,
+  },
+  textPerShift: {
+    borderWidth: 1,
+    borderColor: theme.colors.grisClaro,
+    paddingVertical: 4,
+    paddingLeft: 10,
+    paddingRight: 12,
+    borderTopRightRadius: 12,
+    borderBottomRightRadius: 12
   },
   textLineCenter: {
     fontSize: theme.fontSizes.F18,
@@ -552,18 +633,12 @@ const styles = StyleSheet.create({
     borderColor: theme.colors.grisClaro,
     borderWidth: 1,
     marginHorizontal: 15,
+    marginTop: 12,
     paddingHorizontal: 8,
     paddingVertical: 4,
     fontSize: theme.fontSizes.F18,
     textAlignVertical: "top",
     maxHeight: 60
-  },
-  heightAuto: {
-    height: "auto",
-    overflow: "hidden"
-  },
-  row: {
-    flexDirection: "row"
   },
   textAlert: {
     fontSize: theme.fontSizes.F18,
@@ -610,9 +685,6 @@ const styles = StyleSheet.create({
     position: "relative",
     top: 7
   },
-  view: {
-    height: 180
-  },
   modalButtons: {
     flexDirection: "row",
     gap: 28,
@@ -620,24 +692,6 @@ const styles = StyleSheet.create({
   },
   modalButton: {
     fontSize: theme.fontSizes.F18
-  },
-  slide_exterior: {
-    flexDirection: "row",
-    borderRadius: 15,
-    width: 40,
-    height: 26,
-    alignItems: "center",
-    position: "relative",
-    top: 1,
-  },
-  slide_interior: {
-    backgroundColor: "#fff",
-    borderColor: theme.colors.grisMasClaro,
-    borderWidth: 1,
-    width: 22,
-    height: 22,
-    borderRadius: 12,
-    margin: 2
   },
   pickerContainer: {
     flex: 1,

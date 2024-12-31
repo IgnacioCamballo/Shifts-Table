@@ -7,30 +7,31 @@ import Icon from 'react-native-vector-icons/AntDesign'
 
 import useCalendar from '../hooks/useCalendar'
 import theme from '../theme/theme'
-import { firstLetterUpper, formattedMinutes, textDay, translate} from '../utils'
+import { firstLetterUpper, formattedMinutes, textDay, translate } from '../utils'
 import SwiftArrows from '../components/Molecules/SwiftArrows'
 import TransparentButton from '../components/Atoms/Buttons/ButtonTransparent'
 
 export default function MonthDetail() {
   const param = useParams()
   const month = param.month
+  const employerParam = param.employer ? parseInt(param.employer) : 0
 
-  const {shifts, lenguage, addsInitialized, companysInfo} = useCalendar()
+  const { shifts, lenguage, addsInitialized, companysInfo } = useCalendar()
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
-  function translateFn(text:string){
-    return translate({text, lenguage})
+  function translateFn(text: string) {
+    return translate({ text, lenguage })
   }
 
   const [currentDay, setCurrentDay] = useState(new Date(month!))
-  const [employer, setEmployer] = useState(0)
+  const [employer, setEmployer] = useState(employerParam)
   const [shownDays, setShownDays] = useState("Todos")
   const [employersList, setEmployersList] = useState<number[]>([])
 
   const monthlyShifts = shifts.filter(shift => shift.shiftEntry.getFullYear() === currentDay.getFullYear() && shift.shiftEntry.getMonth() === currentDay.getMonth())
   const monthlyShiftsFiltered = employer === 0 ? monthlyShifts : monthlyShifts.filter(shift => shift.employer === employer)
   const monthlyShiftsFilteredPayment = shownDays === "Todos" ? monthlyShiftsFiltered : shownDays === "Pagos" ? monthlyShiftsFiltered.filter(shift => shift.paid === true) : monthlyShiftsFiltered.filter(shift => shift.paid === false)
-  monthlyShiftsFilteredPayment.sort((a, b)=> a.shiftEntry.getDate() - b.shiftEntry.getDate())
+  monthlyShiftsFilteredPayment.sort((a, b) => a.shiftEntry.getDate() - b.shiftEntry.getDate())
 
   const prevMonth = () => {
     const newDate = new Date(currentDay.getFullYear(), currentDay.getMonth() - 1);
@@ -49,7 +50,7 @@ export default function MonthDetail() {
       const sum = total + (shift.workedMinutes || 0);
       if (sum >= 60) {
         initialHours += 1
-        return(sum - 60)
+        return (sum - 60)
       } else {
         return sum
       }
@@ -57,57 +58,57 @@ export default function MonthDetail() {
     const totalHours = monthlyShiftsFilteredPayment.reduce((total, shift) => {
       return total + (shift.workedHours || 0);
     }, initialHours);
-    return(`${totalMinutes === 0 ? totalHours : (totalHours + totalMinutes/60).toFixed(2)}Hs`);
+    return (`${totalMinutes === 0 ? totalHours : (totalHours + totalMinutes / 60).toFixed(2)}Hs`);
   }
 
   //Gets the entry hour and exit hour and date for every shift showed
   function entryExitHours(entry: Date, exit: Date | null) {
     const monthText = (exit && entry ?
-      (exit?.getDate() !== entry?.getDate() ? 
-        `(${firstLetterUpper(exit!.toLocaleDateString(lenguage, {month: 'short'}))}/${exit?.getDate()})` : "") 
+      (exit?.getDate() !== entry?.getDate() ?
+        `(${firstLetterUpper(exit!.toLocaleDateString(lenguage, { month: 'short' }))}/${exit?.getDate()})` : "")
       : ""
     )
 
     const exitHours = (exit ? `${exit.getHours()}:${formattedMinutes(exit)}` : "")
 
-    return(`${entry.getHours()}:${formattedMinutes(entry)} - ${monthText}${exitHours}`)
+    return (`${entry.getHours()}:${formattedMinutes(entry)} - ${monthText}${exitHours}`)
   }
 
   //Calculates worked hours in any shift showed
   function calculateHours(entry: Date, exit: Date | null, shiftBreak: Date | null) {
-    if(entry !== null && exit !== null) {
+    if (entry !== null && exit !== null) {
       const difMonth = exit!.getMonth() !== entry!.getMonth()
       const daysInMonth = new Date(currentDay.getFullYear(), currentDay.getMonth() + 1, 0).getDate();
-      
-      const dayDiference = exit!.getDate() - entry!.getDate()    
+
+      const dayDiference = exit!.getDate() - entry!.getDate()
       const minutes = ((exit!.getMinutes() < entry!.getMinutes()) ?
-        exit!.getMinutes() + (60 - entry!.getMinutes()):
+        exit!.getMinutes() + (60 - entry!.getMinutes()) :
         exit!.getMinutes() - entry!.getMinutes()
-      ) 
-      const minutesWithBreak = ((shiftBreak === undefined || shiftBreak === null) ? minutes : 
+      )
+      const minutesWithBreak = ((shiftBreak === undefined || shiftBreak === null) ? minutes :
         (minutes - shiftBreak!.getMinutes() >= 0 ? minutes - shiftBreak!.getMinutes() : 60 + (minutes - shiftBreak!.getMinutes()))
       )
-    
-      if(dayDiference === 0) {
+
+      if (dayDiference === 0) {
         const hours = (
-          exit!.getHours() - entry!.getHours()  
-          - (exit!.getMinutes() < entry!.getMinutes() ? 1 : 0) 
+          exit!.getHours() - entry!.getHours()
+          - (exit!.getMinutes() < entry!.getMinutes() ? 1 : 0)
           - ((shiftBreak === undefined || shiftBreak === null) ? 0 : minutes - shiftBreak!.getMinutes() < 0 ? 1 : 0)
           - ((shiftBreak === undefined || shiftBreak === null) ? 0 : shiftBreak!.getHours())
         )
-        
-        return(`${minutesWithBreak === 0 ? hours : ((hours + minutesWithBreak/60).toFixed(2))}Hs`)
+
+        return (`${minutesWithBreak === 0 ? hours : ((hours + minutesWithBreak / 60).toFixed(2))}Hs`)
       } else {
         const hours = (
-          (24 - entry!.getHours()) 
-          - (exit!.getMinutes() < entry!.getMinutes() ? 1 : 0) 
+          (24 - entry!.getHours())
+          - (exit!.getMinutes() < entry!.getMinutes() ? 1 : 0)
           - ((shiftBreak === undefined || shiftBreak === null) ? 0 : minutes - shiftBreak!.getMinutes() < 0 ? 1 : 0)
           - ((shiftBreak === undefined || shiftBreak === null) ? 0 : shiftBreak!.getHours())
-          + (difMonth ? 24 * ((daysInMonth - entry!.getDate()) + (exit!.getDate() -1)) : 24 * (dayDiference - 1)) 
+          + (difMonth ? 24 * ((daysInMonth - entry!.getDate()) + (exit!.getDate() - 1)) : 24 * (dayDiference - 1))
           + exit!.getHours()
-        )  
+        )
 
-        return(`${minutesWithBreak === 0 ? hours : ((hours + minutesWithBreak/60).toFixed(2))}Hs`)
+        return (`${minutesWithBreak === 0 ? hours : ((hours + minutesWithBreak / 60).toFixed(2))}Hs`)
       }
     } else {
       return "-  "
@@ -117,39 +118,42 @@ export default function MonthDetail() {
   //Sets the list of employers of every month used to filter by employer
   useEffect(() => {
     const copyList = [...employersList]
-    if(!monthlyShifts){
+    if (!monthlyShifts) {
       return
     } else {
-      monthlyShifts.forEach(shift => {if(copyList.some(employer => employer === shift.employer)) {
-        return
-      } else {
-        copyList.push(shift.employer)
-      }})
+      monthlyShifts.forEach(shift => {
+        if (copyList.some(employer => employer === shift.employer)) {
+          return
+        } else {
+          copyList.push(shift.employer)
+        }
+      })
     }
     setEmployersList(copyList)
   }, [currentDay])
 
   return (
     <View style={styles.container}>
+      <Text style={styles.absolute}>///</Text>
       <TransparentButton link={`/totals/${currentDay}`} style={styles.link}>
-        <Icon 
-          name="doubleleft" 
-          color={theme.colors.negro} 
+        <Icon
+          name="doubleleft"
+          color={theme.colors.negro}
           size={17}
-          />
-        <Text style={[styles.textLine, {fontWeight: 500}]}>{translateFn("back")}</Text>
-      </TransparentButton>
-      
-      <SwiftArrows 
-        leftAction={prevMonth} 
-        text={`${firstLetterUpper(currentDay.toLocaleDateString(lenguage, { month: 'long' }))} / ${currentDay.toLocaleDateString(lenguage, { year: '2-digit' })}`}
-        rightAction={nextMonth} 
         />
+        <Text style={[styles.textLine, { fontWeight: 500 }]}>{translateFn("back")}</Text>
+      </TransparentButton>
+
+      <SwiftArrows
+        leftAction={prevMonth}
+        text={`${firstLetterUpper(currentDay.toLocaleDateString(lenguage, { month: 'long' }))} / ${currentDay.toLocaleDateString(lenguage, { year: '2-digit' })}`}
+        rightAction={nextMonth}
+      />
 
       <View style={styles.employersContainer}>
-        <View style={[styles.line, {borderBottomWidth: 0, paddingBottom: 0}]}>
+        <View style={[styles.line, { borderBottomWidth: 0, paddingBottom: 0 }]}>
           <Text style={styles.textLine}>{translateFn("employer")}:</Text>
-          
+
           <View style={styles.pickerContainer}>
             <Picker
               selectedValue={employer}
@@ -157,18 +161,18 @@ export default function MonthDetail() {
               style={styles.picker}
               accessibilityLabel={translateFn("selectEmployer")}
               mode='dropdown'
-              >
-                <Picker.Item style={styles.pickerItem} label={translateFn("all")} value={0}/>
-              {employersList.map(employer => 
-                <Picker.Item style={styles.pickerItem} label={companysInfo.find(emp => emp.key === employer)!.name} value={employer} key={employer}/>
+            >
+              <Picker.Item style={styles.pickerItem} label={translateFn("all")} value={0} />
+              {employersList.map(employer =>
+                <Picker.Item style={styles.pickerItem} label={companysInfo.find(emp => emp.key === employer)!.name} value={employer} key={employer} />
               )}
             </Picker>
           </View>
         </View>
       </View>
-      
+
       <View style={styles.selector}>
-        <Text style={styles.textLine}>{translateFn("days")}:</Text>
+        {/* <Text style={styles.textLine}>{translateFn("days")}:</Text> */}
 
         <TouchableOpacity activeOpacity={0.9} style={styles.flexRow} onPress={() => setShownDays("Todos")}>
           <View style={styles.outerCircle}>
@@ -193,31 +197,31 @@ export default function MonthDetail() {
 
           <Text style={styles.textSelector}>{translateFn("unPaid")}</Text>
         </TouchableOpacity>
-      </View>
+      </View> 
 
       <Text style={styles.TotalHours}>{translateFn("totalHours")}: {findWorkedHours()}</Text>
 
       <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
         {monthlyShiftsFilteredPayment.map(shift => (
           <View key={shift.key} style={styles.line}>
-            <View style={[styles.flexRow, {gap: 2, width: 50}]}>
+            <View style={[styles.flexRow, { gap: 2, width: 50 }]}>
               <Text style={styles.textLine}>{textDay(shift.shiftEntry, lenguage)}/</Text>
               <Text style={styles.textLine}>{shift.shiftEntry.getDate()}</Text>
             </View>
             <Text style={styles.textLine}>{entryExitHours(shift.shiftEntry, shift.shiftExit)}</Text>
-            <Text style={[styles.textLine, {width: 70, textAlign:"right"}]}>{calculateHours(shift.shiftEntry, shift.shiftExit, shift.shiftBreak)}</Text>
+            <Text style={[styles.textLine, { width: 70, textAlign: "right" }]}>{calculateHours(shift.shiftEntry, shift.shiftExit, shift.shiftBreak)}</Text>
           </View>
         ))}
       </ScrollView>
 
       {addsInitialized && (
         <View style={styles.banner}>
-        <BannerAd 
-          size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-          unitId={theme.banners.detail}
-          requestOptions={{
-            requestNonPersonalizedAdsOnly: true
-          }}
+          <BannerAd
+            size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+            unitId={theme.banners.detail}
+            requestOptions={{
+              requestNonPersonalizedAdsOnly: true
+            }}
           />
         </View>
       )}
@@ -227,7 +231,14 @@ export default function MonthDetail() {
 
 const styles = StyleSheet.create({
   container: {
+    position: "relative",
     padding: 10
+  },
+  absolute: {
+    position: "absolute",
+    right: 16,
+    top: 6,
+    fontSize: 24
   },
   line: {
     paddingHorizontal: 15,
@@ -253,7 +264,7 @@ const styles = StyleSheet.create({
   },
   picker: {
     marginLeft: 0,
-    transform: [{translateX: 18}, {translateY: 4}]
+    transform: [{ translateX: 18 }, { translateY: 4 }]
   },
   pickerItem: {
     fontSize: 18,
@@ -271,7 +282,7 @@ const styles = StyleSheet.create({
   selector: {
     flexDirection: "row",
     justifyContent: "space-around",
-    alignItems:"center",
+    alignItems: "center",
     paddingHorizontal: 15,
     paddingTop: 4,
     marginTop: 8
@@ -313,7 +324,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.negro,
     borderRadius: 4
   },
-  scrollView:{
+  scrollView: {
     height: theme.heigth.monthDetailScrollView
   },
   link: {
@@ -321,11 +332,11 @@ const styles = StyleSheet.create({
     top: -32,
     left: 12
   },
-  banner:{
-    height: 70, 
+  banner: {
+    height: 70,
     position: 'absolute',
-    justifyContent: "center", 
-    alignContent: "center", 
+    justifyContent: "center",
+    alignContent: "center",
     bottom: -66
   }
 })

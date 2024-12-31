@@ -203,7 +203,7 @@ export default function Calendar() {
 const styles = StyleSheet.create({
    container: {
     flex: 1,
-    padding: 10  
+    padding: 10
   },
   textDayContainer: {
     height: 20,

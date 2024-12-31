@@ -28,7 +28,7 @@ export default function Main() {
             <Route path='/config/editEmployer/:employer' element={<EditEmployer />}/>
           <Route path='/totals' element={<Totals />}/>
             <Route path='/totals/:month' element={<Totals />}/>
-            <Route path='/totalsDetail/:month/' element={<MonthDetail />}/>
+            <Route path='/totalsDetail/:month/:employer' element={<MonthDetail />}/>
         </Routes>
         <LayoutFooter />
     </View>

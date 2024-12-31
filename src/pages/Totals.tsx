@@ -29,7 +29,6 @@ export default function Totals() {
   const [workedHours, setWorkedHours] = useState("")
   const [salary, setSalary] = useState(0)
   const [salaryPaid, setSalaryPaid] = useState(0)
-  const [unpaidHours, setUnpaidHours] = useState("")
 
   const monthlyShifts = shifts.filter(shift => shift.shiftEntry.getFullYear() === currentDay.getFullYear() && shift.shiftEntry.getMonth() === currentDay.getMonth())
   const monthlyShiftsFiltered = employer === 0 ? monthlyShifts : monthlyShifts.filter(shift => shift.employer === employer)
@@ -76,24 +75,6 @@ export default function Totals() {
     setSalaryPaid(parseFloat(PaidSalary.toFixed(2)))
   }
 
-  function findUnpaidHours() {
-    const monthlyShiftsFilteredUnpaid = monthlyShiftsFiltered.filter(shift => shift.paid === false)
-    let initialHours = 0
-    const totalMinutes = monthlyShiftsFilteredUnpaid.reduce((total, shift) => {
-      const sum = total + (shift.workedMinutes || 0);
-      if (sum >= 60) {
-        initialHours += 1
-        return(sum - 60)
-      } else {
-        return sum
-      }
-    }, 0);
-    const totalHours = monthlyShiftsFilteredUnpaid.reduce((total, shift) => {
-      return total + (shift.workedHours || 0);
-    }, initialHours);
-    setUnpaidHours(`${totalHours}:${formattedMinutesNumber(totalMinutes)}`);
-  }
-
   //Creates an array with the employers on the shifts of that month used in the employer filter
   useEffect(() => {
     const copyList = [...employersList]
@@ -115,7 +96,6 @@ export default function Totals() {
     findWorkedHours()
     findFullSalary()
     findPaidSalary()
-    findUnpaidHours()
   }, [currentDay, employer])
 
   const prevMonth = () => {
@@ -161,7 +141,7 @@ export default function Totals() {
         <Text style={styles.textLine}>{translateFn("workedDays")}:</Text>
         <View style={styles.botonVer}>
           <Text style={styles.textLine}>{workedDays}</Text>
-          {workedDays !== 0 && <Link to={`/totalsDetail/${currentDay}/`} activeOpacity={0.8} underlayColor="none">
+          {workedDays !== 0 && <Link to={`/totalsDetail/${currentDay}/${employer}`} activeOpacity={0.8} underlayColor="none">
             <ButtonSmall color={theme.colors.verdeBoton}>
               <Text style={styles.textButtonSmall}>{translateFn("seeDetail")}</Text>
             </ButtonSmall>
@@ -182,11 +162,6 @@ export default function Totals() {
       <View style={styles.line}>
         <Text style={styles.textLine}>{translateFn("paid")}:</Text>
         <Text style={styles.textLine}>${salaryPaid}</Text>
-      </View>
-      
-      <View style={styles.line}>
-        <Text style={styles.textLine}>{translateFn("unpaidHours")}:</Text>
-        <Text style={styles.textLine}>{unpaidHours}</Text>
       </View>
       
       <View style={styles.line}>

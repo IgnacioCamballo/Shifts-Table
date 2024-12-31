@@ -1,24 +1,20 @@
 import React, { useRef, useState } from 'react'
-import { Modal, StyleSheet, Text, TouchableOpacity, View, Platform, Alert, ScrollView, Animated } from 'react-native'
-import DatePicker from 'react-native-date-picker'
+import { StyleSheet, Text, TouchableOpacity, View, Platform, ScrollView, Animated } from 'react-native'
 import Constants from "expo-constants"
 import useCalendar from '../hooks/useCalendar'
 import theme from '../theme/theme'
 import Employer from '../components/Molecules/Employer'
-import { formattedMinutes, translate } from '../utils'
+import { translate } from '../utils'
 import Icon from 'react-native-vector-icons/AntDesign';
-import { Picker } from '@react-native-picker/picker'
 import Button from '../components/Atoms/Buttons/Button'
 import ConfigLenguage from '../components/organisms/ConfigLenguage'
 import ConfigDefaultTimes from '../components/organisms/ConfigDefaultTimes'
-import { PanGestureHandler } from 'react-native-gesture-handler'
 
 export default function Config() {
   const {
-    configInfo,
     companysInfo,
     lenguage,
-    setConfigInfo
+    
   } = useCalendar()
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
@@ -26,22 +22,10 @@ export default function Config() {
     return translate({ text, lenguage })
   }
 
-  let config = { ...configInfo }
-
-  const [timeType, setTimeType] = useState("")
-  const [date, setDate] = useState(new Date())
-  const [modalOpen, setModalOpen] = useState(false)
-  const [showDelete, setShowDelete] = useState(false)
-
-  const [hoursOpen, setHoursOpen] = useState(false)
   const [employersOpen, setEmployersOpen] = useState(false)
-
-  
-
-  
  
   //manage the employers animations
-  const employersValue = useRef(new Animated.Value(hoursOpen ? 1 : 0)).current
+  const employersValue = useRef(new Animated.Value(employersOpen ? 1 : 0)).current
   const handlePressEmployer = () => {
     Animated.parallel([
       Animated.timing(employersValue, {

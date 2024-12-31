@@ -29,6 +29,11 @@
     {"lenguage": "en", "text": "Totals"},
     {"lenguage": "pt", "text": "Totales"}
   ],
+  "total": [
+    {"lenguage": "es", "text": "Total"},
+    {"lenguage": "en", "text": "Total"},
+    {"lenguage": "pt", "text": "Total"}
+  ],
   "totalHours": [
     {"lenguage": "es", "text": "Totale de horas"},
     {"lenguage": "en", "text": "Total hours"},
@@ -289,6 +294,11 @@
     {"lenguage": "en", "text": "Total Salary"},
     {"lenguage": "pt", "text": "Salário total"}
   ],
+  "shiftSalary": [
+    {"lenguage": "es", "text": "Salario del turno"},
+    {"lenguage": "en", "text": "Shift Salary"},
+    {"lenguage": "pt", "text": "Salário do turno"}
+  ],
   "unpaidHours": [
     {"lenguage": "es", "text": "Horas aún no pagadas"},
     {"lenguage": "en", "text": "Hours not paid yet"},
@@ -298,5 +308,20 @@
     {"lenguage": "es", "text": "Salario Pendiente"},
     {"lenguage": "en", "text": "Pending Salary"},
     {"lenguage": "pt", "text": "Salário pendente"}
+  ],
+  "salary": [
+    {"lenguage": "es", "text": "Salario"},
+    {"lenguage": "en", "text": "Salary"},
+    {"lenguage": "pt", "text": "Salário"}
+  ],
+  "hourly": [
+    {"lenguage": "es", "text": "Por Hora"},
+    {"lenguage": "en", "text": "Hourly"},
+    {"lenguage": "pt", "text": "Por Hora"}
+  ],
+  "perTurn": [
+    {"lenguage": "es", "text": "Por Turno"},
+    {"lenguage": "en", "text": "Per Turn"},
+    {"lenguage": "pt", "text": "Por Turno"}
   ]
 }

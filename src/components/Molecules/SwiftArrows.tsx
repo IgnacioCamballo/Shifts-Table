@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     height: 28,
     flexDirection: 'row',
     justifyContent: "space-between",
-    paddingHorizontal: 48
+    paddingHorizontal: 68
   },
   monthText: {
     fontSize: theme.fontSizes.F20,
