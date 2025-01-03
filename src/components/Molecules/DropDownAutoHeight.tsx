@@ -3,6 +3,7 @@ import { Text, Animated, TouchableOpacity, StyleSheet, StyleProp, ViewStyle } fr
 
 import theme from '../../theme/theme';
 import Icon from 'react-native-vector-icons/AntDesign';
+import useCalendar from '../../hooks/useCalendar';
 
 type DropDownAutoHeightProps = {
   children: JSX.Element | JSX.Element[]
@@ -12,11 +13,13 @@ type DropDownAutoHeightProps = {
   duration: number
   maxHeight: number
   titleContainerStyle?: StyleProp<ViewStyle>
+  titleStyle?: StyleProp<ViewStyle>
   isOpen: boolean
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export default function DropDownAutoHeight({ isOpen, setIsOpen, children, textRight, title, arrowColor, duration, maxHeight, titleContainerStyle }: DropDownAutoHeightProps) {
+export default function DropDownAutoHeight({ isOpen, setIsOpen, children, textRight, title, arrowColor, duration, maxHeight, titleStyle, titleContainerStyle }: DropDownAutoHeightProps) {
+  const {configInfo} = useCalendar()
 
   //manage the break animations
   const value = useRef(new Animated.Value(isOpen ? 1 : 0)).current
@@ -56,14 +59,14 @@ export default function DropDownAutoHeight({ isOpen, setIsOpen, children, textRi
         <Animated.View style={[rotateArrow]}>
           <Icon
             name="caretdown"
-            color={arrowColor || theme.colors.verdeBase}
+            color={arrowColor || configInfo.baseColor}
             size={20}
           />
         </Animated.View>
-        <Text style={styles.textLine}>{title}</Text>
+        <Text style={[styles.textLine, titleStyle]}>{title}</Text>
         <Text style={styles.textRight}>{textRight}</Text>
       </TouchableOpacity>
-      <Animated.View style={[styles.heightAuto, heightChange]}>
+      <Animated.View  style={[styles.heightAuto, heightChange]}>
         {children}
       </Animated.View>
 

@@ -1,14 +1,15 @@
 import React from 'react'
-import { View, StyleSheet, ColorValue } from 'react-native'
+import { View, StyleSheet, ColorValue, StyleProp, ViewStyle } from 'react-native'
 import { Platform } from 'react-native';
 import theme from '../../../theme/theme';
 
 interface ButtonProps {
   children: React.ReactNode
-  color: ColorValue;
+  color: ColorValue
+  buttonStyles?: StyleProp<ViewStyle>
 }
 
-export default function ButtonSmall({ children, color }: ButtonProps) {
+export default function ButtonSmall({ children, color, buttonStyles }: ButtonProps) {
   let customeStyle = {
     boton: {
       ...styles.boton,
@@ -17,7 +18,7 @@ export default function ButtonSmall({ children, color }: ButtonProps) {
   }
 
   return (
-    <View style={customeStyle.boton}>
+    <View style={[customeStyle.boton, buttonStyles]}>
       {children}
     </View>
   )
@@ -33,7 +34,7 @@ const styles = StyleSheet.create({
     shadowColor: theme.colors.negro,
     shadowOpacity: 0.6,
     shadowRadius: 2,
-    elevation: 10,
+    elevation: 5,
     borderColor: theme.colors.grisMedio,
     borderWidth: Platform.OS === "android" ? 1 : 0,
     justifyContent: "center",

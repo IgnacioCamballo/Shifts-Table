@@ -27,7 +27,18 @@ export type ShiftProps = {
     note: string | null
 }
 
+export type UserInfo = {
+    user: string,
+    userName: string,
+    mail: string,
+    lastBackUp: Date | null,
+    premium: boolean,
+    usedWithoutConnection: boolean
+}
+
 export type ConfigInfo = {
+    baseColor: string,
+    buttonsColor: string,
     entry: Date | null,
     exit: Date | null,
     configBreakEntry: Date | null,
@@ -36,14 +47,14 @@ export type ConfigInfo = {
 
 export type User = {
     _id: string,
-    userName: string,
     password: string,
-    baseColor: string,
-    buttonsColor: string,
+    userInfo: UserInfo,
     configInfo: ConfigInfo,
     employers: EmployerProps[],
     shifts: ShiftProps[]
 }
+
+
 
 // Used isinde front-end 
 export type DayProps = {
@@ -54,11 +65,13 @@ export type DayProps = {
   }
 
 export type CalendarContextProps = {   
+    userInfo: UserInfo,
     configInfo: ConfigInfo,
     companysInfo: EmployerProps[],
     shifts: ShiftProps[],
     lenguage: string,
     addsInitialized: boolean,
+    setUserInfo: React.Dispatch<React.SetStateAction<UserInfo>>,
     setConfigInfo: React.Dispatch<React.SetStateAction<ConfigInfo>>,
     setCompanysInfo: React.Dispatch<React.SetStateAction<EmployerProps[]>>,
     setShifts: React.Dispatch<React.SetStateAction<ShiftProps[]>>,

@@ -15,7 +15,7 @@ export default function NewEmployer() {
   const params = useParams()
   const pressedDate = params.date
 
-  const { companysInfo, setCompanysInfo, lenguage } = useCalendar()
+  const { companysInfo, setCompanysInfo, lenguage, configInfo } = useCalendar()
   
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text:string){
@@ -183,7 +183,7 @@ export default function NewEmployer() {
         press={() => handleSaveEmployer()}
         block={inputName === "" || salary === "" || repeatedName ? true : false}
         to={pressedDate === undefined ? '/config' : `/calendar/shifts/${pressedDate}/newShift`} 
-        color={theme.colors.verdeBoton}
+        color={configInfo.buttonsColor}
       >
         <Text style={styles.textoBoton}>{translateFn("createEmployer")}</Text>
       </Button>

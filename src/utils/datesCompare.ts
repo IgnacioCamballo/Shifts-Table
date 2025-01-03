@@ -84,3 +84,21 @@ export function getWorkedTime({ entry, exit, breakEntry, breakExit }: {
 
   return { workedHours, workedMinutes }
 }
+
+export function isSameDay({day1, day2} : {day1: Date, day2: Date}) {
+  if(
+    day1.getFullYear() === day2.getFullYear() &&
+    day1.getMonth() === day2.getMonth() &&
+    day1.getDate() === day2.getDate()
+  ) {return true} else {return false}
+}
+
+export function isSameDayHourMinute({day1, day2} : {day1: Date, day2: Date}) {
+  if(
+    day1.getFullYear() === day2.getFullYear() &&
+    day1.getMonth() === day2.getMonth() &&
+    day1.getDate() === day2.getDate() &&
+    day1.getHours() === day2.getHours() &&
+    day1.getMinutes() === day2.getMinutes()
+  ) {return true} else {return false}
+}

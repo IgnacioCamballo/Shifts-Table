@@ -12,7 +12,7 @@ import Button from '../components/Atoms/Buttons/Button'
 import { translate } from '../utils'
 
 export default function EditEmployer() {
-  const { companysInfo, setCompanysInfo, lenguage, shifts, setShifts} = useCalendar()
+  const { companysInfo, setCompanysInfo, lenguage, shifts, setShifts, configInfo} = useCalendar()
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text:string){
@@ -220,7 +220,7 @@ export default function EditEmployer() {
         press={() => handleSaveEmployer()}
         block={inputName === "" || salary === "" || repeatedName ? true : false} 
         to='/config' 
-        color={theme.colors.verdeBoton}
+        color={configInfo.buttonsColor}
       >
         <Text style={styles.textoBoton}>{translateFn("saveChanges")}</Text>
       </Button>

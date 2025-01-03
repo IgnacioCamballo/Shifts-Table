@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react'
-import { Alert, View, Text, TouchableOpacity, StyleSheet, Animated, Modal, Platform } from 'react-native'
+import React, { useState } from 'react'
+import { Alert, View, Text, TouchableOpacity, StyleSheet, Modal, Platform } from 'react-native'
 import Constants from "expo-constants"
 import DatePicker from 'react-native-date-picker'
 import Icon from 'react-native-vector-icons/AntDesign'
@@ -7,9 +7,10 @@ import Icon from 'react-native-vector-icons/AntDesign'
 import useCalendar from '../../hooks/useCalendar'
 import theme from '../../theme/theme'
 import { formattedMinutes, translate } from '../../utils'
+import DropDownAutoHeight from '../Molecules/DropDownAutoHeight'
 
 export default function ConfigDefaultTimes() {
-  const {lenguage, configInfo, setConfigInfo} = useCalendar()
+  const { lenguage, configInfo, setConfigInfo } = useCalendar()
 
   const [hoursOpen, setHoursOpen] = useState(false)
   const [timeType, setTimeType] = useState("")
@@ -79,70 +80,29 @@ export default function ConfigDefaultTimes() {
 
   //takes the new default time when changing default entry, exit or break. and sets the new data
   const changeConfigInfo = (newDate: Date | null) => {
-    const configDateChanged = {
+    const configDateChanged = { ...configInfo,
       entry: timeType === "entrada" ? newDate : config.entry || null,
       exit: timeType === "salida" ? newDate : config.exit || null,
       configBreakEntry: timeType === "descansoEntrada" ? newDate : config.configBreakEntry || null,
-      configBreakExit: timeType === "descansoSalida" ? newDate : config.configBreakExit || null
+      configBreakExit: timeType === "descansoSalida" ? newDate : config.configBreakExit || null,
     }
-    
+
     setConfigInfo(configDateChanged)
     setTimeType("")
   }
 
-  //manage the default hours animation
-  const hoursValue = useRef(new Animated.Value(hoursOpen ? 1 : 0)).current
-  const handlePress = () => {
-    Animated.parallel([
-      Animated.timing(hoursValue, {
-        toValue: hoursOpen ? 0 : 1,
-        duration: 300,
-        useNativeDriver: false,
-      })
-    ]).start();
-    setHoursOpen(!hoursOpen);
-  }
-  const heightChange = {
-    maxHeight: hoursValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0, 200]
-    })
-  }
-  const rotateArrow = {
-    transform: [
-      {
-        rotate: hoursValue.interpolate({
-          inputRange: [0, 1],
-          outputRange: ["-90deg", "0deg"]
-        })
-      },
-      {
-        translateY: hoursValue.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0, -2]
-        })
-      }
-    ]
-  }
-
   return (
     <View style={styles.configGeneral}>
-      <TouchableOpacity
-        activeOpacity={0.8}
-        style={styles.tituloConf}
-        onPress={() => handlePress()}
+      <DropDownAutoHeight
+        duration={300}
+        isOpen={hoursOpen}
+        setIsOpen={setHoursOpen}
+        maxHeight={200}
+        title={translateFn("defaultHours")!}
+        titleStyle={styles.textoConf}
+        titleContainerStyle={styles.tituloConf}
+        arrowColor={configInfo.baseColor}
       >
-        <Animated.View style={[rotateArrow]}>
-          <Icon
-            name="caretdown"
-            color={theme.colors.verdeBase}
-            size={20}
-            style={styles.arrow}
-          />
-        </Animated.View>
-        <Text style={styles.textoConf}>{translateFn("defaultHours")}</Text>
-      </TouchableOpacity>
-      <Animated.View style={[styles.heightAuto, heightChange]}>
         <TouchableOpacity
           activeOpacity={0.8}
           style={styles.line}
@@ -186,7 +146,7 @@ export default function ConfigDefaultTimes() {
             <Text style={styles.textLine}>{config.configBreakExit ? `${config.configBreakExit.getHours()}:${formattedMinutes(config.configBreakExit)}` : "-"}</Text>
           </View>
         </TouchableOpacity>
-      </Animated.View>
+      </DropDownAutoHeight>
 
       <Modal
         visible={modalOpen}
@@ -237,12 +197,15 @@ const styles = StyleSheet.create({
     marginVertical: 10
   },
   tituloConf: {
-    flexDirection: "row",    
+    flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     borderBottomWidth: 2,
+    borderColor: theme.colors.negro,
     width: "100%",
-    gap: 12
+    gap: 12,
+    paddingVertical: 4,
+    marginTop: 20
   },
   textoConf: {
     alignSelf: "center",

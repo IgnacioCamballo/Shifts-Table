@@ -1,21 +1,17 @@
-import React, { useRef, useState } from 'react'
-import { StyleSheet, Text, TouchableOpacity, View, Platform, ScrollView, Animated } from 'react-native'
+import React, { useState } from 'react'
+import { StyleSheet, Text, View, Platform, ScrollView } from 'react-native'
 import Constants from "expo-constants"
 import useCalendar from '../hooks/useCalendar'
 import theme from '../theme/theme'
 import Employer from '../components/Molecules/Employer'
 import { translate } from '../utils'
-import Icon from 'react-native-vector-icons/AntDesign';
 import Button from '../components/Atoms/Buttons/Button'
-import ConfigLenguage from '../components/organisms/ConfigLenguage'
+import ConfigSettings from '../components/organisms/ConfigSettings'
 import ConfigDefaultTimes from '../components/organisms/ConfigDefaultTimes'
+import DropDownAutoHeight from '../components/Molecules/DropDownAutoHeight'
 
 export default function Config() {
-  const {
-    companysInfo,
-    lenguage,
-    
-  } = useCalendar()
+  const {companysInfo, lenguage, configInfo} = useCalendar()
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text: string) {
@@ -23,82 +19,47 @@ export default function Config() {
   }
 
   const [employersOpen, setEmployersOpen] = useState(false)
- 
-  //manage the employers animations
-  const employersValue = useRef(new Animated.Value(employersOpen ? 1 : 0)).current
-  const handlePressEmployer = () => {
-    Animated.parallel([
-      Animated.timing(employersValue, {
-        toValue: employersOpen ? 0 : 1,
-        duration: 400,
-        useNativeDriver: false,
-      })
-    ]).start();
-    setEmployersOpen(!employersOpen);
-  }
-  const heightEmpChange = {
-    maxHeight: employersValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0, 350]
-    })
-  }
-  const rotateEmpArrow = {
-    transform: [
-      {
-        rotate: employersValue.interpolate({
-          inputRange: [0, 1],
-          outputRange: ["-90deg", "0deg"]
-        })
-      },
-      {
-        translateY: employersValue.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0, -2]
-        })
-      }
-    ]
-  }
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
-      <ConfigLenguage />
-
       <ConfigDefaultTimes />
 
-      <View style={styles.empleadores}>
-        <TouchableOpacity 
-          activeOpacity={0.8}
-          style={styles.tituloConf}
-          onPress={() => handlePressEmployer()}
-        >
-          <Animated.View style={[rotateEmpArrow]}>
-            <Icon
-              name="caretdown"
-              color={theme.colors.verdeBase}
-              size={20}
-              style={styles.arrow}
-            />
-          </Animated.View>
-          <Text style={styles.textoConf}>{translateFn("employers")}</Text>
-        </TouchableOpacity>
+      <DropDownAutoHeight
+        duration={400}
+        isOpen={employersOpen}
+        setIsOpen={setEmployersOpen}
+        maxHeight={350}
+        title={translateFn("employers")!}
+        titleStyle={styles.textoConf}
+        titleContainerStyle={[styles.tituloConf, styles.empleadores]}
+        arrowColor={configInfo.baseColor}
 
-        <Animated.ScrollView 
-          showsVerticalScrollIndicator={false} 
-          style={[styles.heightAuto, heightEmpChange]}
+      >
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          style={[styles.heightAuto]}
           nestedScrollEnabled={true}
         >
+
           {companysInfo.length === 0 ? <Text style={styles.textNotEmployers}>{translateFn("noEmployersYet")}</Text> :
             companysInfo.map(employer => (
               <Employer key={employer.key} employer={employer} />
             ))
           }
-        </Animated.ScrollView>
+        </ScrollView>
+      </DropDownAutoHeight>
 
-        <Button margintop={20} to='/config/newEmployer' color={theme.colors.verdeBoton}>
-          <Text style={styles.textoBoton}>{translateFn("createNewEmployer")}</Text>
-        </Button>
-      </View>
-      <View style={{height: 30}}/>
+      <Button 
+        margintop={20} 
+        to='/config/newEmployer' 
+        color={theme.colors.grisMasClaro}
+        buttonStyles={styles.botonStyle}
+      >
+        <Text style={styles.textoBoton}>{translateFn("createNewEmployer")}</Text>
+      </Button>
+      <View style={{ height: 20 }} />
+
+      <ConfigSettings />
     </ScrollView>
   )
 }
@@ -112,10 +73,12 @@ const styles = StyleSheet.create({
     marginVertical: 10
   },
   tituloConf: {
-    flexDirection: "row",    
+    flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     borderBottomWidth: 2,
+    borderColor: theme.colors.negro,
+    paddingVertical: 4,
     width: "100%",
     gap: 12
   },
@@ -144,6 +107,7 @@ const styles = StyleSheet.create({
     fontWeight: '400'
   },
   heightAuto: {
+    transform: [{translateY: -2}],
     height: "auto",
     overflow: "hidden"
   },
@@ -198,5 +162,18 @@ const styles = StyleSheet.create({
   textoBoton: {
     fontSize: theme.fontSizes.F18,
     fontWeight: "500"
+  },
+  botonStyle: {
+    borderWidth: 1, 
+    borderColor: theme.colors.grisMedio,
+    shadowOffset: { width: 2, height: 2 },
+    shadowColor: theme.colors.negro,
+    shadowOpacity: 0.6,
+    shadowRadius: 2,
+    elevation: 5,
+    borderRadius: 14,
+    paddingHorizontal: 20,
+    paddingVertical: 4,
+    paddingBottom: 6
   }
 })

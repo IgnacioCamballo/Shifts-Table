@@ -1,9 +1,9 @@
 import React, { useState, createContext, useEffect } from "react"
 import { MobileAds } from 'react-native-google-mobile-ads';
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import firestore from "@react-native-firebase/firestore"
 
-import { CalendarContextProps, ConfigInfo, EmployerProps, ShiftProps } from "../types"
+import { CalendarContextProps, ConfigInfo, EmployerProps, ShiftProps, UserInfo } from "../types"
+import theme from "../theme/theme";
 
 interface props {
   children: JSX.Element | JSX.Element[]
@@ -12,14 +12,12 @@ interface props {
 const CalendarContext = createContext<CalendarContextProps>({} as CalendarContextProps)
 
 const CalendarProvider = ({ children }: props) => {
+  const [userInfo, setUserInfo] = useState<UserInfo>({} as UserInfo)
   const [configInfo, setConfigInfo] = useState<ConfigInfo>({} as ConfigInfo)
   const [companysInfo, setCompanysInfo] = useState<EmployerProps[]>([])
   const [shifts, setShifts] = useState<ShiftProps[]>([])
   const [lenguage, setLenguage] = useState<string>("es")
   const [addsInitialized, setAddsInitialized] = useState(false)
-
-  //Gets User profile from firestore database
-  const userCollection = firestore().collection("Users").doc("userID")
 
   //Initializes adds
   useEffect(() => {
@@ -32,18 +30,37 @@ const CalendarProvider = ({ children }: props) => {
       }
     }
     addsInit()
-  }, [])
+  }, [])  
+
+  const getUserInfo = async () => {
+    try {
+      const storagedConfig = await AsyncStorage.getItem("userInfo")
+      const userInformation: UserInfo = {
+        user: "11",
+        userName: "Nacho",
+        mail: "correo@correo.com",
+        premium: false,
+        lastBackUp: null,
+        usedWithoutConnection: false
+      } 
+      setUserInfo(userInformation)
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const getConfigStoraged = async () => {
     try {
       const storagedConfig = await AsyncStorage.getItem("config")
       if (storagedConfig !== null) {
-        const parsed = JSON.parse(storagedConfig)
+        const parsed: ConfigInfo = JSON.parse(storagedConfig)
         const config: ConfigInfo = {
+          baseColor: parsed.baseColor || theme.colors.verdeBase,
+          buttonsColor: parsed.buttonsColor || theme.colors.verdeBoton,
           entry: parsed.entry === null ? null : new Date(parsed.entry),
           exit: parsed.exit === null ? null : new Date(parsed.exit),
           configBreakEntry: parsed.configBreakEntry === null ? null : new Date(parsed.configBreakEntry),
-          configBreakExit: parsed.configBreakExit === null ? null : new Date(parsed.configBreakEntry)
+          configBreakExit: parsed.configBreakExit === null ? null : new Date(parsed.configBreakExit)
         }
         setConfigInfo(config)
       }
@@ -114,6 +131,7 @@ const CalendarProvider = ({ children }: props) => {
     getConfigStoraged()
     getCompanysStoraged()
     getShiftsStoraged()
+    getUserInfo()
   }, [])
 
   useEffect(() => {
@@ -135,11 +153,13 @@ const CalendarProvider = ({ children }: props) => {
   return (
     <CalendarContext.Provider
       value={{
+        userInfo,
         configInfo,
         companysInfo,
         shifts,
         lenguage,
         addsInitialized,
+        setUserInfo,
         setConfigInfo,
         setCompanysInfo,
         setShifts,

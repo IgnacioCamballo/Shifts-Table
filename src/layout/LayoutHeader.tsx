@@ -26,8 +26,10 @@ function NombreLayout () {
 }
 
 export default function LayoutHeader() {
+  const {configInfo} = useCalendar()
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {backgroundColor: configInfo.baseColor}]}>
       <Text style={styles.text}>{NombreLayout()}</Text>
     </View>
   )
@@ -36,7 +38,6 @@ export default function LayoutHeader() {
 const styles = StyleSheet.create({
   container: {
     height: 36,
-    backgroundColor: theme.colors.verdeBase,
     paddingTop: Platform.OS === "ios" ? 5 : 0,
     paddingBottom: 10,
     alignItems: "center",

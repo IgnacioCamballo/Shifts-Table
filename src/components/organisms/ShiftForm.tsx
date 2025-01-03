@@ -3,7 +3,6 @@ import { StyleSheet, Text, TextInput, TouchableOpacity, View, Modal, Platform, A
 import { Link } from 'react-router-native'
 import { Picker } from '@react-native-picker/picker'
 import DatePicker from 'react-native-date-picker'
-import Icon from 'react-native-vector-icons/AntDesign'
 import Constants from "expo-constants"
 
 import useCalendar from '../../hooks/useCalendar'
@@ -15,6 +14,7 @@ import ButtonSmall from '../Atoms/Buttons/ButtonSmall'
 import Button from '../Atoms/Buttons/Button'
 import { GetBreakTime, getWorkedTime } from '../../utils/datesCompare'
 import DropDownAutoHeight from '../Molecules/DropDownAutoHeight'
+import ModalDatePicker from '../Molecules/ModalDatePicker'
 
 type ShiftFormProps = {
   isCreate: boolean,
@@ -63,9 +63,7 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
 
   //states to manage modal datepicker
   const [timeType, setTimeType] = useState("")
-  const [date, setDate] = useState<Date | null>(pressedDate)
   const [modalOpen, setModalOpen] = useState(false)
-  const [showDelete, setShowDelete] = useState(false)
 
   useEffect(() => {
     if (employerForm > 1) {
@@ -81,47 +79,6 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
       setSalaryForm(salary)
     }
   }, [isHourlyRateForm, wageForm, workedHoursForm, workedMinutesForm])
-
-  //called when pressing on default entry, exit or break. Sets data to open de correct modal and edit the correct info
-  const selectedTime = () => {
-    switch (timeType) {
-      case "entrada":
-        setDate(shiftEntryForm || pressedDate)
-        setShowDelete(shiftEntryForm ? true : false)
-        break
-      case "salida":
-        setDate(shiftExitForm || (shiftEntryForm || pressedDate))
-        setShowDelete(shiftExitForm ? true : false)
-        break
-      case "descansoEntrada":
-        setDate(shiftBreakEntryForm || pressedDate)
-        setShowDelete(shiftBreakEntryForm ? true : false)
-      case "descansoSalida":
-        setDate(shiftBreakExitForm || (shiftBreakEntryForm || pressedDate))
-        setShowDelete(shiftBreakExitForm ? true : false)
-    }
-  }
-
-  //takes the new time when changing entry, exit or break. and sets the new data
-  const changeConfigInfo = (newDate: Date | null) => {
-    if (timeType === "entrada") {
-      setShiftEntryForm(newDate)
-    }
-    if (timeType === "salida") {
-      setShiftExitForm(newDate)
-
-      if (newDate !== null && newDate.getDate() === shiftEntryForm!.getDate() && (newDate.getHours() < shiftEntryForm!.getHours() || (newDate.getHours() === shiftEntryForm!.getHours() && newDate.getMinutes() < shiftEntryForm!.getMinutes()))) {
-        setShiftEntryForm(null)
-      }
-    }
-    if (timeType === "descansoEntrada") {
-      setShiftBreakEntryForm(newDate)
-    }
-    if (timeType === "descansoSalida") {
-      setShiftBreakExitForm(newDate)
-    }
-    setTimeType("")
-  }
 
   //calculates break
   useEffect(() => {
@@ -151,38 +108,6 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
       setWorkedMinutesForm(null)
     }
   }, [shiftEntryForm, shiftExitForm, shiftBreakForm])
-
-  //calls the alert when trying to delete entry, exit or break time
-  const showAlert = () => {
-    Alert.alert(
-      '',
-      translateFn("timeDeleteAlert"),
-      [
-        {
-          text: translateFn("cancel"),
-          style: 'cancel'
-        },
-        {
-          text: 'OK',
-          onPress: () => { setModalOpen(false), changeConfigInfo(null) },
-          style: 'cancel'
-        },
-      ],
-      {
-        cancelable: true
-      }
-    )
-  }
-
-  //sets the datePicker modal title
-  const modalTitle = () => {
-    switch (timeType) {
-      case "entrada": return translateFn("entryHour")
-      case "salida": return translateFn("exitHour")
-      case "descansoEntrada": return translateFn("breakStart")
-      case "descansoSalida": return translateFn("breakEnd")
-    }
-  }
 
   //saves the new edited info when submiting
   const handleSubmit = () => {
@@ -237,35 +162,7 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
     setBlockSubmit(false)
   }, [employerForm, shiftEntryForm])
 
-  //sets the date picker mode
-  const datePickerMode = () => {
-    switch (timeType) {
-      case "entrada": return "time"
-      case "salida": return "datetime"
-      case "descansoEntrada": return shiftExitForm && shiftExitForm.getDate() === pressedDate.getDate() ? "time" : "datetime"
-      case "descansoSalida": return shiftExitForm && shiftExitForm.getDate() === pressedDate.getDate() ? "time" : "datetime"
-    }
-  }
-
-  //sets the minimum date for date picker
-  const minDate = () => {
-    switch (timeType) {
-      case "salida": return shiftEntryForm || pressedDate
-      case "descansoEntrada": return shiftEntryForm || shiftBreakEntryForm || pressedDate
-      case "descansoSalida": return shiftBreakEntryForm || (shiftEntryForm || pressedDate)
-    }
-  }
-
-  //sets the maximum date for date picker
-  const maxDate = () => {
-    switch (timeType) {
-      case "entrada": return shiftExitForm || new Date(pressedDate.getFullYear(), pressedDate.getMonth(), pressedDate.getDate() + 2, 23, 59)
-      case "salida": return new Date(pressedDate.getFullYear(), pressedDate.getMonth(), pressedDate.getDate() + 2, 23, 59)
-      case "descansoEntrada": return shiftExitForm || undefined
-      case "descansoSalida": return shiftExitForm || new Date(pressedDate.getFullYear(), pressedDate.getMonth(), pressedDate.getDate() + 2, 23, 59)
-    }
-  }
-
+  //Animation of payment method selector
   const value = useRef(new Animated.Value(isHourlyRateForm ? 0 : 1)).current
   const handlePress = (boolean: boolean) => {
     Animated.parallel([
@@ -371,7 +268,7 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
             textRight={shiftBreakForm ? `${shiftBreakForm.getHours()}:${formattedMinutes(shiftBreakForm)}` : "0"}
             duration={300}
             maxHeight={200}
-            arrowColor={theme.colors.verdeBase}
+            arrowColor={configInfo.baseColor}
             isOpen={breakOpen}
             setIsOpen={setBreakOpen}
           >
@@ -410,7 +307,7 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
             textRight={salaryForm && !salaryOpen ? `$ ${Math.floor(salaryForm * 100)/ 100}` : ""}
             duration={300}
             maxHeight={200}
-            arrowColor={theme.colors.verdeBase}
+            arrowColor={configInfo.baseColor}
             isOpen={salaryOpen}
             setIsOpen={setSalaryOpen}
           >
@@ -473,48 +370,15 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
           />
         </View>
 
-        <Modal
-          visible={modalOpen}
-          onShow={selectedTime}
-          transparent={true}
-          animationType="fade"
-        >
-          <View style={styles.modalContainer}>
-            <View style={styles.modal}>
-              <View style={styles.modalTitleContainer}>
-                <Text style={styles.modalTitle}>{modalTitle()}</Text>
-                {showDelete && <Icon
-                  style={styles.delete}
-                  name='delete'
-                  color={theme.colors.rojoBin}
-                  size={20}
-                  onPress={() => { showAlert() }}
-                />}
-              </View>
-
-              <DatePicker
-                theme='light'
-                mode={datePickerMode()}
-                minimumDate={minDate()}
-                maximumDate={maxDate()}
-                locale={lenguage}
-                date={date!}
-                onDateChange={setDate}
-                dividerColor={theme.colors.verdeBase}
-                is24hourSource={timeType === "descanso" ? "locale" : "device"}
-              />
-
-              <View style={styles.modalButtons}>
-                <TouchableOpacity activeOpacity={0.7} onPress={() => { setModalOpen(false), setTimeType("") }}>
-                  <Text style={styles.modalButton}>{translateFn("cancel")}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity activeOpacity={0.7} onPress={() => { setModalOpen(false), changeConfigInfo(date) }}>
-                  <Text style={styles.modalButton}>{translateFn("save")}</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </Modal>
+        <ModalDatePicker 
+          entry={shiftEntryForm} setEntry={setShiftEntryForm}
+          exit={shiftExitForm} setExit={setShiftExitForm}
+          entryBreak={shiftBreakEntryForm} setEntryBreak={setShiftBreakEntryForm}
+          exitBreak={shiftBreakExitForm} setExitBreak={setShiftBreakExitForm}
+          modalOpen={modalOpen} setModalOpen={setModalOpen}
+          timeType={timeType} setTimeType={setTimeType}
+          pressedDate={pressedDate}
+        />        
 
         {missing &&
           <Text style={styles.textAlert}>{missing}</Text>
@@ -526,7 +390,7 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
             press={() => handleSubmit()}
             block={employerForm === 0 || !shiftEntryForm || blockSubmit ? true : false}
             to={`/calendar/shifts/${pressedDate}`}
-            color={theme.colors.verdeBoton}
+            color={configInfo.buttonsColor}
           >
             <Text style={styles.textoBoton}>{isCreate ? translateFn("createNewShift") : translateFn("saveChanges")}</Text>
           </Button>
@@ -657,41 +521,6 @@ const styles = StyleSheet.create({
   boton: {
     marginTop: -20,
     marginBottom: 10
-  },
-  modalContainer: {
-    flex: 1,
-    marginTop: Platform.OS === "ios" ? Constants.statusBarHeight + 10 : Constants.statusBarHeight + 12,
-    marginBottom: 76,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modal: {
-    alignItems: "center",
-    backgroundColor: "white",
-    padding: 40,
-    borderRadius: 10
-  },
-  modalTitleContainer: {
-    alignSelf: "flex-start",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "70%"
-  },
-  modalTitle: {
-    fontSize: 24
-  },
-  delete: {
-    position: "relative",
-    top: 7
-  },
-  modalButtons: {
-    flexDirection: "row",
-    gap: 28,
-    alignSelf: "flex-end"
-  },
-  modalButton: {
-    fontSize: theme.fontSizes.F18
   },
   pickerContainer: {
     flex: 1,

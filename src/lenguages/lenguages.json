@@ -49,6 +49,26 @@
     {"lenguage": "en", "text": "Settings"},
     {"lenguage": "pt", "text": "Configuração"}
   ],
+  "userSettings": [
+    {"lenguage": "es", "text": "Ajustes de Usuario"},
+    {"lenguage": "en", "text": "User Settings"},
+    {"lenguage": "pt", "text": "configurações do usuário"}
+  ],
+  "user": [
+    {"lenguage": "es", "text": "Usuario"},
+    {"lenguage": "en", "text": "User"},
+    {"lenguage": "pt", "text": "Usuário"}
+  ],
+  "securityCopy": [
+    {"lenguage": "es", "text": "Hacer copia de seguridad"},
+    {"lenguage": "en", "text": "Save Backup"},
+    {"lenguage": "pt", "text": "Fazer backup"}
+  ],
+  "logOut": [
+    {"lenguage": "es", "text": "Cerrar Sesión"},
+    {"lenguage": "en", "text": "Log Out"},
+    {"lenguage": "pt", "text": "Fechar Sessão"}
+  ],
   "createEmployer": [
     {"lenguage": "es", "text": "Crear Empleador"},
     {"lenguage": "en", "text": "Create Employer"},
@@ -323,5 +343,20 @@
     {"lenguage": "es", "text": "Por Turno"},
     {"lenguage": "en", "text": "Per Turn"},
     {"lenguage": "pt", "text": "Por Turno"}
+  ],
+  "baseColor": [
+    {"lenguage": "es", "text": "Color Base"},
+    {"lenguage": "en", "text": "Base Color"},
+    {"lenguage": "pt", "text": "Cor Base"}
+  ],
+  "buttonsColor": [
+    {"lenguage": "es", "text": "Color de Botones"},
+    {"lenguage": "en", "text": "Buttons Color"},
+    {"lenguage": "pt", "text": "cor do botão"}
+  ],
+  "resetColor": [
+    {"lenguage": "es", "text": "Reestablecer al color inicial"},
+    {"lenguage": "en", "text": "Reset to initial color"},
+    {"lenguage": "pt", "text": "Redefinir a cor inicial"}
   ]
 }

@@ -14,7 +14,7 @@ export default function Totals() {
   const param = useParams()
   const currentMonth = param.month ? new Date(param.month) : new Date()
 
-  const {shifts, lenguage, addsInitialized, companysInfo} = useCalendar()
+  const {shifts, lenguage, addsInitialized, companysInfo, configInfo} = useCalendar()
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text:string){
@@ -142,7 +142,7 @@ export default function Totals() {
         <View style={styles.botonVer}>
           <Text style={styles.textLine}>{workedDays}</Text>
           {workedDays !== 0 && <Link to={`/totalsDetail/${currentDay}/${employer}`} activeOpacity={0.8} underlayColor="none">
-            <ButtonSmall color={theme.colors.verdeBoton}>
+            <ButtonSmall color={configInfo.buttonsColor}>
               <Text style={styles.textButtonSmall}>{translateFn("seeDetail")}</Text>
             </ButtonSmall>
           </Link>}

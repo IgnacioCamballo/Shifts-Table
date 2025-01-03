@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, StyleSheet, ColorValue } from 'react-native'
+import { View, StyleSheet, ColorValue, StyleProp, ViewStyle } from 'react-native'
 import { Link } from 'react-router-native'
 
 interface ButtonProps {
@@ -8,10 +8,11 @@ interface ButtonProps {
     to: string;
     block?: boolean;
     press?: () => void,
-    margintop?: number
+    margintop?: number,
+    buttonStyles?: StyleProp<ViewStyle>
   }
 
-export default function Button({children, color, to, block, press, margintop} : ButtonProps) {
+export default function Button({children, color, to, block, press, margintop, buttonStyles} : ButtonProps) {
     let customeStyle = {
         boton: {
             ...styles.boton,
@@ -22,7 +23,7 @@ export default function Button({children, color, to, block, press, margintop} : 
 
     return (
         <Link activeOpacity={0.5} onPress={press} to={to} disabled={block} underlayColor="none">
-            <View style={customeStyle.boton}>
+            <View style={[customeStyle.boton, buttonStyles]}>
                 {children}
             </View>
         </Link>
