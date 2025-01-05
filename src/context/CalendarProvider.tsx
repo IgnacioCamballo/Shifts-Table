@@ -4,6 +4,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage"
 
 import { CalendarContextProps, ConfigInfo, EmployerProps, ShiftProps, UserInfo } from "../types"
 import theme from "../theme/theme";
+import { useQuery } from "@tanstack/react-query";
+import { getUser } from "../api/UserAPI";
 
 interface props {
   children: JSX.Element | JSX.Element[]
@@ -35,15 +37,17 @@ const CalendarProvider = ({ children }: props) => {
   const getUserInfo = async () => {
     try {
       const storagedConfig = await AsyncStorage.getItem("userInfo")
-      const userInformation: UserInfo = {
-        user: "11",
-        userName: "Nacho",
-        mail: "correo@correo.com",
-        premium: false,
-        lastBackUp: null,
-        usedWithoutConnection: false
-      } 
-      setUserInfo(userInformation)
+      if(storagedConfig !== null) {
+        const parsed: UserInfo = JSON.parse(storagedConfig)
+        const userInformation: UserInfo = {
+          userName: parsed.userName || "",
+          mail: parsed.mail || "",
+          premium: parsed.premium || false,
+          lastBackUp: parsed.lastBackUp || null,
+          usedWithoutConnection: parsed.usedWithoutConnection || false
+        } 
+        setUserInfo(userInformation)
+      }
     } catch (error) {
       console.log(error)
     }
@@ -126,13 +130,23 @@ const CalendarProvider = ({ children }: props) => {
     }
   }
   
+  const {data } = useQuery({
+    queryKey: ["User"],
+    queryFn: getUser
+  })
+  console.log(data)
+
   useEffect(() => {
-    getLenguageStoraged()
+    getUserInfo()
     getConfigStoraged()
     getCompanysStoraged()
     getShiftsStoraged()
-    getUserInfo()
+    getLenguageStoraged()
   }, [])
+
+  useEffect(() => {
+    AsyncStorage.setItem("userInfo", JSON.stringify(userInfo))
+  }, [userInfo])
 
   useEffect(() => {
     AsyncStorage.setItem("config", JSON.stringify(configInfo))

@@ -1,4 +1,20 @@
 
+export type UserInfo = {
+    userName: string,
+    mail: string,
+    lastBackUp: Date | null,
+    premium: boolean,
+    usedWithoutConnection: boolean
+}
+
+export type ConfigInfo = {
+    baseColor: string,
+    buttonsColor: string,
+    entry: Date | null,
+    exit: Date | null,
+    configBreakEntry: Date | null,
+    configBreakExit: Date | null
+}
 
 export type EmployerProps = {
     key: number,
@@ -27,34 +43,12 @@ export type ShiftProps = {
     note: string | null
 }
 
-export type UserInfo = {
-    user: string,
-    userName: string,
-    mail: string,
-    lastBackUp: Date | null,
-    premium: boolean,
-    usedWithoutConnection: boolean
-}
-
-export type ConfigInfo = {
-    baseColor: string,
-    buttonsColor: string,
-    entry: Date | null,
-    exit: Date | null,
-    configBreakEntry: Date | null,
-    configBreakExit: Date | null
-}
-
 export type User = {
-    _id: string,
-    password: string,
     userInfo: UserInfo,
     configInfo: ConfigInfo,
     employers: EmployerProps[],
     shifts: ShiftProps[]
 }
-
-
 
 // Used isinde front-end 
 export type DayProps = {
@@ -62,7 +56,7 @@ export type DayProps = {
     day: number, 
     isCurrentDay: boolean,
     shadowed: boolean
-  }
+}
 
 export type CalendarContextProps = {   
     userInfo: UserInfo,
