@@ -1,9 +1,9 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef } from 'react'
 import { Text, Animated, TouchableOpacity, StyleSheet, StyleProp, ViewStyle } from 'react-native';
-
-import theme from '../../theme/theme';
 import Icon from 'react-native-vector-icons/AntDesign';
-import useCalendar from '../../hooks/useCalendar';
+
+import theme from '@/theme/theme';
+import useCalendar from '@/hooks/useCalendar';
 
 type DropDownAutoHeightProps = {
   children: JSX.Element | JSX.Element[]
@@ -56,11 +56,12 @@ export default function DropDownAutoHeight({ isOpen, setIsOpen, children, textRi
         style={[styles.lineCenter, titleContainerStyle]}
         onPress={() => handlePress()}
       >
-        <Animated.View style={[rotateArrow]}>
+        <Animated.View style={[styles.arrowCont, rotateArrow]}>
           <Icon
             name="caretdown"
             color={arrowColor || configInfo.baseColor}
             size={20}
+            style={styles.arrow}
           />
         </Animated.View>
         <Text style={[styles.textLine, titleStyle]}>{title}</Text>
@@ -89,7 +90,8 @@ const styles = StyleSheet.create({
   textLine: {
     fontSize: theme.fontSizes.F18,
     fontWeight: '400',
-    textAlign: "right"
+    textAlign: "right",
+    marginHorizontal: 4
   },
   textRight: {
     position: "absolute",
@@ -101,4 +103,12 @@ const styles = StyleSheet.create({
     height: "auto",
     overflow: "hidden"
   },
+  arrowCont: {
+    position: "relative",
+  },
+  arrow: {
+    position: "absolute",
+    left: -10,
+    top: -10
+  }
 })

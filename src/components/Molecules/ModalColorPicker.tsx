@@ -3,9 +3,9 @@ import { Modal, View, TouchableOpacity, Text, StyleSheet, Platform } from 'react
 import ColorPicker, { Preview, Panel1, HueSlider } from 'reanimated-color-picker'
 import Constants from "expo-constants"
 
-import useCalendar from '../../hooks/useCalendar'
-import theme from '../../theme/theme'
-import { translate } from '../../utils'
+import useCalendar from '@/hooks/useCalendar'
+import theme from '@/theme/theme'
+import { translate } from '@/utils'
 
 type ModalColorPickerProps = {
   isOpen: boolean,

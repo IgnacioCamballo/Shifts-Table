@@ -1,11 +1,13 @@
 import React from 'react'
 import { View, Text, StyleSheet, Alert } from 'react-native'
-import theme from '../../theme/theme'
-import { ShiftProps } from '../../types'
-import useCalendar from '../../hooks/useCalendar'
-import { firstLetterUpper, formattedMinutes, formattedMinutesNumber, textDay, translate } from '../../utils'
-import Slider from '../Atoms/Slider'
-import EditDeletButtons from './EditDeletButtons'
+
+import useCalendar from '@/hooks/useCalendar'
+import theme from '@/theme/theme'
+import { ShiftProps } from '@/types'
+import { firstLetterUpper, formattedMinutes, formattedMinutesNumber, textDay, translate } from '@/utils'
+
+import Slider from '@/components/Atoms/Slider'
+import EditDeletButtons from '@/components/Molecules/EditDeletButtons'
 
 export default function Shift({shift}: {shift: ShiftProps}) {
   const {shifts, companysInfo, setShifts, lenguage} = useCalendar()

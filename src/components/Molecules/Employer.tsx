@@ -1,11 +1,12 @@
 import React from 'react'
 import { View, Text, StyleSheet, Alert } from 'react-native'
-import theme from '../../theme/theme'
-import { EmployerProps } from '../../types'
-import useCalendar from '../../hooks/useCalendar'
-import EditDeletButtons from './EditDeletButtons'
-import { translate } from '../../utils'
 
+import useCalendar from '@/hooks/useCalendar'
+import theme from '@/theme/theme'
+import { EmployerProps } from '@/types'
+import { translate } from '@/utils'
+
+import EditDeletButtons from '@/components/Molecules/EditDeletButtons'
 
 export default function Employer({ employer }: { employer: EmployerProps }) {
   const { companysInfo, setCompanysInfo, lenguage } = useCalendar()

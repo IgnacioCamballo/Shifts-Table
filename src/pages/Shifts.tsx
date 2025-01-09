@@ -1,17 +1,18 @@
 import React, { useState } from 'react'
 import { Text, ScrollView, StyleSheet, View} from 'react-native'
 import { useParams } from 'react-router-native'
-
-import useCalendar from '../hooks/useCalendar'
-import { ShiftProps } from '../types'
-import { firstLetterUpper, textDay, translate } from '../utils'
-import theme from '../theme/theme'
-import Shift from '../components/Molecules/Shift'
-import SwiftArrows from '../components/Molecules/SwiftArrows'
+import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads'
 import Icon from 'react-native-vector-icons/AntDesign'
-import TransparentButton from '../components/Atoms/Buttons/ButtonTransparent'
-import Button from '../components/Atoms/Buttons/Button'
-import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads'
+
+import useCalendar from '@/hooks/useCalendar'
+import { ShiftProps } from '@/types'
+import { firstLetterUpper, textDay, translate } from '@/utils'
+import theme from '@/theme/theme'
+
+import Shift from '@/components/Molecules/Shift'
+import SwiftArrows from '@/components/Molecules/SwiftArrows'
+import TransparentButton from '@/components/Atoms/Buttons/ButtonTransparent'
+import Button from '@/components/Atoms/Buttons/Button'
 
 export default function Shifts() {
   const params = useParams()

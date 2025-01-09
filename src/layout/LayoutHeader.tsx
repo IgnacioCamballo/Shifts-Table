@@ -1,10 +1,11 @@
 import React from 'react'
 import { View, StyleSheet, Text } from 'react-native'
 import { Platform } from 'react-native';
-import theme from '../theme/theme';
 import { useLocation } from 'react-router-native';
-import useCalendar from '../hooks/useCalendar';
-import { translate } from '../utils';
+
+import useCalendar from '@/hooks/useCalendar';
+import theme from '@/theme/theme';
+import { translate } from '@/utils';
 
 function NombreLayout () {
   const {pathname} = useLocation()

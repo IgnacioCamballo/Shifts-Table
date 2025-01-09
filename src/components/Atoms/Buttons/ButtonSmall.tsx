@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, StyleSheet, ColorValue, StyleProp, ViewStyle } from 'react-native'
 import { Platform } from 'react-native';
-import theme from '../../../theme/theme';
+import theme from '@/theme/theme';
 
 interface ButtonProps {
   children: React.ReactNode

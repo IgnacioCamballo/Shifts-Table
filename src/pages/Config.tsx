@@ -1,14 +1,16 @@
 import React, { useState } from 'react'
 import { StyleSheet, Text, View, Platform, ScrollView } from 'react-native'
 import Constants from "expo-constants"
-import useCalendar from '../hooks/useCalendar'
-import theme from '../theme/theme'
-import Employer from '../components/Molecules/Employer'
-import { translate } from '../utils'
-import Button from '../components/Atoms/Buttons/Button'
-import ConfigSettings from '../components/organisms/ConfigSettings'
-import ConfigDefaultTimes from '../components/organisms/ConfigDefaultTimes'
-import DropDownAutoHeight from '../components/Molecules/DropDownAutoHeight'
+
+import useCalendar from '@/hooks/useCalendar'
+import { translate } from '@/utils'
+import theme from '@/theme/theme'
+
+import Button from '@/components/Atoms/Buttons/Button'
+import ConfigSettings from '@/components/organisms/ConfigSettings'
+import Employer from '@/components/Molecules/Employer'
+import ConfigDefaultTimes from '@/components/organisms/ConfigDefaultTimes'
+import DropDownAutoHeight from '@/components/Molecules/DropDownAutoHeight'
 
 export default function Config() {
   const {companysInfo, lenguage, configInfo} = useCalendar()

@@ -1,8 +1,9 @@
+import React from "react";
 import { StyleSheet, View } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import { Link } from "react-router-native";
-import theme from "../../theme/theme";
-import React from "react";
+
+import theme from "@/theme/theme";
 
 type EditDeleteProps = {
   DeleteAlert: () => void,

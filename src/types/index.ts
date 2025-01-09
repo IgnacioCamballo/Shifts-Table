@@ -1,11 +1,24 @@
+import {z} from "zod"
 
-export type UserInfo = {
-    userName: string,
-    mail: string,
-    lastBackUp: Date | null,
-    premium: boolean,
-    usedWithoutConnection: boolean
-}
+export const UserInfoSchema = z.object({
+    userName: z.string(),
+    mail: z.string(),
+    lastBackUp: z.date().nullable(),
+    premium: z.boolean(),
+    usedWithoutConnection: z.boolean()
+})
+export type UserInfo = z.infer<typeof UserInfoSchema>
+
+export const UserDBSchema = z.object({
+    _id: z.string(),
+    userName: z.string(),
+    mail: z.string(),
+    premiumEnds: z.number().nullable(),
+    lastPayment: z.string(),
+    userInfo: z.string()
+})
+export type UserDB = z.infer<typeof UserDBSchema>
+export const UserDbArraySchema = z.array(UserDBSchema)
 
 export type ConfigInfo = {
     baseColor: string,

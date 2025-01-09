@@ -4,12 +4,13 @@ import ColorPicker, { HueSlider, Panel1, Preview, returnedResults } from 'reanim
 import { Link, useParams } from 'react-router-native'
 import Constants from "expo-constants"
 
-import { EmployerProps } from '../types'
-import useCalendar from '../hooks/useCalendar'
-import theme from '../theme/theme'
-import ButtonSmall from '../components/Atoms/Buttons/ButtonSmall'
-import Button from '../components/Atoms/Buttons/Button'
-import { translate } from '../utils'
+import useCalendar from '@/hooks/useCalendar'
+import { EmployerProps } from '@/types'
+import theme from '@/theme/theme'
+import { translate } from '@/utils'
+
+import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
+import Button from '@/components/Atoms/Buttons/Button'
 
 export default function NewEmployer() {
   const params = useParams()

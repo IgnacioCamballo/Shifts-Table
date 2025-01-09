@@ -5,9 +5,9 @@ import { Navigate } from "react-router-native"
 import Icon from 'react-native-vector-icons/AntDesign';
 import Icon2 from 'react-native-vector-icons/FontAwesome';
 
-import useCalendar from "../../hooks/useCalendar"
-import { DayProps } from "../../types"
-import theme from "../../theme/theme"
+import useCalendar from "@/hooks/useCalendar"
+import { DayProps } from "@/types"
+import theme from "@/theme/theme"
 
 type RenderDayCalendarProps = {
   item : DayProps,

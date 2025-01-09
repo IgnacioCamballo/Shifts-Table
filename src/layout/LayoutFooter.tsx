@@ -1,11 +1,13 @@
 import React from 'react'
 import { View, StyleSheet } from 'react-native'
-import theme from '../theme/theme'
 import { useLocation } from 'react-router-native';
-import LogoCalendar from '../components/Atoms/Logos/LogoCalendar';
-import LogoTotals from '../components/Atoms/Logos/LogoTotals';
-import LogoConfig from '../components/Atoms/Logos/LogoConfig';
-import useCalendar from '../hooks/useCalendar';
+
+import useCalendar from '@/hooks/useCalendar';
+import theme from '@/theme/theme'
+
+import LogoCalendar from '@/components/Atoms/Logos/LogoCalendar';
+import LogoTotals from '@/components/Atoms/Logos/LogoTotals';
+import LogoConfig from '@/components/Atoms/Logos/LogoConfig';
 
 export default function LayoutFooter() {
   const { pathname } = useLocation()

@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
 import { Modal, Text, View, StyleSheet, Platform, TouchableOpacity, Alert } from 'react-native'
 import DatePicker from 'react-native-date-picker'
-import theme from '../../theme/theme'
 import Icon from 'react-native-vector-icons/AntDesign'
-import useCalendar from '../../hooks/useCalendar'
-import { translate } from '../../utils'
 import Constants from "expo-constants"
+
+import useCalendar from '@/hooks/useCalendar'
+import theme from '@/theme/theme'
+import { translate } from '@/utils'
 
 type modalDatePickerPorps = {
     timeType: string,

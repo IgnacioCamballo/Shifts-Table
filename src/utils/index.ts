@@ -1,4 +1,4 @@
-import trans from "../lenguages/lenguages.json"
+import trans from "@/lenguages/lenguages.json"
 
 //returns list of days of the week starting on monday
 export function weekdays(lenguage: string) {

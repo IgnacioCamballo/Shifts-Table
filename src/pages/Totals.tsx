@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { Text, View, StyleSheet } from 'react-native'
 import { Link, useParams } from 'react-router-native'
+import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads'
 import { Picker } from '@react-native-picker/picker'
 
-import useCalendar from '../hooks/useCalendar'
-import { firstLetterUpper, formattedMinutesNumber, translate } from '../utils'
-import theme from '../theme/theme'
-import SwiftArrows from '../components/Molecules/SwiftArrows'
-import ButtonSmall from '../components/Atoms/Buttons/ButtonSmall'
-import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads'
+import useCalendar from '@/hooks/useCalendar'
+import { firstLetterUpper, formattedMinutesNumber, translate } from '@/utils'
+import theme from '@/theme/theme'
+
+import SwiftArrows from '@/components/Molecules/SwiftArrows'
+import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
 
 export default function Totals() {
   const param = useParams()

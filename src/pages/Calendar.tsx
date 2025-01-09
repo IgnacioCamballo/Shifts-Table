@@ -15,12 +15,12 @@ import Animated, {
 } from 'react-native-reanimated';
 import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
 
-import useCalendar from '../hooks/useCalendar';
-import theme from '../theme/theme';
-import { firstLetterUpper, weekdays } from '../utils';
-import SwiftArrows from '../components/Molecules/SwiftArrows';
-import { DayProps } from '../types';
-import RenderDayCalendar from '../components/Atoms/RenderDayCalendar';
+import useCalendar from '@/hooks/useCalendar';
+import theme from '@/theme/theme';
+import { firstLetterUpper, weekdays } from '@/utils';
+import SwiftArrows from '@/components/Molecules/SwiftArrows';
+import { DayProps } from '@/types';
+import RenderDayCalendar from '@/components/Atoms/RenderDayCalendar';
 
 let screenWidth = Dimensions.get("window").width
 
@@ -34,12 +34,6 @@ export default function Calendar() {
 
   const translationX = useSharedValue(0)
   const prevTranslationX = useSharedValue(0)
-
-  
-  useEffect(() => {
-    const today = new Date();
-    setCurrentDay(today);
-  }, []);
   
   //creates the array with the month days to build the grid, filling past month last days and next month
   //first days as necesary

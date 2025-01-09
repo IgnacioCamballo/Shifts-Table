@@ -4,10 +4,11 @@ import Constants from "expo-constants"
 import DatePicker from 'react-native-date-picker'
 import Icon from 'react-native-vector-icons/AntDesign'
 
-import useCalendar from '../../hooks/useCalendar'
-import theme from '../../theme/theme'
-import { formattedMinutes, translate } from '../../utils'
-import DropDownAutoHeight from '../Molecules/DropDownAutoHeight'
+import useCalendar from '@/hooks/useCalendar'
+import theme from '@/theme/theme'
+import { formattedMinutes, translate } from '@/utils'
+
+import DropDownAutoHeight from '@/components/Molecules/DropDownAutoHeight'
 
 export default function ConfigDefaultTimes() {
   const { lenguage, configInfo, setConfigInfo } = useCalendar()

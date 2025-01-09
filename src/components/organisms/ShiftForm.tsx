@@ -1,20 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { StyleSheet, Text, TextInput, TouchableOpacity, View, Modal, Platform, Alert, ScrollView, Animated, Dimensions } from 'react-native'
-import { Link } from 'react-router-native'
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, ScrollView, Animated, Dimensions } from 'react-native'
+import { Link, Navigate } from 'react-router-native'
 import { Picker } from '@react-native-picker/picker'
-import DatePicker from 'react-native-date-picker'
-import Constants from "expo-constants"
 
-import useCalendar from '../../hooks/useCalendar'
-import { ShiftProps } from '../../types'
-import theme from '../../theme/theme'
-import { firstLetterUpper, formattedMinutes, formattedMinutesNumber, textDay, translate } from '../../utils'
-import Slider from '../Atoms/Slider'
-import ButtonSmall from '../Atoms/Buttons/ButtonSmall'
-import Button from '../Atoms/Buttons/Button'
-import { GetBreakTime, getWorkedTime } from '../../utils/datesCompare'
-import DropDownAutoHeight from '../Molecules/DropDownAutoHeight'
-import ModalDatePicker from '../Molecules/ModalDatePicker'
+import useCalendar from '@/hooks/useCalendar'
+import { ShiftProps } from '@/types'
+import theme from '@/theme/theme'
+import { firstLetterUpper, formattedMinutes, formattedMinutesNumber, textDay, translate } from '@/utils'
+import { GetBreakTime, getWorkedTime } from '@/utils/datesCompare'
+
+import Slider from '@/components/Atoms/Slider'
+import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
+import Button from '@/components/Atoms/Buttons/Button'
+import DropDownAutoHeight from '@/components/Molecules/DropDownAutoHeight'
+import ModalDatePicker from '@/components/Molecules/ModalDatePicker'
 
 type ShiftFormProps = {
   isCreate: boolean,
@@ -229,7 +228,9 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
                 {companysInfo.map(employer =>
                   <Picker.Item style={styles.pickerItem} label={employer.name} value={employer.key} key={employer.key} />
                 )}
+                {isCreate && <Picker.Item style={styles.pickerItem} label={translateFn("createNewEmployerTab")} value={1}/>}
               </Picker>
+              {employerForm === 1 && <Navigate to={`/config/newEmployer/${pressedDate}`}/>}
             </View>
           </View>
 

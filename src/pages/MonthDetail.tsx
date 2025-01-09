@@ -2,14 +2,15 @@ import React, { useEffect, useState } from 'react'
 import { Text, TouchableOpacity, View, StyleSheet, ScrollView } from 'react-native'
 import { useParams } from 'react-router-native'
 import { Picker } from '@react-native-picker/picker'
-import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads'
+import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads'
 import Icon from 'react-native-vector-icons/AntDesign'
 
-import useCalendar from '../hooks/useCalendar'
-import theme from '../theme/theme'
-import { firstLetterUpper, formattedMinutes, textDay, translate } from '../utils'
-import SwiftArrows from '../components/Molecules/SwiftArrows'
-import TransparentButton from '../components/Atoms/Buttons/ButtonTransparent'
+import useCalendar from '@/hooks/useCalendar'
+import theme from '@/theme/theme'
+import { firstLetterUpper, formattedMinutes, textDay, translate } from '@/utils'
+
+import SwiftArrows from '@/components/Molecules/SwiftArrows'
+import TransparentButton from '@/components/Atoms/Buttons/ButtonTransparent'
 
 export default function MonthDetail() {
   const param = useParams()

@@ -1,6 +1,7 @@
 import React, { useRef } from 'react'
 import { Animated, TouchableOpacity, StyleSheet } from 'react-native';
-import theme from '../../theme/theme';
+
+import theme from '@/theme/theme';
 
 type ValueProps = {
   value: boolean,

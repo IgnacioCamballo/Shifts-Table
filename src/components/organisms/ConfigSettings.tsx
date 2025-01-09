@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import useCalendar from '../../hooks/useCalendar'
-import { translate } from '../../utils'
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import { Picker } from '@react-native-picker/picker'
-import theme from '../../theme/theme'
-import DropDownAutoHeight from '../Molecules/DropDownAutoHeight'
-import ModalColorPicker from '../Molecules/ModalColorPicker'
-import ButtonSmall from '../Atoms/Buttons/ButtonSmall'
+
+import useCalendar from '@/hooks/useCalendar'
+import { translate } from '@/utils'
+import theme from '@/theme/theme'
+
+import DropDownAutoHeight from '@/components/Molecules/DropDownAutoHeight'
+import ModalColorPicker from '@/components/Molecules/ModalColorPicker'
+import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
 
 export default function ConfigSettings() {
   const { lenguage, setLenguage, configInfo, setConfigInfo, userInfo } = useCalendar()
@@ -80,7 +82,7 @@ export default function ConfigSettings() {
         </>
       }
       
-      {userInfo.user ? 
+      {userInfo.userName ? 
         <>
           <View style={[styles.line, styles.user]}>
             <View style={[styles.line, {borderBottomWidth: 0}]}>
@@ -108,7 +110,7 @@ export default function ConfigSettings() {
           </View>
         </> : 
         <>
-          
+          <Text>Inicia sesion</Text>
         </>
       }
 
@@ -133,6 +135,8 @@ export default function ConfigSettings() {
         : <></>
       }
 
+      <Text>politicas de privacidad</Text>
+      <Text>Guia de uso</Text>
       <View style={{ height: 40 }} />
     </DropDownAutoHeight>
   )

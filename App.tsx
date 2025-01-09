@@ -24,13 +24,13 @@ function InsideApp() {
 export default function App() {
   return (
 
-    <GestureHandlerRootView>
-      <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <GestureHandlerRootView>
         <CalendarProvider>
           <InsideApp />
         </CalendarProvider>
-      </QueryClientProvider>
-    </GestureHandlerRootView>
+      </GestureHandlerRootView>
+    </QueryClientProvider>
   );
 }
 

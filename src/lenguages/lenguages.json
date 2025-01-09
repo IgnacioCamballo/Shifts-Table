@@ -84,6 +84,11 @@
     {"lenguage": "en", "text": "Create new employer"},
     {"lenguage": "pt", "text": "Criar novo empregador"}
   ],
+  "createNewEmployerTab": [
+    {"lenguage": "es", "text": "+ Crear nuevo empleador"},
+    {"lenguage": "en", "text": "+ Create new employer"},
+    {"lenguage": "pt", "text": "+ Criar novo empregador"}
+  ],
   "editEmployer": [
     {"lenguage": "es", "text": "Editar Empleador"},
     {"lenguage": "en", "text": "Edit Employer"},

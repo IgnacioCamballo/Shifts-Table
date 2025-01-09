@@ -1,10 +1,11 @@
+import React from "react"; 
 import { View, Text, StyleSheet } from "react-native";
 import { Link } from "react-router-native";
 import IonIcon from "react-native-vector-icons/Ionicons"
-import theme from "../../../theme/theme";
-import useCalendar from "../../../hooks/useCalendar";
-import React from "react";
-import { translate } from "../../../utils";
+
+import theme from "@/theme/theme";
+import useCalendar from "@/hooks/useCalendar";
+import { translate } from "@/utils";
 
 type LogoConfigProps = {
   to: string,

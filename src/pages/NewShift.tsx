@@ -1,9 +1,10 @@
 import React from 'react'
 import { useParams } from 'react-router-native'
-import { ShiftProps } from '../types'
 
-import useCalendar from '../hooks/useCalendar'
-import ShiftForm from '../components/organisms/ShiftForm'
+import useCalendar from '@/hooks/useCalendar'
+import { ShiftProps } from '@/types'
+
+import ShiftForm from '@/components/organisms/ShiftForm'
 
 export default function NewShift() {
   const params = useParams()

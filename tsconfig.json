@@ -4,6 +4,12 @@
     "module": "ESNext",
     "target": "ESNext",
     "jsx": "react",
-    "strict": true
+    "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    }
   }
 }
