@@ -1,5 +1,5 @@
 import { isAxiosError } from "axios"
-import api from "../lib/axios"
+import api from "@/lib/axios"
 
 export async function getUserInfo() {
   //const token = sessionStorage.getItem("AUTH_TOKEN")

@@ -1,17 +1,26 @@
 import React from 'react'
 import { View, StyleSheet } from 'react-native'
 import { Route, Routes } from 'react-router-native'
+
 import LayoutHeader from '@/layout/LayoutHeader'
 import LayoutFooter from '@/layout/LayoutFooter'
+//Calendar pages
 import Calendar from '@/pages/Calendar'
-import Totals from '@/pages/Totals'
-import Config from '@/pages/Config'
-import NewEmployer from '@/pages/NewEmployer'
-import EditEmployer from '@/pages/EditEmployer'
 import Shifts from '@/pages/Shifts'
 import NewShift from '@/pages/NewShift'
 import EditShift from '@/pages/EditShift'
+//config pages
+import Config from '@/pages/Config'
+import NewEmployer from '@/pages/NewEmployer'
+import EditEmployer from '@/pages/EditEmployer'
+//Totals pages
+import Totals from '@/pages/Totals'
 import MonthDetail from '@/pages/MonthDetail'
+//Account pages
+import AccountIntro from '@/pages/AccountIntro'
+import SelectLenguage from '@/pages/SelectLenguage'
+import Login from '@/pages/Login'
+import CreateAccount from '@/pages/CreateAccount'
 
 export default function Main() {
   return (
@@ -32,10 +41,10 @@ export default function Main() {
             <Route path='/totals/:month' element={<Totals />}/>
             <Route path='/totalsDetail/:month/:employer' element={<MonthDetail />}/>
 
-          <Route path='/account' element={<></>}/>
-            <Route path='/account/lenguage' element={<></>}/>
-            <Route path='/account/login' element={<></>}/>
-            <Route path='/account/createAccount' element={<></>}/>
+          <Route path='/account' element={<AccountIntro />}/>
+            <Route path='/account/lenguage' element={<SelectLenguage />}/>
+            <Route path='/account/login' element={<Login />}/>
+            <Route path='/account/createAccount' element={<CreateAccount />}/>
         </Routes>
         <LayoutFooter />
     </View>

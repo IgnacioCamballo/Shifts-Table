@@ -24,6 +24,7 @@ function NombreLayout () {
   if(pathname === "/config") return translateFn("settings")
   if(pathname === "/config/newEmployer") return translateFn("createEmployer")
   if(pathname.startsWith("/config/editEmployer/")) return translateFn("editEmployer")
+  if(pathname.startsWith("/account")) return translateFn("account")
 }
 
 export default function LayoutHeader() {

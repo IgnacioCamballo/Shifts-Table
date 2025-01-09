@@ -1,6 +1,6 @@
 import { isAxiosError } from "axios"
-import api from "../lib/axios"
-import useCalendar from "../hooks/useCalendar"
+import api from "@/lib/axios"
+import useCalendar from "@/hooks/useCalendar"
 
 export async function getAllUsers() {
   try {

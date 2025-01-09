@@ -9,6 +9,7 @@ import theme from '@/theme/theme'
 import DropDownAutoHeight from '@/components/Molecules/DropDownAutoHeight'
 import ModalColorPicker from '@/components/Molecules/ModalColorPicker'
 import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
+import { useNavigate } from 'react-router-native'
 
 export default function ConfigSettings() {
   const { lenguage, setLenguage, configInfo, setConfigInfo, userInfo } = useCalendar()
@@ -17,6 +18,8 @@ export default function ConfigSettings() {
   function translateFn(text: string) {
     return translate({ text, lenguage })
   }
+
+  const navigate = useNavigate()
 
   const [baseColor, setBaseColor] = useState(configInfo.baseColor || theme.colors.verdeBase)
   const [buttonsColor, setButtonsColor] = useState(configInfo.buttonsColor || theme.colors.verdeBoton)
@@ -51,8 +54,8 @@ export default function ConfigSettings() {
             accessibilityLabel={translateFn("selectLenguage")}
             mode='dropdown'
           >
-            <Picker.Item style={styles.pickerItem} label='Español' value="es" />
             <Picker.Item style={styles.pickerItem} label='English' value="en" />
+            <Picker.Item style={styles.pickerItem} label='Español' value="es" />
             <Picker.Item style={styles.pickerItem} label='Portugues' value="pt" />
           </Picker>
         </View>
@@ -110,7 +113,7 @@ export default function ConfigSettings() {
           </View>
         </> : 
         <>
-          <Text>Inicia sesion</Text>
+          <Text onPress={() => navigate('/account/lenguage')}>Inicia sesion</Text>
         </>
       }
 

@@ -21,7 +21,7 @@ const CalendarProvider = ({ children }: props) => {
   const [configInfo, setConfigInfo] = useState<ConfigInfo>({} as ConfigInfo)
   const [companysInfo, setCompanysInfo] = useState<EmployerProps[]>([])
   const [shifts, setShifts] = useState<ShiftProps[]>([])
-  const [lenguage, setLenguage] = useState<string>("es")
+  const [lenguage, setLenguage] = useState<string>("en")
   const [addsInitialized, setAddsInitialized] = useState(false)
   
   //Initializes adds

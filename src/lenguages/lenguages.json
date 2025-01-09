@@ -363,5 +363,15 @@
     {"lenguage": "es", "text": "Reestablecer al color inicial"},
     {"lenguage": "en", "text": "Reset to initial color"},
     {"lenguage": "pt", "text": "Redefinir a cor inicial"}
+  ],
+  "account": [
+    {"lenguage": "es", "text": "Cuenta"},
+    {"lenguage": "en", "text": "Account"},
+    {"lenguage": "pt", "text": "Conta"}
+  ],
+  "createAccount": [
+    {"lenguage": "es", "text": "Crear cuenta"},
+    {"lenguage": "en", "text": "Create account"},
+    {"lenguage": "pt", "text": "Criar conta"}
   ]
 }
