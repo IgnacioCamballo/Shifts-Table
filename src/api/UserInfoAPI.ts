@@ -1,12 +1,12 @@
 import { isAxiosError } from "axios"
 import api from "@/lib/axios"
+import AsyncStorage from "@react-native-async-storage/async-storage"
 
 export async function getUserInfo() {
-  //const token = sessionStorage.getItem("AUTH_TOKEN")
-  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3Nzk3YzJkYzFkOWJkYWM1ZGVlNzk5MiIsImlhdCI6MTczNjAxNjEyMCwiZXhwIjoxNzY3NTczNzIwfQ.evd-iRn-qSEZeCe-fqBgEepdN4_jf_-2267kjm2pCgA"
+  const token = await AsyncStorage.getItem("userToken")
 
   try {
-    const {data, headers} = await api("/usersInfo/getUserInfo", {
+    const {data} = await api("/usersInfo/getUserInfo", {
       headers: {
         Authorization: `Bearer ${token}`
       }

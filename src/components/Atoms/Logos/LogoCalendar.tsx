@@ -18,8 +18,8 @@ export default function LogoCalendar({to, pathName}: LogoCalendarProps) {
   return (
     <Link to={to} activeOpacity={0.7} underlayColor="none">
       <View style={styles.menuItem}>
-        <View style={[styles.border, pathName === "/" || pathName.startsWith("/calendar") ? styles.borderBlack : {}]}>
-          <IonIcon name='calendar-outline' size={30}  color={pathName === "/" || pathName.startsWith("/calendar") ? theme.colors.azulClaro : theme.colors.negro}/>
+        <View style={[styles.border, pathName === "/calendar" || pathName.startsWith("/calendar") ? styles.borderBlack : {}]}>
+          <IonIcon name='calendar-outline' size={30}  color={pathName.startsWith("/calendar") ? theme.colors.azulClaro : theme.colors.negro}/>
           <Text>{translate({text:"calendar", lenguage})}</Text>
         </View>
       </View>

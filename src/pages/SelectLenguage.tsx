@@ -62,7 +62,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: theme.fontSizes.F20,
     fontWeight: "700",
-    marginBottom: 20
+    marginBottom: 20,
+    color: theme.colors.verdeBase
   },
   button: {
     minWidth: "60%",

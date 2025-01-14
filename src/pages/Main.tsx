@@ -4,6 +4,7 @@ import { Route, Routes } from 'react-router-native'
 
 import LayoutHeader from '@/layout/LayoutHeader'
 import LayoutFooter from '@/layout/LayoutFooter'
+import LoadingPage from './LoadingPage'
 //Calendar pages
 import Calendar from '@/pages/Calendar'
 import Shifts from '@/pages/Shifts'
@@ -27,7 +28,9 @@ export default function Main() {
     <View style={styles.containerGeneral}>
         <LayoutHeader />
         <Routes>
-          <Route path='/' element={<Calendar />}/>
+          <Route path='/' element={<LoadingPage />} index/>
+
+          <Route path='/calendar' element={<Calendar />}/>
             <Route path='/calendar/shifts/:date' element={<Shifts />}/>
               <Route path='/calendar/shifts/:date/newShift' element={<NewShift />}/>
               <Route path='/calendar/shifts/:date/editShift/:shift' element={<EditShift />}/>

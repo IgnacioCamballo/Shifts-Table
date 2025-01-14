@@ -16,7 +16,7 @@ function NombreLayout () {
     return translate({text, lenguage})
   }
 
-  if(pathname === "/") return translateFn("calendar")
+  if(pathname === "/calendar") return translateFn("calendar")
   if(pathname.startsWith("/calendar/shifts/")) return translateFn("shifts")
   if(pathname === "/totals") return translateFn("totals")
   if(pathname.startsWith("/totals/")) return translateFn("totals")

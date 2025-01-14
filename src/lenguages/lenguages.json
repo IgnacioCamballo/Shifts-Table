@@ -195,9 +195,14 @@
     {"lenguage": "pt", "text": "Siglas"}
   ],
   "placeholderName": [
-    {"lenguage": "es", "text": "Ingresa el nombre"},
+    {"lenguage": "es", "text": "Ingresa un nombre"},
     {"lenguage": "en", "text": "Insert name"},
-    {"lenguage": "pt", "text": "Insira o nome"}
+    {"lenguage": "pt", "text": "Insira um nome"}
+  ],
+  "placeholderMail": [
+    {"lenguage": "es", "text": "Ingresa un email"},
+    {"lenguage": "en", "text": "Insert email"},
+    {"lenguage": "pt", "text": "Insira um email"}
   ],
   "placeholderShortName": [
     {"lenguage": "es", "text": "Ingresa las siglas"},
@@ -373,5 +378,95 @@
     {"lenguage": "es", "text": "Crear cuenta"},
     {"lenguage": "en", "text": "Create account"},
     {"lenguage": "pt", "text": "Criar conta"}
+  ],
+  "titleAccountIntro": [
+    {"lenguage": "es", "text": "No hay datos de usuario en este dispositivo. ¿Como deseas continuar?"},
+    {"lenguage": "en", "text": "No user data on this device. How do you want to continue?"},
+    {"lenguage": "pt", "text": "Nenhum dado de usuário neste dispositivo. Como você quer continuar?"}
+  ],
+  "login": [
+    {"lenguage": "es", "text": "Iniciar sesión"},
+    {"lenguage": "en", "text": "Log in"},
+    {"lenguage": "pt", "text": "iniciar sessão"}
+  ],
+  "continueWithoutAccount": [
+    {"lenguage": "es", "text": "Continuar sin cuenta"},
+    {"lenguage": "en", "text": "Continue without account"},
+    {"lenguage": "pt", "text": "Continue sem conta"}
+  ],
+  "o": [
+    {"lenguage": "es", "text": "o"},
+    {"lenguage": "en", "text": "or"},
+    {"lenguage": "pt", "text": "o"}
+  ],
+  "continue": [
+    {"lenguage": "es", "text": "Continuar"},
+    {"lenguage": "en", "text": "Continue"},
+    {"lenguage": "pt", "text": "Continue"}
+  ],
+  "continueAlert": [
+    {"lenguage": "es", "text": "Nota: Si continúas sin una cuenta y luego inicias sesión con una cuenta existente, los datos de la cuenta sobrescribirán los datos ingresados al usar sin una cuenta"},
+    {"lenguage": "en", "text": "Note: If you continue without an account and then log in with an existing account, the account data will overwrite the data entered when using without an account"},
+    {"lenguage": "pt", "text": "Observação: Se você continuar sem uma conta e fizer login com uma conta existente, os dados da conta substituirão os dados inseridos ao usar sem uma conta"}
+  ],
+  "continueWithoutAccountTitle": [
+    {"lenguage": "es", "text": "continua sin una cuenta, luego puedes crear una manteniendo la información"},
+    {"lenguage": "en", "text": "continue without an account, you can create one after while keeping the information"},
+    {"lenguage": "pt", "text": "continue sem uma conta, logo pode criar uma mantendo as informações"}
+  ],
+  "userName": [
+    {"lenguage": "es", "text": "Nombre de usuario"},
+    {"lenguage": "en", "text": "User name"},
+    {"lenguage": "pt", "text": "Nome do usuário"}
+  ],
+  "mail": [
+    {"lenguage": "es", "text": "Email"},
+    {"lenguage": "en", "text": "Email"},
+    {"lenguage": "pt", "text": "E-mail"}
+  ],
+  "password": [
+    {"lenguage": "es", "text": "Contraseña"},
+    {"lenguage": "en", "text": "Password"},
+    {"lenguage": "pt", "text": "Senha"}
+  ],
+  "min8": [
+    {"lenguage": "es", "text": "* Mínimo 8 caracteres"},
+    {"lenguage": "en", "text": "* Minimum 8 characteres"},
+    {"lenguage": "pt", "text": "* Mínimo 8 caracteres"}
+  ],
+  "errorName": [
+    {"lenguage": "es", "text": "El nombre es obligatorio"},
+    {"lenguage": "en", "text": "The name is obligatory"},
+    {"lenguage": "pt", "text": "O nome é obrigatório"}
+  ],
+  "errorMail": [
+    {"lenguage": "es", "text": "El email es obligatorio"},
+    {"lenguage": "en", "text": "The email is obligatory"},
+    {"lenguage": "pt", "text": "U e-mail é obrigatório"}
+  ],
+  "errorPassword": [
+    {"lenguage": "es", "text": "La contraseña es obligatoria"},
+    {"lenguage": "en", "text": "The password is obligatory"},
+    {"lenguage": "pt", "text": "A senha é obrigatória"}
+  ],
+  "invalidMail": [
+    {"lenguage": "es", "text": "Ingresa un email válido"},
+    {"lenguage": "en", "text": "Insert a valid email"},
+    {"lenguage": "pt", "text": "Digite um correio válido"}
+  ],
+  "repeatedMail": [
+    {"lenguage": "es", "text": "Email ya esta en uso"},
+    {"lenguage": "en", "text": "Email is already in use"},
+    {"lenguage": "pt", "text": "O email já está em uso"}
+  ],
+  "privacyPolicies": [
+    {"lenguage": "es", "text": "Políticas de privacidad"},
+    {"lenguage": "en", "text": "Privacy policies"},
+    {"lenguage": "pt", "text": "Políticas de privacidad"}
+  ],
+  "guide": [
+    {"lenguage": "es", "text": "Guía de uso"},
+    {"lenguage": "en", "text": "Guide of use"},
+    {"lenguage": "pt", "text": "Guia de uso"}
   ]
 }

@@ -23,6 +23,7 @@ const theme = {
         slider: "#397B63"
     },
     fontSizes: {
+        F24: 24,
         F20: 20,
         F18: 18,
         F16: 16,

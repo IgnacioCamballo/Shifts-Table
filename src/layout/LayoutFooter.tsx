@@ -16,8 +16,8 @@ export default function LayoutFooter() {
   return (
     <View style={styles.containerGrande}>
       <View style={[styles.container, { backgroundColor: configInfo.baseColor }]}>
-        {!pathname.startsWith("/account") && <>
-          <LogoCalendar to='/' pathName={pathname} />
+        {pathname.startsWith("/account") || pathname === "/" ? <></> : <>
+          <LogoCalendar to='/calendar' pathName={pathname} />
           <LogoTotals to='/totals' pathName={pathname} />
           <LogoConfig to='/config' pathName={pathname} />
         </>}

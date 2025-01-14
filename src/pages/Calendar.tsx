@@ -21,6 +21,7 @@ import { firstLetterUpper, weekdays } from '@/utils';
 import SwiftArrows from '@/components/Molecules/SwiftArrows';
 import { DayProps } from '@/types';
 import RenderDayCalendar from '@/components/Atoms/RenderDayCalendar';
+import { Navigate } from 'react-router-native';
 
 let screenWidth = Dimensions.get("window").width
 

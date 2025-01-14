@@ -39,7 +39,7 @@ export default function Shifts() {
 
   return (
     <View style={styles.container}>
-      <TransparentButton link="/" style={styles.link}>
+      <TransparentButton link="/calendar" style={styles.link}>
         <Icon 
           name="doubleleft" 
           color={theme.colors.negro} 

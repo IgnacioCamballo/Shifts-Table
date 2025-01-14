@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native'
 import { Picker } from '@react-native-picker/picker'
 
 import useCalendar from '@/hooks/useCalendar'
@@ -9,7 +9,7 @@ import theme from '@/theme/theme'
 import DropDownAutoHeight from '@/components/Molecules/DropDownAutoHeight'
 import ModalColorPicker from '@/components/Molecules/ModalColorPicker'
 import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
-import { useNavigate } from 'react-router-native'
+import { Link, useNavigate } from 'react-router-native'
 
 export default function ConfigSettings() {
   const { lenguage, setLenguage, configInfo, setConfigInfo, userInfo } = useCalendar()
@@ -106,14 +106,14 @@ export default function ConfigSettings() {
             </View>
 
             <TouchableOpacity activeOpacity={0.8} onPress={() => {}}>
-              <ButtonSmall color={theme.colors.grisOscuro} buttonStyles={{marginTop: 20}}>
+              <ButtonSmall color={theme.colors.grisMasClaro} buttonStyles={{marginTop: 8}}>
                 <Text style={[styles.textLine, styles.endSession]}>{translateFn("logOut")}</Text>
               </ButtonSmall>
             </TouchableOpacity>
           </View>
         </> : 
         <>
-          <Text onPress={() => navigate('/account/lenguage')}>Inicia sesion</Text>
+          <Text style={styles.centeredLogin} onPress={() => navigate('/account')}>{translateFn("login")} / {translateFn("createAccount")}</Text>
         </>
       }
 
@@ -138,8 +138,8 @@ export default function ConfigSettings() {
         : <></>
       }
 
-      <Text>politicas de privacidad</Text>
-      <Text>Guia de uso</Text>
+      <Text style={styles.centeredText} onPress={() => Linking.openURL("https://cambadev.netlify.app/Shifts-Table/privacy-policy")}>{translateFn("privacyPolicies")}</Text>
+      <Text style={styles.centeredText} onPress={() => Linking.openURL("https://cambadev.netlify.app/Shifts-Table/guide")}>{translateFn("guide")}</Text>
       <View style={{ height: 40 }} />
     </DropDownAutoHeight>
   )
@@ -220,12 +220,22 @@ const styles = StyleSheet.create({
   endSession: {
     marginBottom: 2, 
     marginHorizontal: 20, 
-    color: theme.colors.blanco,
-    fontWeight: 600
+    color: theme.colors.rojo,
+    fontWeight: 600,
+    fontSize: theme.fontSizes.F18
   },
   backup: {
     marginBottom: 2, 
     marginHorizontal: 20, 
     fontWeight: 600
+  }, 
+  centeredLogin: {
+    textAlign: "center",
+    marginVertical: 12,
+    fontSize: theme.fontSizes.F16
+  },
+  centeredText: {
+    textAlign: "center",
+    marginVertical: 2
   }
 })
