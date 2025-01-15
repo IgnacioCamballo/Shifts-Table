@@ -4,8 +4,7 @@ export const UserInfoSchema = z.object({
     userName: z.string(),
     mail: z.string(),
     lastBackUp: z.date().nullable(),
-    premium: z.boolean(),
-    usedWithoutConnection: z.boolean()
+    premium: z.boolean()
 })
 export type UserInfo = z.infer<typeof UserInfoSchema>
 
@@ -77,11 +76,13 @@ export type CalendarContextProps = {
     companysInfo: EmployerProps[],
     shifts: ShiftProps[],
     lenguage: string,
+    lastShiftCreated: Date | null | undefined,
     addsInitialized: boolean,
     setUserInfo: React.Dispatch<React.SetStateAction<UserInfo>>,
     setConfigInfo: React.Dispatch<React.SetStateAction<ConfigInfo>>,
     setCompanysInfo: React.Dispatch<React.SetStateAction<EmployerProps[]>>,
     setShifts: React.Dispatch<React.SetStateAction<ShiftProps[]>>,
     setLenguage: React.Dispatch<React.SetStateAction<string>>,
+    setLastShiftCreated: React.Dispatch<React.SetStateAction<Date | null | undefined>>
 }
 

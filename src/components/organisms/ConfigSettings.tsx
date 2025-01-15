@@ -1,25 +1,28 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Linking, Alert } from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useMutation } from '@tanstack/react-query'
+import { useNavigate } from 'react-router-native'
 import { Picker } from '@react-native-picker/picker'
 
 import useCalendar from '@/hooks/useCalendar'
 import { translate } from '@/utils'
 import theme from '@/theme/theme'
+import { saveUserInfo } from '@/api/UserInfoAPI'
 
 import DropDownAutoHeight from '@/components/Molecules/DropDownAutoHeight'
 import ModalColorPicker from '@/components/Molecules/ModalColorPicker'
 import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
-import { Link, useNavigate } from 'react-router-native'
+import Spinner from '@/components/Atoms/Spinner'
 
 export default function ConfigSettings() {
-  const { lenguage, setLenguage, configInfo, setConfigInfo, userInfo } = useCalendar()
+  const { lenguage, shifts, userInfo, configInfo, companysInfo, setLenguage, setConfigInfo } = useCalendar()
+  const navigate = useNavigate()
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text: string) {
     return translate({ text, lenguage })
   }
-
-  const navigate = useNavigate()
 
   const [baseColor, setBaseColor] = useState(configInfo.baseColor || theme.colors.verdeBase)
   const [buttonsColor, setButtonsColor] = useState(configInfo.buttonsColor || theme.colors.verdeBoton)
@@ -27,17 +30,56 @@ export default function ConfigSettings() {
   const [colorModal, setColorModal] = useState(false)
   const [buttonsColorModal, setButtonsColorModal] = useState(false)
 
+  const { mutate, isPending } = useMutation({
+    mutationFn: saveUserInfo,
+    onError: (error) => {
+      console.log(error)
+    },
+    onSuccess: (data) => {
+      console.log(data)
+    }
+  })
+
   useEffect(() => {
     const configCopy = { ...configInfo, baseColor, buttonsColor }
     setConfigInfo(configCopy)
   }, [baseColor, buttonsColor])
+
+  const endSessionAlert = () => {
+    Alert.alert(
+      '',
+      translateFn("endSessionAlert"),
+      [
+        {
+          text: translateFn("cancel"),
+          style: 'cancel'
+        },
+        {
+          text: translateFn("logOut"),
+          onPress: async () => {
+            await AsyncStorage.multiRemove(["userData", "userToken"])
+            navigate("/")
+          },
+          style: 'cancel'
+        },
+      ],
+      {
+        cancelable: true
+      }
+    )
+  }
+
+  const securityCopy = () => {
+    const saveData = { configInfo, employers: companysInfo, lenguage, shifts }
+    mutate(saveData)
+  }
 
   return (
     <DropDownAutoHeight
       duration={400}
       isOpen={isOpen}
       setIsOpen={setIsOpen}
-      maxHeight={300}
+      maxHeight={340}
       title={translateFn("userSettings")!}
       arrowColor={configInfo.baseColor}
       titleContainerStyle={[styles.tituloConf, styles.configGeneral]}
@@ -59,7 +101,6 @@ export default function ConfigSettings() {
             <Picker.Item style={styles.pickerItem} label='Portugues' value="pt" />
           </Picker>
         </View>
-
       </View>
 
       {!userInfo.premium ? <></> :
@@ -84,34 +125,38 @@ export default function ConfigSettings() {
 
         </>
       }
-      
-      {userInfo.userName ? 
+
+      {userInfo.mail ?
         <>
           <View style={[styles.line, styles.user]}>
-            <View style={[styles.line, {borderBottomWidth: 0}]}>
+            <View style={[styles.line, { borderBottomWidth: 0 }]}>
               <Text style={styles.textLine}>{translateFn("user")}: </Text>
               <Text style={styles.textLine}>{userInfo.userName}</Text>
             </View>
 
-            {!userInfo.premium && 
-            <TouchableOpacity activeOpacity={0.8} onPress={() => {}}>
-              <ButtonSmall color={theme.colors.azulClaro} buttonStyles={{marginBottom: 8}}>
-                <Text style={[styles.textLine, styles.backup]}>{translateFn("securityCopy")}</Text>
-              </ButtonSmall>
-            </TouchableOpacity>
+            {!userInfo.premium &&
+              <>
+                {isPending ?
+                  <Spinner borderWidth={6} size={28} />
+                  :
+                  <TouchableOpacity activeOpacity={0.8} onPress={() => securityCopy()}>
+                    <ButtonSmall color={theme.colors.azulClaro} buttonStyles={{ marginBottom: 8 }}>
+                      <Text style={[styles.textLine, styles.backup]}>{translateFn("securityCopy")}</Text>
+                    </ButtonSmall>
+                  </TouchableOpacity>
+                }
+              </>
             }
-          
-            <View style={[styles.line, {borderBottomWidth: 0, paddingTop: 0}]}>
+
+            <View style={[styles.line, { borderBottomWidth: 0, paddingTop: 0 }]}>
               <Text style={styles.textLine}>{userInfo.mail}</Text>
             </View>
 
-            <TouchableOpacity activeOpacity={0.8} onPress={() => {}}>
-              <ButtonSmall color={theme.colors.grisMasClaro} buttonStyles={{marginTop: 8}}>
-                <Text style={[styles.textLine, styles.endSession]}>{translateFn("logOut")}</Text>
-              </ButtonSmall>
+            <TouchableOpacity activeOpacity={0.8} onPress={() => endSessionAlert()}>
+              <Text style={[styles.textLine, styles.endSession]}>{translateFn("logOut")}</Text>
             </TouchableOpacity>
           </View>
-        </> : 
+        </> :
         <>
           <Text style={styles.centeredLogin} onPress={() => navigate('/account')}>{translateFn("login")} / {translateFn("createAccount")}</Text>
         </>
@@ -137,7 +182,7 @@ export default function ConfigSettings() {
         />
         : <></>
       }
-
+      
       <Text style={styles.centeredText} onPress={() => Linking.openURL("https://cambadev.netlify.app/Shifts-Table/privacy-policy")}>{translateFn("privacyPolicies")}</Text>
       <Text style={styles.centeredText} onPress={() => Linking.openURL("https://cambadev.netlify.app/Shifts-Table/guide")}>{translateFn("guide")}</Text>
       <View style={{ height: 40 }} />
@@ -218,17 +263,17 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0
   },
   endSession: {
-    marginBottom: 2, 
-    marginHorizontal: 20, 
+    marginBottom: 2,
+    marginHorizontal: 20,
     color: theme.colors.rojo,
     fontWeight: 600,
     fontSize: theme.fontSizes.F18
   },
   backup: {
-    marginBottom: 2, 
-    marginHorizontal: 20, 
+    marginBottom: 2,
+    marginHorizontal: 20,
     fontWeight: 600
-  }, 
+  },
   centeredLogin: {
     textAlign: "center",
     marginVertical: 12,

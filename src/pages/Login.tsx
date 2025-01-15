@@ -13,6 +13,7 @@ import { logIn } from '@/api/UserAPI'
 
 import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
 import TransparentButton from '@/components/Atoms/Buttons/ButtonTransparent'
+import Spinner from '@/components/Atoms/Spinner'
 
 export default function Login() {
   const {lenguage, setCompanysInfo, setConfigInfo, setLenguage, setShifts, setUserInfo} = useCalendar()
@@ -29,7 +30,7 @@ export default function Login() {
   const [error, setError] = useState(false)
 
   //query to create user
-  const { mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: logIn,
     onError: (error) => {
       console.log(error.message)
@@ -39,8 +40,7 @@ export default function Login() {
         userName: data.userName, 
         mail, 
         lastBackUp: data.userInfo.updatedAt, 
-        premium: data.premiumEnds ? data.premiumEnds > Date.now() : false, 
-        usedWithoutConnection: false
+        premium: data.premiumEnds ? data.premiumEnds > Date.now() : false
       }
       setUserInfo(userInfo),
       setCompanysInfo(data.userInfo.employers)
@@ -52,7 +52,7 @@ export default function Login() {
   })
 
   //manage onPress to create user
-  const handlePress = async () => {
+  const handlePress = () => {
     if( !mail || !password || password.length < 8 || !isEmail(mail)) {
       setError(true)
     } else {
@@ -114,11 +114,15 @@ export default function Login() {
         {password.length < 8 && <Text style={[styles.lowerText, error && 0 < password.length && { color: theme.colors.rojo }]}>{translateFn("min8")}</Text>}
       </View>
 
-      <TouchableOpacity activeOpacity={0.9} onPress={() => handlePress()}>
-        <ButtonSmall color={theme.colors.grisMasClaro} buttonStyles={styles.button}>
-          <Text style={styles.textButton}>{translateFn("login")}</Text>
-        </ButtonSmall>
-      </TouchableOpacity>
+      {isPending ?
+        <Spinner borderWidth={6} size={28} />
+        :
+        <TouchableOpacity activeOpacity={0.9} onPress={() => handlePress()}>
+          <ButtonSmall color={theme.colors.grisMasClaro} buttonStyles={styles.button}>
+            <Text style={styles.textButton}>{translateFn("login")}</Text>
+          </ButtonSmall>
+        </TouchableOpacity>
+      }
     </ScrollView>
   )
 }
@@ -176,7 +180,7 @@ const styles = StyleSheet.create({
   },
   eye: {
     position: "absolute",
-    bottom: 12,
+    top: 38,
     right: 12,
     zIndex: 1
   },

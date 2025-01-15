@@ -14,6 +14,7 @@ import { createUser } from '@/api/UserAPI'
 
 import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
 import TransparentButton from '@/components/Atoms/Buttons/ButtonTransparent'
+import Spinner from '@/components/Atoms/Spinner'
 
 export default function CreateAccount() {
   const {lenguage, setUserInfo} = useCalendar()
@@ -32,7 +33,7 @@ export default function CreateAccount() {
   const [repeatedMail, setRepeatedMail] = useState(false)
 
   //query to create user
-  const { mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: createUser,
     onError: (error) => {
       console.log(error.message)
@@ -41,7 +42,7 @@ export default function CreateAccount() {
       }
     },
     onSuccess: () => {
-      const userInfo = {userName, mail, lastBackUp: null, premium: false, usedWithoutConnection: false}
+      const userInfo = {userName, mail, lastBackUp: null, premium: false}
       setUserInfo(userInfo)
       navigate("/calendar")
     }
@@ -125,11 +126,15 @@ export default function CreateAccount() {
         {password.length < 8 && <Text style={[styles.lowerText, error && 0 < password.length && {color: theme.colors.rojo}]}>{translateFn("min8")}</Text>}
       </View>  
 
-      <TouchableOpacity activeOpacity={0.9} onPress={() => handlePress()}>
-        <ButtonSmall color={theme.colors.grisMasClaro} buttonStyles={styles.button}>
-          <Text style={styles.textButton}>{translateFn("createAccount")}</Text>
-        </ButtonSmall>
-      </TouchableOpacity>
+      {isPending ?
+        <Spinner borderWidth={6} size={28} />
+        :
+        <TouchableOpacity activeOpacity={0.9} onPress={() => handlePress()}>
+          <ButtonSmall color={theme.colors.grisMasClaro} buttonStyles={styles.button}>
+            <Text style={styles.textButton}>{translateFn("createAccount")}</Text>
+          </ButtonSmall>
+        </TouchableOpacity>
+      }
     </ScrollView>
   )
 }

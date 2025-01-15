@@ -154,6 +154,11 @@
     {"lenguage": "en", "text": "Shift already exist for this employer"},
     {"lenguage": "pt", "text": "O turno já existe para este empregador"}
   ],
+  "endSessionAlert": [
+    {"lenguage": "es", "text": "Al cerrar sesión, se eliminarán los datos del dispositivo, asegúrate de haber realizado una copia de seguridad para tener todos los datos cuando inicie la sesión nuevamente"},
+    {"lenguage": "en", "text": "When you log out, the device data will be deleted, make sure you have backed up to have all the data when you log in again"},
+    {"lenguage": "pt", "text": "Quando você sair, os dados do dispositivo serão excluídos, certifique-se de ter feito backup para ter todos os dados quando você fizer login novamente"}
+  ],
   "yes": [
     {"lenguage": "es", "text": "Si"},
     {"lenguage": "en", "text": "Yes"},
@@ -402,6 +407,11 @@
   "continue": [
     {"lenguage": "es", "text": "Continuar"},
     {"lenguage": "en", "text": "Continue"},
+    {"lenguage": "pt", "text": "Continue"}
+  ],
+  "confirm": [
+    {"lenguage": "es", "text": "Confirmar"},
+    {"lenguage": "en", "text": "Confirm"},
     {"lenguage": "pt", "text": "Continue"}
   ],
   "continueAlert": [

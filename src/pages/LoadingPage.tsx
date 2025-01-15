@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-native'
 import Spinner from '@/components/Atoms/Spinner'
 
 export default function LoadingPage() {
-  const {setCompanysInfo, setConfigInfo, setLenguage, setShifts, setUserInfo} = useCalendar()
+  const {setCompanysInfo, setConfigInfo, setLenguage, setShifts, setUserInfo, setLastShiftCreated} = useCalendar()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
 
@@ -25,7 +25,7 @@ export default function LoadingPage() {
   const getStoragedInfo = async () => {
     try {
       const storagedData = await AsyncStorage.getItem("userData")
-
+      //if there is data in the movil storage =>
       if(storagedData) {
         const parsed = await JSON.parse(storagedData)
         
@@ -34,6 +34,9 @@ export default function LoadingPage() {
 
         //Sets storaged Lenguage
         setLenguage(parsed.lenguage)
+
+        //Sets last shift created
+        setLastShiftCreated(parsed.lastShiftCreated)
         
         //Sets storaged UserInfo
         const parsedUserInfo: UserInfo = parsed.userInfo
@@ -41,8 +44,7 @@ export default function LoadingPage() {
           userName: parsedUserInfo.userName,
           mail: parsedUserInfo.mail,
           premium: parsedUserInfo.premium,
-          lastBackUp: parsedUserInfo.lastBackUp,
-          usedWithoutConnection: parsedUserInfo.usedWithoutConnection
+          lastBackUp: parsedUserInfo.lastBackUp
         } 
         setUserInfo(userInformation)
         
@@ -80,11 +82,11 @@ export default function LoadingPage() {
           return (item)
         })
         setShifts(maped)
-
         navigate("/calendar")
-        //si modificado sin coneccion es verdadero ver si es premium , si no poner en false, si si guardar en db
+        //if there is not data in the movil storage => 
       } else {
         const token = await AsyncStorage.getItem("userToken")
+        //if there is a token storaged but not data in the movile storage => 
         if(token) {
           await queryClient.invalidateQueries({queryKey: ["UserInfoDB"]})
           const {data, refetch, error} = getUserInfoQuery
@@ -103,11 +105,11 @@ export default function LoadingPage() {
               userName: data.userName,
               mail: data.mail,
               lastBackUp: data.userInformation.updatedAt,
-              premium: data.premiumEnds !== null ? true : false,
-              usedWithoutConnection: false
+              premium: data.premiumEnds !== null ? true : false
             })
             navigate("/calendar")
           }
+          //if there is not data nither token in the movil storage => 
         } else {
           navigate("/account/lenguage")
         }
