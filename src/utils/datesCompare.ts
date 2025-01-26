@@ -86,19 +86,23 @@ export function getWorkedTime({ entry, exit, breakEntry, breakExit }: {
 }
 
 export function isSameDay({day1, day2} : {day1: Date, day2: Date}) {
+  const d1 = new Date(day1)
+  const d2 = new Date(day2)
   if(
-    day1.getFullYear() === day2.getFullYear() &&
-    day1.getMonth() === day2.getMonth() &&
-    day1.getDate() === day2.getDate()
+    d1.getFullYear() === d2.getFullYear() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getDate() === d2.getDate()
   ) {return true} else {return false}
 }
 
 export function isSameDayHourMinute({day1, day2} : {day1: Date, day2: Date}) {
+  const d1 = new Date(day1)
+  const d2 = new Date(day2)
   if(
-    day1.getFullYear() === day2.getFullYear() &&
-    day1.getMonth() === day2.getMonth() &&
-    day1.getDate() === day2.getDate() &&
-    day1.getHours() === day2.getHours() &&
-    day1.getMinutes() === day2.getMinutes()
+    d1.getFullYear() === d2.getFullYear() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getDate() === d2.getDate() &&
+    d1.getHours() === d2.getHours() &&
+    d1.getMinutes() === d2.getMinutes()
   ) {return true} else {return false}
 }

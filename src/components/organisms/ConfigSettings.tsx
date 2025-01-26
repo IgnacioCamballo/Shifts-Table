@@ -16,7 +16,13 @@ import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
 import Spinner from '@/components/Atoms/Spinner'
 
 export default function ConfigSettings() {
-  const { lenguage, shifts, userInfo, configInfo, companysInfo, setLenguage, setConfigInfo } = useCalendar()
+  const { 
+    lenguage, setLenguage,
+    shifts,
+    userInfo,
+    configInfo, setConfigInfo,
+    companysInfo
+  } = useCalendar()
   const navigate = useNavigate()
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
@@ -56,7 +62,7 @@ export default function ConfigSettings() {
         },
         {
           text: translateFn("logOut"),
-          onPress: async () => {
+          onPress: async () => {             
             await AsyncStorage.multiRemove(["userData", "userToken"])
             navigate("/")
           },
@@ -105,24 +111,27 @@ export default function ConfigSettings() {
 
       {!userInfo.premium ? <></> :
         <>
-          <TouchableOpacity
-            activeOpacity={0.8}
-            style={[styles.line, styles.colorLine]}
-            onPress={() => setColorModal(true)}
-          >
-            <Text style={styles.textLine}>{translateFn("baseColor")}:</Text>
-            <View style={[styles.colorRectangle, { backgroundColor: baseColor }]} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            activeOpacity={0.8}
-            style={[styles.line, styles.colorLine]}
-            onPress={() => setButtonsColorModal(true)}
-          >
-            <Text style={styles.textLine}>{translateFn("buttonsColor")}:</Text>
-            <View style={[styles.colorRectangle, { backgroundColor: buttonsColor }]} />
-          </TouchableOpacity>
-
+          <View style={[styles.line, {flexDirection: "column", alignItems: "flex-start"}]}>
+            <Text style={{fontSize: 20}}>{translateFn("color")}:</Text>
+            <View style={styles.colorsContainer}>
+              <TouchableOpacity 
+                activeOpacity={0.8} 
+                style={{alignItems: "center"}}
+                onPress={() => setColorModal(true)}
+                >
+                <Text style={{fontSize: 20}}>{translateFn("baseColor")}</Text>
+                <View style={[styles.colorRectangle, {backgroundColor: baseColor}]}/>
+              </TouchableOpacity>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                style={{alignItems: "center"}}
+                onPress={() => setButtonsColorModal(true)}
+                >
+                <Text style={{fontSize: 20}}>{translateFn("buttonsColor")}</Text>
+                <View style={[styles.colorRectangle, {backgroundColor: buttonsColor}]} />
+              </TouchableOpacity>
+            </View>
+          </View>
         </>
       }
 
@@ -158,7 +167,7 @@ export default function ConfigSettings() {
           </View>
         </> :
         <>
-          <Text style={styles.centeredLogin} onPress={() => navigate('/account')}>{translateFn("login")} / {translateFn("createAccount")}</Text>
+          <Text style={styles.centeredLogin} onPress={() => navigate(`/account/${lenguage}`)}>{translateFn("login")} / {translateFn("createAccount")}</Text>
         </>
       }
 
@@ -234,11 +243,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "100%"
   },
-  colorRectangle: {
-    width: 20,
-    height: 20,
-    justifyContent: "center"
-  },
+  colorRectangle: { 
+    width: 100, 
+    height: 20, 
+    borderRadius: 10,
+    marginBottom: 4
+  }
+  ,
   pickerContainer: {
     height: 36,
     justifyContent: "center",
@@ -282,5 +293,11 @@ const styles = StyleSheet.create({
   centeredText: {
     textAlign: "center",
     marginVertical: 2
+  },
+  colorsContainer: {
+    marginTop: -8,
+    flexDirection: "row", 
+    width: "100%", 
+    justifyContent: "space-around"
   }
 })

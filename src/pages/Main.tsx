@@ -22,6 +22,7 @@ import AccountIntro from '@/pages/AccountIntro'
 import SelectLenguage from '@/pages/SelectLenguage'
 import Login from '@/pages/Login'
 import CreateAccount from '@/pages/CreateAccount'
+import PassRecover from './PassRecover'
 
 export default function Main() {
   return (
@@ -44,10 +45,11 @@ export default function Main() {
             <Route path='/totals/:month' element={<Totals />}/>
             <Route path='/totalsDetail/:month/:employer' element={<MonthDetail />}/>
 
-          <Route path='/account' element={<AccountIntro />}/>
+          <Route path='/account/:lg' element={<AccountIntro />}/>
             <Route path='/account/lenguage' element={<SelectLenguage />}/>
-            <Route path='/account/login' element={<Login />}/>
-            <Route path='/account/createAccount' element={<CreateAccount />}/>
+            <Route path='/account/:lg/login' element={<Login />}/>
+            <Route path='/account/:lg/recoverPassword' element={<PassRecover />}/>
+            <Route path='/account/:lg/createAccount' element={<CreateAccount />}/>
         </Routes>
         <LayoutFooter />
     </View>

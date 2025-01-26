@@ -16,7 +16,7 @@ export default function NewShift() {
   const {shifts, lastShiftCreated, userInfo, setShifts, setLastShiftCreated} = useCalendar()
   const [loaded, setLoaded] = useState(false)
 
-  const sameDay = lastShiftCreated ? isSameDay({day1: lastShiftCreated, day2: new Date()}) : false 
+  const sameDay = isSameDay({day1: lastShiftCreated, day2: new Date()})
   const interstitial = InterstitialAd.createForAdRequest(theme.banners.intersticial)
   if(!userInfo.premium && sameDay) {
     interstitial.addAdEventListener(AdEventType.LOADED, () => setLoaded(true))

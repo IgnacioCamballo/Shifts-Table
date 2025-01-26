@@ -1,13 +1,14 @@
 import theme from '@/theme/theme'
 import React, { useRef } from 'react'
-import { View, Animated, StyleSheet, Easing } from 'react-native'
+import { View, Animated, StyleSheet, Easing, StyleProp, TextStyle } from 'react-native'
 
 type SpinnerProps = {
   size: number,
-  borderWidth: number
+  borderWidth: number,
+  style?: StyleProp<TextStyle>
 }
 
-export default function Spinner({size, borderWidth}: SpinnerProps) {
+export default function Spinner({size, borderWidth, style}: SpinnerProps) {
 const refValue = useRef(new Animated.Value(0)).current
 
   Animated.loop(Animated.timing(refValue,
@@ -31,7 +32,7 @@ const rotate = {
 }
 
   return (
-    <View style={[styles.container, {height: size, width: size}]}>
+    <View style={[styles.container, {height: size, width: size}, style]}>
       <View style={[styles.back, {height: size, width: size, borderRadius: size / 2, borderWidth: borderWidth}]}/>
       <Animated.View style={[styles.front, {height: size, width: size, borderRadius: size / 2, borderWidth: borderWidth}, rotate]}/>
     </View>

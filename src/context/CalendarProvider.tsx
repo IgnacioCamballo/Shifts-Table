@@ -38,7 +38,7 @@ const CalendarProvider = ({ children }: props) => {
   const [shifts, setShifts] = useState<ShiftProps[]>([])
   const [lenguage, setLenguage] = useState<string>("en")
   const [addsInitialized, setAddsInitialized] = useState(false)
-  const [lastShiftCreated, setLastShiftCreated] = useState<Date | null>()
+  const [lastShiftCreated, setLastShiftCreated] = useState<Date>(new Date(new Date().getFullYear(), new Date().getMonth() - 1))
 
   //Initializes adds
   const addsInit = async () => {

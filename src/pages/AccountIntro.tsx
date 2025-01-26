@@ -1,13 +1,15 @@
 import React from 'react'
 import { Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native'
+import { useNavigate, useParams } from 'react-router-native'
 
+import useCalendar from '@/hooks/useCalendar'
 import theme from '@/theme/theme'
 import { translate } from '@/utils'
-import useCalendar from '@/hooks/useCalendar'
-import { useNavigate } from 'react-router-native'
 
 export default function AccountIntro() {
-  const {lenguage, setNavig} = useCalendar()
+  const {setCompanysInfo, setLenguage, setConfigInfo, setShifts, setUserInfo} = useCalendar()
+  const params = useParams()
+  const lenguage = params.lg!
   const navigate = useNavigate()
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
@@ -27,8 +29,23 @@ export default function AccountIntro() {
           {
             text: translateFn("continue"),
             onPress: () => {  
-              //To avoid a loop and allow to start app without storaged data
-              setNavig(false),
+              setLenguage(lenguage)
+              setShifts([])
+              setUserInfo({
+                userName: "",
+                mail: "",
+                lastBackUp: null,
+                premium: false
+              })
+              setConfigInfo({
+                baseColor: theme.colors.verdeBase, 
+                buttonsColor: theme.colors.verdeBoton, 
+                configBreakEntry: null, 
+                configBreakExit: null, 
+                entry: null, 
+                exit: null
+              })
+              setCompanysInfo([])
               navigate("/calendar")
             },
             style: 'cancel'
@@ -44,11 +61,11 @@ export default function AccountIntro() {
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.contentContainer} style={styles.container}>
       <Text style={styles.firstTitle}>{translateFn("titleAccountIntro")}</Text>
 
-      <TouchableOpacity activeOpacity={0.9} style={[styles.button]} onPress={() => navigate("/account/login")}>
+      <TouchableOpacity activeOpacity={0.9} style={[styles.button]} onPress={() => navigate(`/account/${lenguage}/login`)}>
         <Text style={styles.buttonText}>{translateFn("login")}</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity activeOpacity={0.9} style={[styles.button]} onPress={() => navigate("/account/createAccount")}>
+      <TouchableOpacity activeOpacity={0.9} style={[styles.button]} onPress={() => navigate(`/account/${lenguage}/createAccount`)}>
         <Text style={styles.buttonText}>{translateFn("createAccount")}</Text>
       </TouchableOpacity>
 

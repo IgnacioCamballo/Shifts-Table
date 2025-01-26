@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Text, View, StyleSheet, ScrollView } from 'react-native'
 import { TextInput, TouchableOpacity } from 'react-native-gesture-handler'
 import { useMutation } from '@tanstack/react-query'
-import { useNavigate } from 'react-router-native'
+import { useNavigate, useParams } from 'react-router-native'
 import Icon from 'react-native-vector-icons/Feather'
 import IconArrow from 'react-native-vector-icons/AntDesign'
 import isEmail from 'validator/lib/isEmail'
@@ -10,40 +10,61 @@ import isEmail from 'validator/lib/isEmail'
 import useCalendar from '@/hooks/useCalendar'
 import theme from '@/theme/theme'
 import { translate } from '@/utils'
-import { createUser } from '@/api/UserAPI'
+import { createUser, createValidationToken } from '@/api/UserAPI'
 
 import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
 import TransparentButton from '@/components/Atoms/Buttons/ButtonTransparent'
 import Spinner from '@/components/Atoms/Spinner'
 
 export default function CreateAccount() {
-  const {lenguage, setUserInfo} = useCalendar()
+  const { setUserInfo, setLenguage } = useCalendar()
+  const params = useParams()
+  const lenguage = params.lg!
   const navigate = useNavigate()
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text: string) {
     return translate({ text, lenguage })
   }
-  
+
   const [userName, setUserName] = useState("")
   const [mail, setMail] = useState("")
   const [password, setPassword] = useState("")
   const [showPass, setShowPass] = useState(false)
   const [error, setError] = useState(false)
   const [repeatedMail, setRepeatedMail] = useState(false)
+  const [tokenId, setTokenId] = useState("")
+  const [token, setToken] = useState("")
+  const [inputToken, setInputToken] = useState("")
+  const [creatingLoader, setCreatingLoader] = useState(false)
 
-  //query to create user
+  //query to send validation token by mail
   const { mutate, isPending } = useMutation({
-    mutationFn: createUser,
+    mutationFn: createValidationToken,
     onError: (error) => {
-      console.log(error.message)
-      if(error.message === "used mail") {
+      if (error.message === "used mail") {
         setRepeatedMail(true)
       }
     },
+    onSuccess: (data) => {
+      setToken(data.code)
+      setTokenId(data.tokenid)
+    }
+  })
+
+  //query to create user
+  const createUserQuery = useMutation({
+    mutationFn: createUser,
+    onError: (error) => {
+      console.log(error)
+      setCreatingLoader(false)
+      setTokenId("")
+      setToken("")
+    },
     onSuccess: () => {
-      const userInfo = {userName, mail, lastBackUp: null, premium: false}
+      const userInfo = { userName, mail, lastBackUp: null, premium: false }
       setUserInfo(userInfo)
+      setLenguage(lenguage)
       navigate("/calendar")
     }
   })
@@ -51,90 +72,124 @@ export default function CreateAccount() {
   //manage onPress to create user
   const handlePress = async () => {
     setRepeatedMail(false)
-    if(!userName || !mail || !password || password.length < 8 || !isEmail(mail)) {
+    if (!userName || !mail || !password || password.length < 8 || !isEmail(mail)) {
       setError(true)
     } else {
       setError(false)
-      const formData = {userName, mail, password}
+      const formData = { mail, lenguage }
       mutate(formData)
     }
   }
 
+  useEffect(() => {
+    if (inputToken && inputToken === token) {
+      const { mutate } = createUserQuery
+      const formData = { userName, password, mail, tokenId }
+      mutate(formData)
+      setCreatingLoader(true)
+    }
+  }, [inputToken])
+
   return (
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.contentContainer} style={styles.container}>
-      <TransparentButton link='/account' style={styles.arrow}>
-      <IconArrow 
-          name="doubleleft" 
-          color={theme.colors.negro} 
-          size={20}
-        />
-      </TransparentButton>
-
-      <Text style={styles.title}>{translateFn("createAccount")}</Text>
-
-      <View style={styles.inputContainer}>
-        <Text style={styles.text}>{translateFn("userName")}</Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={setUserName}
-          value={userName}
-          maxLength={25}
-          placeholder={translateFn("placeholderName")}
-          placeholderTextColor={theme.colors.grisMedio}
-        />
-        {error && userName === "" && <Text style={styles.error}>{translateFn("errorName")}</Text>}
-      </View>  
-
-      <View style={styles.inputContainer}>
-        <Text style={styles.text}>{translateFn("mail")}</Text>
-        <TextInput
-          textContentType='emailAddress'
-          style={styles.input}
-          onChangeText={setMail}
-          value={mail}
-          maxLength={25}
-          placeholder={translateFn("placeholderMail")}
-          placeholderTextColor={theme.colors.grisMedio}
-        />
-        {error && mail === "" && <Text style={styles.error}>{translateFn("errorMail")}</Text>}
-        {error && mail && !isEmail(mail) && <Text style={styles.error}>{translateFn("invalidMail")}</Text>}
-        {repeatedMail && <Text style={styles.error}>{translateFn("repeatedMail")}</Text>}
-      </View>  
-
-      <View style={styles.inputContainer}>
-        <Text style={styles.text}>{translateFn("password")}</Text>
-        
-        <TextInput
-          style={[styles.input, {zIndex: 0}]}
-          secureTextEntry={!showPass}
-          onChangeText={setPassword}
-          value={password}
-          maxLength={25}
-          placeholder={translateFn("password")}
-          placeholderTextColor={theme.colors.grisMedio}
-          pointerEvents='none'
-        />
-
-        <TouchableOpacity activeOpacity={0.9} onPressIn={() => setShowPass(!showPass)} style={styles.eye}>
-          <Icon 
-            name={showPass ? "eye" : "eye-off"}
+      {!tokenId && 
+        <TransparentButton link={`/account/${lenguage}`} style={styles.arrow}>
+          <IconArrow
+            name="doubleleft"
+            color={theme.colors.negro}
             size={20}
-            />
-        </TouchableOpacity>
-        
-        {error && password === "" && <Text style={styles.error}>{translateFn("errorPassword")}</Text>}
-        {password.length < 8 && <Text style={[styles.lowerText, error && 0 < password.length && {color: theme.colors.rojo}]}>{translateFn("min8")}</Text>}
-      </View>  
-
-      {isPending ?
-        <Spinner borderWidth={6} size={28} />
-        :
-        <TouchableOpacity activeOpacity={0.9} onPress={() => handlePress()}>
-          <ButtonSmall color={theme.colors.grisMasClaro} buttonStyles={styles.button}>
-            <Text style={styles.textButton}>{translateFn("createAccount")}</Text>
-          </ButtonSmall>
-        </TouchableOpacity>
+          />
+        </TransparentButton>
       }
+
+      {!tokenId ? 
+        <>
+          <Text style={styles.title}>{translateFn("createAccount")}</Text>
+
+          <View style={styles.inputContainer}>
+            <Text style={styles.text}>{translateFn("userName")}</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={setUserName}
+              value={userName}
+              maxLength={25}
+              placeholder={translateFn("placeholderName")}
+              placeholderTextColor={theme.colors.grisMedio}
+            />
+            {error && userName === "" && <Text style={styles.error}>{translateFn("errorName")}</Text>}
+          </View>
+
+          <View style={styles.inputContainer}>
+            <Text style={styles.text}>{translateFn("mail")}</Text>
+            <TextInput
+              textContentType='emailAddress'
+              style={styles.input}
+              onChangeText={setMail}
+              value={mail}
+              maxLength={25}
+              placeholder={translateFn("placeholderMail")}
+              placeholderTextColor={theme.colors.grisMedio}
+            />
+            {error && mail === "" && <Text style={styles.error}>{translateFn("errorMail")}</Text>}
+            {error && mail && !isEmail(mail) && <Text style={styles.error}>{translateFn("invalidMail")}</Text>}
+            {repeatedMail && <Text style={styles.error}>{translateFn("repeatedMail")}</Text>}
+          </View>
+
+          <View style={styles.inputContainer}>
+            <Text style={styles.text}>{translateFn("password")}</Text>
+
+            <TextInput
+              style={[styles.input, { zIndex: 0 }]}
+              secureTextEntry={!showPass}
+              onChangeText={setPassword}
+              value={password}
+              maxLength={25}
+              placeholder={translateFn("password")}
+              placeholderTextColor={theme.colors.grisMedio}
+              pointerEvents='none'
+            />
+
+            <TouchableOpacity activeOpacity={0.9} onPressIn={() => setShowPass(!showPass)} style={styles.eye}>
+              <Icon
+                name={showPass ? "eye" : "eye-off"}
+                size={20}
+              />
+            </TouchableOpacity>
+
+            {error && password === "" && <Text style={styles.error}>{translateFn("errorPassword")}</Text>}
+            {password.length < 8 && <Text style={[styles.lowerText, error && 0 < password.length && { color: theme.colors.rojo }]}>{translateFn("min8")}</Text>}
+          </View>
+
+          {isPending ?
+            <Spinner borderWidth={6} size={28} />
+            :
+            <TouchableOpacity activeOpacity={0.9} onPress={() => handlePress()}>
+              <ButtonSmall color={theme.colors.grisMasClaro} buttonStyles={styles.button}>
+                <Text style={styles.textButton}>{translateFn("createAccount")}</Text>
+              </ButtonSmall>
+            </TouchableOpacity>
+          }
+        </> :
+        <>
+          {!creatingLoader ? 
+          <>
+            <Text style={styles.title}>{translateFn("validationCode")}</Text>
+            <Text style={styles.textValidation}>{translateFn("validationText")}</Text>
+            <TextInput 
+              style={[styles.input, styles.vfyCode]}
+              keyboardType='numeric'
+              onChangeText={setInputToken}
+              value={inputToken}
+            />
+          </> 
+          : <>
+              <Spinner style={{marginTop: 60}} size={50} borderWidth={10}/>
+              <Text>{translateFn("creatingAccount")}</Text>
+            </>
+          }
+        </>
+      }
+
     </ScrollView>
   )
 }
@@ -165,6 +220,10 @@ const styles = StyleSheet.create({
     fontSize: theme.fontSizes.F18,
     marginLeft: 4
   },
+  textValidation: {
+    fontSize: theme.fontSizes.F16,
+    marginHorizontal: 16
+  },
   textButton: {
     fontSize: theme.fontSizes.F20,
   },
@@ -179,6 +238,13 @@ const styles = StyleSheet.create({
     fontSize: theme.fontSizes.F18,
     paddingHorizontal: 16,
     paddingVertical: 4,
+  },
+  vfyCode: {
+    fontSize: 24,
+    fontWeight: "600", 
+    textAlign: "center", 
+    letterSpacing: 4,
+    minWidth: 180
   },
   lowerText: {
     marginLeft: 4,

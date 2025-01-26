@@ -360,14 +360,14 @@
     {"lenguage": "pt", "text": "Por Turno"}
   ],
   "baseColor": [
-    {"lenguage": "es", "text": "Color Base"},
-    {"lenguage": "en", "text": "Base Color"},
-    {"lenguage": "pt", "text": "Cor Base"}
+    {"lenguage": "es", "text": "Base"},
+    {"lenguage": "en", "text": "Base"},
+    {"lenguage": "pt", "text": "Base"}
   ],
   "buttonsColor": [
-    {"lenguage": "es", "text": "Color de Botones"},
-    {"lenguage": "en", "text": "Buttons Color"},
-    {"lenguage": "pt", "text": "cor do botão"}
+    {"lenguage": "es", "text": "Botones"},
+    {"lenguage": "en", "text": "Buttons"},
+    {"lenguage": "pt", "text": "botão"}
   ],
   "resetColor": [
     {"lenguage": "es", "text": "Reestablecer al color inicial"},
@@ -439,6 +439,11 @@
     {"lenguage": "en", "text": "Password"},
     {"lenguage": "pt", "text": "Senha"}
   ],
+  "newPassword": [
+    {"lenguage": "es", "text": "Nueva contraseña"},
+    {"lenguage": "en", "text": "New password"},
+    {"lenguage": "pt", "text": "Nova senha"}
+  ],
   "min8": [
     {"lenguage": "es", "text": "* Mínimo 8 caracteres"},
     {"lenguage": "en", "text": "* Minimum 8 characteres"},
@@ -478,5 +483,60 @@
     {"lenguage": "es", "text": "Guía de uso"},
     {"lenguage": "en", "text": "Guide of use"},
     {"lenguage": "pt", "text": "Guia de uso"}
+  ],
+  "creatingAccount": [
+    {"lenguage": "es", "text": "Creando cuenta"},
+    {"lenguage": "en", "text": "Creating account"},
+    {"lenguage": "pt", "text": "Criando conta"}
+  ],
+  "validationCode": [
+    {"lenguage": "es", "text": "Código de validación"},
+    {"lenguage": "en", "text": "Validation Code"},
+    {"lenguage": "pt", "text": "Código de validação"}
+  ],
+  "validationText": [
+    {"lenguage": "es", "text": "Ingrese el código de validación enviado a su correo electrónico, el código caduca después de 10 minutos"},
+    {"lenguage": "en", "text": "Enter the validation code sent to your email, the code expires after 10 minutes"},
+    {"lenguage": "pt", "text": "Digite o código de validação enviado para o seu e-mail, o código expira após 10 minutos"}
+  ],
+  "forgotPass": [
+    {"lenguage": "es", "text": "Olvidé mi contraseña"},
+    {"lenguage": "en", "text": "Forgot my password"},
+    {"lenguage": "pt", "text": "Esqueci minha senha"}
+  ],
+  "recoverPass": [
+    {"lenguage": "es", "text": "Recuperar contraseña"},
+    {"lenguage": "en", "text": "Recover password"},
+    {"lenguage": "pt", "text": "Recuperar senha"}
+  ],
+  "changePass": [
+    {"lenguage": "es", "text": "Cambiar contraseña"},
+    {"lenguage": "en", "text": "Change password"},
+    {"lenguage": "pt", "text": "Alterar senha"}
+  ],
+  "sendRestoreCode": [
+    {"lenguage": "es", "text": "Enviar código de recuperación"},
+    {"lenguage": "en", "text": "Send recovery code"},
+    {"lenguage": "pt", "text": "Enviar código de recuperação"}
+  ],
+  "sendingCode": [
+    {"lenguage": "es", "text": "Enviando código"},
+    {"lenguage": "en", "text": "Sending code"},
+    {"lenguage": "pt", "text": "Enviando código"}
+  ],
+  "changingPass": [
+    {"lenguage": "es", "text": "Guardando cambio"},
+    {"lenguage": "en", "text": "Saving change"},
+    {"lenguage": "pt", "text": "Salvando alteração"}
+  ],
+  "userNotExist": [
+    {"lenguage": "es", "text": "El usuario no existe"},
+    {"lenguage": "en", "text": "User doesn´t exist"},
+    {"lenguage": "pt", "text": "O usuário não existe"}
+  ],
+  "invalidCode": [
+    {"lenguage": "es", "text": "Código inválido"},
+    {"lenguage": "en", "text": "Invalid code"},
+    {"lenguage": "pt", "text": "Código inválido"}
   ]
 }

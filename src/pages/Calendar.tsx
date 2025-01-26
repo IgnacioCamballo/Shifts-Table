@@ -21,12 +21,11 @@ import { firstLetterUpper, weekdays } from '@/utils';
 import SwiftArrows from '@/components/Molecules/SwiftArrows';
 import { DayProps } from '@/types';
 import RenderDayCalendar from '@/components/Atoms/RenderDayCalendar';
-import { Navigate } from 'react-router-native';
 
 let screenWidth = Dimensions.get("window").width
 
 export default function Calendar() {
-  const {lenguage, addsInitialized} = useCalendar()
+  const {lenguage, addsInitialized, userInfo} = useCalendar()
 
   const [currentDay, setCurrentDay] = useState(new Date());
   const [monthdays, setMonthDays] = useState<DayProps[]>([])
@@ -180,7 +179,7 @@ export default function Calendar() {
         </Animated.ScrollView>
       </GestureDetector>
 
-      {addsInitialized && (
+      {addsInitialized && !userInfo.premium && (
         <View style={styles.banner}>
         <BannerAd 
           size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
@@ -221,19 +220,6 @@ const styles = StyleSheet.create({
     width: screenWidth - 20,
     flexDirection: "row", 
     flexWrap: "wrap"
-  },
-  dayContainer: {
-    height: theme.heigth.daysContainer,
-    width: (screenWidth - 20)/7,
-    borderColor: theme.colors.negro,
-    borderWidth: 0.5
-  },
-  dayContainerEmpty: {
-    width: (screenWidth - 20)/7,
-    height: theme.heigth.daysContainer,
-    backgroundColor: theme.colors.grisMasClaro,
-    borderColor: theme.colors.gris,
-    borderWidth: 0.5    
   },
   dayText: {
     position: "absolute",

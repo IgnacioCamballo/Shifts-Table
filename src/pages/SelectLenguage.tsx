@@ -2,12 +2,10 @@ import React, { useState } from 'react'
 import { Text, View, StyleSheet } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 
-import useCalendar from '@/hooks/useCalendar'
 import theme from '@/theme/theme'
 import { useNavigate } from 'react-router-native'
 
 export default function SelectLenguage() {
-  const {setLenguage} = useCalendar()
   const navigate = useNavigate()
 
   const [lenguageSelected, setLenguageSelected] = useState("")
@@ -17,8 +15,7 @@ export default function SelectLenguage() {
     if(lenguageSelected === "") {
       setError(true)
     } else {
-      setLenguage(lenguageSelected)
-      navigate("/account")
+      navigate(`/account/${lenguageSelected}`)
     }
   }
   

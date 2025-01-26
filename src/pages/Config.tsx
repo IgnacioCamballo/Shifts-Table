@@ -21,7 +21,7 @@ export default function Config() {
   }
 
   const [employersOpen, setEmployersOpen] = useState(false)
-
+  
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
       <ConfigDefaultTimes />

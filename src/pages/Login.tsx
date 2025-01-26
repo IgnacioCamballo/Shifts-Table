@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, View } from 'react-native'
-import { useNavigate } from 'react-router-native'
+import { useNavigate, useParams } from 'react-router-native'
 import { useMutation } from '@tanstack/react-query'
 import Icon from 'react-native-vector-icons/Feather'
 import IconArrow from 'react-native-vector-icons/AntDesign'
@@ -16,7 +16,9 @@ import TransparentButton from '@/components/Atoms/Buttons/ButtonTransparent'
 import Spinner from '@/components/Atoms/Spinner'
 
 export default function Login() {
-  const {lenguage, setCompanysInfo, setConfigInfo, setLenguage, setShifts, setUserInfo} = useCalendar()
+  const {setCompanysInfo, setConfigInfo, setLenguage, setShifts, setUserInfo} = useCalendar()
+  const params = useParams()
+  const lenguage = params.lg!
   const navigate = useNavigate()
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
@@ -64,7 +66,7 @@ export default function Login() {
   
   return (
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.contentContainer} style={styles.container}>
-      <TransparentButton link='/account' style={styles.arrow}>
+      <TransparentButton link={`/account/${lenguage}`} style={styles.arrow}>
         <IconArrow
           name="doubleleft"
           color={theme.colors.negro}
@@ -117,11 +119,14 @@ export default function Login() {
       {isPending ?
         <Spinner borderWidth={6} size={28} />
         :
-        <TouchableOpacity activeOpacity={0.9} onPress={() => handlePress()}>
-          <ButtonSmall color={theme.colors.grisMasClaro} buttonStyles={styles.button}>
-            <Text style={styles.textButton}>{translateFn("login")}</Text>
-          </ButtonSmall>
-        </TouchableOpacity>
+        <>
+          <TouchableOpacity activeOpacity={0.9} onPress={() => handlePress()}>
+            <ButtonSmall color={theme.colors.grisMasClaro} buttonStyles={styles.button}>
+              <Text style={styles.textButton}>{translateFn("login")}</Text>
+            </ButtonSmall>
+          </TouchableOpacity>
+          <Text style={{marginTop: 12, color: theme.colors.gris}} onPress={() => navigate(`/account/${lenguage}/recoverPassword`)}>{translateFn("forgotPass")}</Text>
+        </>
       }
     </ScrollView>
   )

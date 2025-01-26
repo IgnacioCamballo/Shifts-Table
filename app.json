@@ -23,6 +23,7 @@
       "googleServicesFile": "./google-services.json",
       "package": "com.shiftstable"
     },
+    "scheme": "shifts-table",
     "extra": {
       "eas": {
         "projectId": "968dc7b3-ab52-4e39-a056-846429f84d9d"
