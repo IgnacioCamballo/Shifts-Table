@@ -34,9 +34,12 @@ const theme = {
     heigth: {
         publicidad: 80,
         daysContainer: (screenHeight - Constants.statusBarHeight - 265)/6,
+        daysContainerPremium: (screenHeight - Constants.statusBarHeight - 195)/6,
         configScrollView: (screenHeight - Constants.statusBarHeight - 540),
         shiftScrollView: (screenHeight - Constants.statusBarHeight - 300),
+        shiftScrollViewPremium: (screenHeight - Constants.statusBarHeight - 230),
         monthDetailScrollView: (screenHeight - Constants.statusBarHeight - 340),
+        monthDetailScrollViewPremium: (screenHeight - Constants.statusBarHeight - 270),
         shiftNewEditScrollView: (screenHeight - Constants.statusBarHeight - 200),
         noFooterNoHeader: (screenHeight - Constants.statusBarHeight - 110)
     },

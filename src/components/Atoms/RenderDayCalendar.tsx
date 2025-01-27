@@ -23,7 +23,6 @@ const containerWidth = (screenWidth - 20)/7
 
 export default function RenderDayCalendar({item, currentDay, pressedDate, nav, onPress}: RenderDayCalendarProps) {
   const {shifts, companysInfo, userInfo} = useCalendar()
-  let daysContainerHeight = (Dimensions.get("window").height - Constants.statusBarHeight - (userInfo.premium ? 195 : 265))/6
 
   const {day, key, isCurrentDay, shadowed} = item
 
@@ -37,7 +36,7 @@ export default function RenderDayCalendar({item, currentDay, pressedDate, nav, o
       key={key}
       onPress={() => onPress(key)}
     >
-      <View style={shadowed ? [styles.dayContainerEmpty, {height: daysContainerHeight}] : [styles.dayContainer, {height: daysContainerHeight}]}>
+      <View style={[shadowed ? styles.dayContainerEmpty : styles.dayContainer, {height: userInfo.premium ? theme.heigth.daysContainerPremium : theme.heigth.daysContainer}]}>
         {nav && <Navigate to={`/calendar/shifts/${pressedDate}`}/>}
         {shadowed === true ? <View></View> : colorShifts.map(shiftColor => 
           <View 

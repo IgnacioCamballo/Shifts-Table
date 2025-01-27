@@ -18,7 +18,7 @@ export default function Shifts() {
   const params = useParams()
   const pressedDate = params.date!
 
-  const {shifts, lenguage, addsInitialized, configInfo} = useCalendar()
+  const {shifts, lenguage, addsInitialized, configInfo, userInfo} = useCalendar()
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text:string){
@@ -58,7 +58,7 @@ export default function Shifts() {
         <Text style={styles.textoBoton}>{translateFn("createNewShift")}</Text>
       </Button>
 
-      <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
+      <ScrollView showsVerticalScrollIndicator={false} style={[styles.scrollView, {maxHeight: userInfo.premium ? theme.heigth.shiftScrollViewPremium : theme.heigth.shiftScrollView}]}>
         {shifts.length === 0 ? <View></View> : 
           shifts.filter(shift => shift.shiftEntry.getFullYear() === date.getFullYear() && shift.shiftEntry.getMonth() === date.getMonth() && shift.shiftEntry.getDate() === date.getDate())
           .map(
@@ -67,7 +67,7 @@ export default function Shifts() {
         }
       </ScrollView>
 
-      {addsInitialized && (
+      {!userInfo.premium && addsInitialized && (
         <View style={styles.banner}>
         <BannerAd 
           size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
@@ -88,7 +88,6 @@ const styles = StyleSheet.create({
     padding: 10  
   },
   scrollView: {
-    maxHeight: theme.heigth.shiftScrollView,
     marginTop: 16
   },
   link: {

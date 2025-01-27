@@ -17,7 +17,7 @@ export default function MonthDetail() {
   const month = param.month
   const employerParam = param.employer ? parseInt(param.employer) : 0
 
-  const { shifts, lenguage, addsInitialized, companysInfo } = useCalendar()
+  const { shifts, lenguage, addsInitialized, companysInfo, userInfo } = useCalendar()
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text: string) {
@@ -202,7 +202,7 @@ export default function MonthDetail() {
 
       <Text style={styles.TotalHours}>{translateFn("totalHours")}: {findWorkedHours()}</Text>
 
-      <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
+      <ScrollView showsVerticalScrollIndicator={false} style={{height: userInfo.premium ? theme.heigth.monthDetailScrollViewPremium : theme.heigth.monthDetailScrollView}}>
         {monthlyShiftsFilteredPayment.map(shift => (
           <View key={shift.key} style={styles.line}>
             <View style={[styles.flexRow, { gap: 2, width: 50 }]}>
@@ -215,7 +215,7 @@ export default function MonthDetail() {
         ))}
       </ScrollView>
 
-      {addsInitialized && (
+      {!userInfo.premium && addsInitialized && (
         <View style={styles.banner}>
           <BannerAd
             size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
@@ -324,9 +324,6 @@ const styles = StyleSheet.create({
   bgBlack: {
     backgroundColor: theme.colors.negro,
     borderRadius: 4
-  },
-  scrollView: {
-    height: theme.heigth.monthDetailScrollView
   },
   link: {
     position: "absolute",

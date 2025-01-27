@@ -15,7 +15,7 @@ export default function Totals() {
   const param = useParams()
   const currentMonth = param.month ? new Date(param.month) : new Date()
 
-  const {shifts, lenguage, addsInitialized, companysInfo, configInfo} = useCalendar()
+  const {shifts, lenguage, addsInitialized, companysInfo, configInfo, userInfo} = useCalendar()
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text:string){
@@ -170,7 +170,7 @@ export default function Totals() {
         <Text style={styles.textLine}>${salary - salaryPaid === 0 ? "0" : (salary - salaryPaid).toFixed(2)}</Text>
       </View>
 
-      {addsInitialized && (
+      {!userInfo.premium && addsInitialized && (
         <View style={styles.banner}>
         <BannerAd 
           size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
