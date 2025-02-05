@@ -72,7 +72,7 @@ export async function getAllUsers() {
 
 export async function getUser() {
   const {userInfo} = useCalendar()
-  const token = sessionStorage.getItem("userToken")
+  const token = await AsyncStorage.getItem("userToken")
 
   try {
     const {data} = await api("/users/getUser", {

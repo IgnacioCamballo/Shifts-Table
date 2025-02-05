@@ -44,6 +44,12 @@
           "androidAppId": "ca-app-pub-4926030013898312~7320718360",
           "iosAppId": "ca-app-pub-4926030013898312~8140812186"
         }
+      ],
+      [
+        "@stripe/stripe-react-native",
+        {
+          "enableGooglePay": true
+        }
       ]
     ]
   }

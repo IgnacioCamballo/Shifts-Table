@@ -22,7 +22,10 @@ import AccountIntro from '@/pages/AccountIntro'
 import SelectLenguage from '@/pages/SelectLenguage'
 import Login from '@/pages/Login'
 import CreateAccount from '@/pages/CreateAccount'
-import PassRecover from './PassRecover'
+import PassRecover from '@/pages/PassRecover'
+//Premium pages
+import PremiumPurchase from '@/pages/PremiumPurchase'
+import PremiumPurchaseSuccess from './PremiumPurchaseSuccess'
 
 export default function Main() {
   return (
@@ -50,6 +53,8 @@ export default function Main() {
             <Route path='/account/:lg/login' element={<Login />}/>
             <Route path='/account/:lg/recoverPassword' element={<PassRecover />}/>
             <Route path='/account/:lg/createAccount' element={<CreateAccount />}/>
+          <Route path="/premium-purchase" element={<PremiumPurchase />}/>
+            <Route path="/premium-purchase/success" element={<PremiumPurchaseSuccess />}/>
         </Routes>
         <LayoutFooter />
     </View>

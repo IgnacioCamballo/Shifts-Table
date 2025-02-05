@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import { StyleSheet, Text, View, Platform, ScrollView } from 'react-native'
+import { StyleSheet, Text, View, Platform, ScrollView, TouchableOpacity } from 'react-native'
 import Constants from "expo-constants"
+import { useNavigate } from 'react-router-native'
 
 import useCalendar from '@/hooks/useCalendar'
 import { translate } from '@/utils'
@@ -14,6 +15,7 @@ import DropDownAutoHeight from '@/components/Molecules/DropDownAutoHeight'
 
 export default function Config() {
   const {companysInfo, lenguage, configInfo} = useCalendar()
+  const navigate = useNavigate()
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text: string) {
@@ -35,7 +37,6 @@ export default function Config() {
         titleStyle={styles.textoConf}
         titleContainerStyle={[styles.tituloConf, styles.empleadores]}
         arrowColor={configInfo.baseColor}
-
       >
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -59,9 +60,16 @@ export default function Config() {
       >
         <Text style={styles.textoBoton}>{translateFn("createNewEmployer")}</Text>
       </Button>
+      
       <View style={{ height: 20 }} />
 
       <ConfigSettings />
+
+      <TouchableOpacity activeOpacity={1} onPress={() => navigate("/premium-purchase")} style={{backgroundColor: "red"}}>
+        <Text>buy premium</Text>
+      </TouchableOpacity>
+      
+      <View style={{ height: 20 }} />
     </ScrollView>
   )
 }

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { Text, TouchableOpacity, View, StyleSheet, ScrollView } from 'react-native'
+import { Text, TouchableOpacity, View, StyleSheet, ScrollView, Dimensions } from 'react-native'
 import { useParams } from 'react-router-native'
 import { Picker } from '@react-native-picker/picker'
 import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads'
 import Icon from 'react-native-vector-icons/AntDesign'
+import IconMenu from 'react-native-vector-icons/Feather'
 
 import useCalendar from '@/hooks/useCalendar'
 import theme from '@/theme/theme'
@@ -11,6 +12,8 @@ import { firstLetterUpper, formattedMinutes, textDay, translate } from '@/utils'
 
 import SwiftArrows from '@/components/Molecules/SwiftArrows'
 import TransparentButton from '@/components/Atoms/Buttons/ButtonTransparent'
+
+let screenWidth = Dimensions.get("window").width
 
 export default function MonthDetail() {
   const param = useParams()
@@ -28,6 +31,7 @@ export default function MonthDetail() {
   const [employer, setEmployer] = useState(employerParam)
   const [shownDays, setShownDays] = useState("Todos")
   const [employersList, setEmployersList] = useState<number[]>([])
+  const [modal, setModal] = useState(false)
 
   const monthlyShifts = shifts.filter(shift => shift.shiftEntry.getFullYear() === currentDay.getFullYear() && shift.shiftEntry.getMonth() === currentDay.getMonth())
   const monthlyShiftsFiltered = employer === 0 ? monthlyShifts : monthlyShifts.filter(shift => shift.employer === employer)
@@ -135,7 +139,13 @@ export default function MonthDetail() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.absolute}>///</Text>
+      <IconMenu
+        style={styles.absolute}
+        name="menu"
+        color={theme.colors.negro}
+        size={28}
+        onPress={() => setModal(true)}
+      />
       <TransparentButton link={`/totals/${currentDay}`} style={styles.link}>
         <Icon
           name="doubleleft"
@@ -173,8 +183,6 @@ export default function MonthDetail() {
       </View>
 
       <View style={styles.selector}>
-        {/* <Text style={styles.textLine}>{translateFn("days")}:</Text> */}
-
         <TouchableOpacity activeOpacity={0.9} style={styles.flexRow} onPress={() => setShownDays("Todos")}>
           <View style={styles.outerCircle}>
             <View style={[styles.innerCircle, shownDays === "Todos" ? styles.bgBlack : {}]}></View>
@@ -226,6 +234,16 @@ export default function MonthDetail() {
           />
         </View>
       )}
+      {modal && 
+        <TouchableOpacity activeOpacity={1} style={styles.modalContainer} onPress={() => setModal(false)}>
+          <View style={styles.modal}>
+            <Text style={styles.modalText} onPress={() => {}}>exportar imagen</Text>
+            <Text style={styles.modalText} onPress={() => {}}>exportar pdf</Text>
+            <Text style={styles.modalText} onPress={() => {}}>exportar excel</Text>
+            {userInfo.premium && <Text style={styles.modalText_s} onPress={() => {}}>i habilitado solo en premium</Text>}
+          </View>
+        </TouchableOpacity>
+      }
     </View>
   )
 }
@@ -238,8 +256,7 @@ const styles = StyleSheet.create({
   absolute: {
     position: "absolute",
     right: 16,
-    top: 6,
-    fontSize: 24
+    top: 9,
   },
   line: {
     paddingHorizontal: 15,
@@ -336,5 +353,33 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignContent: "center",
     bottom: -66
+  },
+  modalContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: screenWidth,
+    height: theme.heigth.noFooterNoHeader,
+    backgroundColor: "transparent"
+  },
+  modal: {
+    position: "absolute",
+    top: 32,
+    right: 32,
+    backgroundColor: "white",
+    borderWidth: 1,
+    borderColor: theme.colors.grisClaro,
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    gap: 16
+  },
+  modalText: {
+    textAlign: "right",
+    fontSize: theme.fontSizes.F18
+  },
+  modalText_s: {
+    fontSize: theme.fontSizes.F14,
+    marginTop: -8
   }
 })

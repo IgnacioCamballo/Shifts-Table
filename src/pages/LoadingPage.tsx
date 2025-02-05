@@ -14,6 +14,7 @@ export default function LoadingPage() {
   const {setCompanysInfo, setConfigInfo, setLenguage, setShifts, setUserInfo, setLastShiftCreated} = useCalendar()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  
   //gets UserInfo when login in
   const getUserInfoQuery = useQuery({
     queryKey: ["UserInfoDB"],
