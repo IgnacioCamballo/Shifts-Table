@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
-import { StyleSheet, Text, View, Platform, ScrollView, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, Platform, ScrollView } from 'react-native'
 import Constants from "expo-constants"
-import { useNavigate } from 'react-router-native'
 
 import useCalendar from '@/hooks/useCalendar'
 import { translate } from '@/utils'
@@ -12,10 +11,10 @@ import ConfigSettings from '@/components/organisms/ConfigSettings'
 import Employer from '@/components/Molecules/Employer'
 import ConfigDefaultTimes from '@/components/organisms/ConfigDefaultTimes'
 import DropDownAutoHeight from '@/components/Molecules/DropDownAutoHeight'
+import BannerPremium from '@/components/Atoms/Buttons/BannerPremium'
 
 export default function Config() {
-  const {companysInfo, lenguage, configInfo} = useCalendar()
-  const navigate = useNavigate()
+  const { companysInfo, lenguage, configInfo, userInfo } = useCalendar()
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text: string) {
@@ -23,61 +22,63 @@ export default function Config() {
   }
 
   const [employersOpen, setEmployersOpen] = useState(false)
-  
+
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
-      <ConfigDefaultTimes />
+      <View style={styles.p8}>
 
-      <DropDownAutoHeight
-        duration={400}
-        isOpen={employersOpen}
-        setIsOpen={setEmployersOpen}
-        maxHeight={350}
-        title={translateFn("employers")!}
-        titleStyle={styles.textoConf}
-        titleContainerStyle={[styles.tituloConf, styles.empleadores]}
-        arrowColor={configInfo.baseColor}
-      >
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          style={[styles.heightAuto]}
-          nestedScrollEnabled={true}
+        <ConfigDefaultTimes />
+
+        <DropDownAutoHeight
+          duration={400}
+          isOpen={employersOpen}
+          setIsOpen={setEmployersOpen}
+          maxHeight={350}
+          title={translateFn("employers")!}
+          titleStyle={styles.textoConf}
+          titleContainerStyle={[styles.tituloConf, styles.empleadores]}
+          arrowColor={configInfo.baseColor}
         >
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            style={[styles.heightAuto]}
+            nestedScrollEnabled={true}
+          >
 
-          {companysInfo.length === 0 ? <Text style={styles.textNotEmployers}>{translateFn("noEmployersYet")}</Text> :
-            companysInfo.map(employer => (
-              <Employer key={employer.key} employer={employer} />
-            ))
-          }
-        </ScrollView>
-      </DropDownAutoHeight>
+            {companysInfo.length === 0 ? <Text style={styles.textNotEmployers}>{translateFn("noEmployersYet")}</Text> :
+              companysInfo.map(employer => (
+                <Employer key={employer.key} employer={employer} />
+              ))
+            }
+          </ScrollView>
+        </DropDownAutoHeight>
 
-      <Button 
-        margintop={20} 
-        to='/config/newEmployer' 
-        color={theme.colors.grisMasClaro}
-        buttonStyles={styles.botonStyle}
-      >
-        <Text style={styles.textoBoton}>{translateFn("createNewEmployer")}</Text>
-      </Button>
-      
-      <View style={{ height: 20 }} />
+        <Button
+          margintop={20}
+          to='/config/newEmployer'
+          color={theme.colors.grisMasClaro}
+          buttonStyles={styles.botonStyle}
+        >
+          <Text style={styles.textoBoton}>{translateFn("createNewEmployer")}</Text>
+        </Button>
 
-      <ConfigSettings />
+        <View style={{ height: 20 }} />
 
-      <TouchableOpacity activeOpacity={1} onPress={() => navigate("/premium-purchase")} style={{backgroundColor: "red"}}>
-        <Text>buy premium</Text>
-      </TouchableOpacity>
-      
-      <View style={{ height: 20 }} />
+        <ConfigSettings />
+      </View>
+      {!userInfo.premium && <BannerPremium />}
+
+      <View style={{ height: 10 }} />
     </ScrollView>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 8,
-    maxHeight: theme.heigth.noFooterNoHeader
+    maxHeight: theme.heigth.noFooterNoHeader,
+  },
+  p8: {
+    padding: 8
   },
   configGeneral: {
     marginVertical: 10
@@ -117,7 +118,7 @@ const styles = StyleSheet.create({
     fontWeight: '400'
   },
   heightAuto: {
-    transform: [{translateY: -2}],
+    transform: [{ translateY: -2 }],
     height: "auto",
     overflow: "hidden"
   },
@@ -174,7 +175,7 @@ const styles = StyleSheet.create({
     fontWeight: "500"
   },
   botonStyle: {
-    borderWidth: 1, 
+    borderWidth: 1,
     borderColor: theme.colors.grisMedio,
     shadowOffset: { width: 2, height: 2 },
     shadowColor: theme.colors.negro,

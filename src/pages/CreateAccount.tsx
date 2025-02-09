@@ -20,6 +20,7 @@ export default function CreateAccount() {
   const { setUserInfo, setLenguage } = useCalendar()
   const params = useParams()
   const lenguage = params.lg!
+  const type = params.type!
   const navigate = useNavigate()
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
@@ -93,7 +94,7 @@ export default function CreateAccount() {
   return (
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.contentContainer} style={styles.container}>
       {!tokenId && 
-        <TransparentButton link={`/account/${lenguage}`} style={styles.arrow}>
+        <TransparentButton link={type === "2" ? "/account/prePurchaseLogin" : `/account/${lenguage}`} style={styles.arrow}>
           <IconArrow
             name="doubleleft"
             color={theme.colors.negro}

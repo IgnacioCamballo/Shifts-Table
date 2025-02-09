@@ -44,6 +44,27 @@
     {"lenguage": "en", "text": "Worked Days"},
     {"lenguage": "pt", "text": "Dias trabalhados"}
   ],
+
+  "exportImagen": [
+    {"lenguage": "es", "text": "Exportar como imagen"},
+    {"lenguage": "en", "text": "Export as image"},
+    {"lenguage": "pt", "text": "Exportar como imagem"}
+  ],
+  "exportPdf": [
+    {"lenguage": "es", "text": "Exportar como PDF"},
+    {"lenguage": "en", "text": "Export as PDF"},
+    {"lenguage": "pt", "text": "Exportar como PDF"}
+  ],
+  "exportExcel": [
+    {"lenguage": "es", "text": "Exportar en Excel"},
+    {"lenguage": "en", "text": "Export in Excel"},
+    {"lenguage": "pt", "text": "Exportar en Excel"}
+  ],
+  "onlyInPremium": [
+    {"lenguage": "es", "text": "Disponibles solo para premium"},
+    {"lenguage": "en", "text": "Available only for premium"},
+    {"lenguage": "pt", "text": "Disponível so para premium"}
+  ],
   "settings": [
     {"lenguage": "es", "text": "Ajustes"},
     {"lenguage": "en", "text": "Settings"},
@@ -159,6 +180,11 @@
     {"lenguage": "en", "text": "When you log out, the device data will be deleted, make sure you have backed up to have all the data when you log in again"},
     {"lenguage": "pt", "text": "Quando você sair, os dados do dispositivo serão excluídos, certifique-se de ter feito backup para ter todos os dados quando você fizer login novamente"}
   ],
+  "endSessionAlertPremium": [
+    {"lenguage": "es", "text": "Seguro que deseas cerrar sesión"},
+    {"lenguage": "en", "text": "Are you sure you want to log out"},
+    {"lenguage": "pt", "text": "Tem certeza de que deseja sair"}
+  ],
   "yes": [
     {"lenguage": "es", "text": "Si"},
     {"lenguage": "en", "text": "Yes"},
@@ -173,6 +199,11 @@
     {"lenguage": "es", "text": "Cancelar"},
     {"lenguage": "en", "text": "Cancel"},
     {"lenguage": "pt", "text": "Cancelar"}
+  ],
+  "close": [
+    {"lenguage": "es", "text": "Cerrar"},
+    {"lenguage": "en", "text": "Close"},
+    {"lenguage": "pt", "text": "Fechar"}
   ],
   "save": [
     {"lenguage": "es", "text": "Guardar"},
@@ -319,6 +350,11 @@
     {"lenguage": "en", "text": "Days"},
     {"lenguage": "pt", "text": "Dias"}
   ],
+  "hours": [
+    {"lenguage": "es", "text": "Horas"},
+    {"lenguage": "en", "text": "Hours"},
+    {"lenguage": "pt", "text": "Horas"}
+  ],
   "seeDetail": [
     {"lenguage": "es", "text": "Ver Detalle"},
     {"lenguage": "en", "text": "Detailed View"},
@@ -388,6 +424,11 @@
     {"lenguage": "es", "text": "No hay datos de usuario en este dispositivo. ¿Como deseas continuar?"},
     {"lenguage": "en", "text": "No user data on this device. How do you want to continue?"},
     {"lenguage": "pt", "text": "Nenhum dado de usuário neste dispositivo. Como você quer continuar?"}
+  ],
+  "titleAccountPrePurchase": [
+    {"lenguage": "es", "text": "Para poder continuar, debes iniciar sesión o crear una cuenta"},
+    {"lenguage": "en", "text": "To continue, you must log in or create an account"},
+    {"lenguage": "pt", "text": "Para continuar, você deve fazer login ou criar uma conta"}
   ],
   "login": [
     {"lenguage": "es", "text": "Iniciar sesión"},
@@ -464,10 +505,20 @@
     {"lenguage": "en", "text": "The password is obligatory"},
     {"lenguage": "pt", "text": "A senha é obrigatória"}
   ],
+  "incorrectPassword": [
+    {"lenguage": "es", "text": "Contraseña incorrecta"},
+    {"lenguage": "en", "text": "Wrong password"},
+    {"lenguage": "pt", "text": "Senha incorreta"}
+  ],
   "invalidMail": [
     {"lenguage": "es", "text": "Ingresa un email válido"},
     {"lenguage": "en", "text": "Insert a valid email"},
     {"lenguage": "pt", "text": "Digite um correio válido"}
+  ],
+  "mailNoExist": [
+    {"lenguage": "es", "text": "El usuario no existe"},
+    {"lenguage": "en", "text": "User doesn't exist"},
+    {"lenguage": "pt", "text": "O usuário não existe"}
   ],
   "repeatedMail": [
     {"lenguage": "es", "text": "Email ya esta en uso"},
@@ -538,5 +589,25 @@
     {"lenguage": "es", "text": "Código inválido"},
     {"lenguage": "en", "text": "Invalid code"},
     {"lenguage": "pt", "text": "Código inválido"}
+  ],
+  "premiumEndsMessage": [
+    {"lenguage": "es", "text": "Tu año de membresía premium a llegado a su fin y estamos muy agradecidos de que hayas confiado en nosotros, deseas renovar tu suscripción y seguir disfrutando de los beneficios de la membresía premium?"},
+    {"lenguage": "en", "text": "Your year of premium membership has come to an end and we are very grateful that you have trusted us, do you want to renew your subscription and continue enjoying the benefits of premium membership?"},
+    {"lenguage": "pt", "text": "Seu ano de associação premium chegou ao fim e estamos muito gratos por ter confiado em nós, você deseja renovar sua assinatura e continuar desfrutando dos benefícios da associação premium?"}
+  ],
+  "renew": [
+    {"lenguage": "es", "text": "Renovar"},
+    {"lenguage": "en", "text": "Renew"},
+    {"lenguage": "pt", "text": "Renovar"}
+  ],
+  "importantMessage": [
+    {"lenguage": "es", "text": "Mensaje importante"},
+    {"lenguage": "en", "text": "Important message"},
+    {"lenguage": "pt", "text": "Mensajen importante"}
+  ],
+  "errorStartingPayment": [
+    {"lenguage": "es", "text": "Hubo un problema al iniciar el proceso de pago"},
+    {"lenguage": "en", "text": "There was a problem starting the payment process"},
+    {"lenguage": "pt", "text": "Houve um problema ao iniciar o processo de pagamento"}
   ]
 }

@@ -38,8 +38,8 @@ const theme = {
         configScrollView: (screenHeight - Constants.statusBarHeight - 540),
         shiftScrollView: (screenHeight - Constants.statusBarHeight - 300),
         shiftScrollViewPremium: (screenHeight - Constants.statusBarHeight - 230),
-        monthDetailScrollView: (screenHeight - Constants.statusBarHeight - 340),
-        monthDetailScrollViewPremium: (screenHeight - Constants.statusBarHeight - 270),
+        monthDetailScrollView: (screenHeight - Constants.statusBarHeight - 370),
+        monthDetailScrollViewPremium: (screenHeight - Constants.statusBarHeight - 300),
         shiftNewEditScrollView: (screenHeight - Constants.statusBarHeight - 200),
         noFooterNoHeader: (screenHeight - Constants.statusBarHeight - 110)
     },

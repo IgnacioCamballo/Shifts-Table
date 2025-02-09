@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, Linking, Alert } from 'react-native'
+import React, { useEffect, useRef, useState } from 'react'
+import { View, Text, StyleSheet, TouchableOpacity, Linking, Alert, Animated, Easing } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-native'
 import { Picker } from '@react-native-picker/picker'
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 import useCalendar from '@/hooks/useCalendar'
 import { translate } from '@/utils'
@@ -35,6 +36,9 @@ export default function ConfigSettings() {
   const [isOpen, setIsOpen] = useState(true)
   const [colorModal, setColorModal] = useState(false)
   const [buttonsColorModal, setButtonsColorModal] = useState(false)
+  //for button animation
+  const [successSave, setSuccessSave] = useState(false)
+  const successAnimation = useRef(new Animated.Value(0)).current
 
   const { mutate, isPending } = useMutation({
     mutationFn: saveUserInfo,
@@ -42,9 +46,43 @@ export default function ConfigSettings() {
       console.log(error)
     },
     onSuccess: (data) => {
-      console.log(data)
+      setSuccessSave(true)
+      Animated.timing(successAnimation, {
+        toValue: 1,
+        duration: 400, 
+        easing: Easing.inOut(Easing.ease),
+        useNativeDriver: false
+      }).start(() => {
+        setTimeout(() => {
+          setSuccessSave(false)
+          successAnimation.setValue(0)
+        }, 1500);
+      })
     }
   })
+
+  const opacity = {
+    opacity: successAnimation.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, 1]
+    })
+  }
+  const reverseOpacity = {
+    opacity: successAnimation.interpolate({
+      inputRange: [0, 1],
+      outputRange: [1, 0]
+    })
+  }
+  const rotate = {
+    transform: [
+      {
+        rotate: successAnimation.interpolate({
+          inputRange: [0, 1],
+          outputRange: ["0deg", "360deg"]
+        })
+      }
+    ]
+  }
 
   useEffect(() => {
     const configCopy = { ...configInfo, baseColor, buttonsColor }
@@ -54,7 +92,7 @@ export default function ConfigSettings() {
   const endSessionAlert = () => {
     Alert.alert(
       '',
-      translateFn("endSessionAlert"),
+      translateFn(userInfo.premium ? "endSessionAlertPremium" : "endSessionAlert"),
       [
         {
           text: translateFn("cancel"),
@@ -146,13 +184,24 @@ export default function ConfigSettings() {
             {!userInfo.premium &&
               <>
                 {isPending ?
-                  <Spinner borderWidth={6} size={28} />
+                  <Spinner borderWidth={6} size={28} style={{marginBottom: 15}}/>
+                  : successSave ? 
+                  <Animated.View style={[opacity, rotate, {padding: 10, borderRadius: 8, alignItems: "center", justifyContent: "center", marginTop: -16}]}>
+                    <Icon 
+                      name='check-circle'
+                      size={38}
+                      color={theme.colors.verdeMedio}
+
+                    />
+                  </Animated.View>
                   :
-                  <TouchableOpacity activeOpacity={0.8} onPress={() => securityCopy()}>
-                    <ButtonSmall color={theme.colors.azulClaro} buttonStyles={{ marginBottom: 8 }}>
-                      <Text style={[styles.textLine, styles.backup]}>{translateFn("securityCopy")}</Text>
-                    </ButtonSmall>
-                  </TouchableOpacity>
+                    <TouchableOpacity activeOpacity={0.8} onPress={() => securityCopy()}>
+                      <Animated.View style={reverseOpacity}>  
+                        <ButtonSmall color={theme.colors.azulClaro} buttonStyles={{ marginBottom: 8 }}>
+                          <Text style={[styles.textLine, styles.backup]}>{translateFn("securityCopy")}</Text>
+                        </ButtonSmall>
+                      </Animated.View>
+                    </TouchableOpacity>
                 }
               </>
             }

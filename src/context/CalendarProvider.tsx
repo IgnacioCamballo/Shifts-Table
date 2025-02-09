@@ -1,11 +1,14 @@
 import React, { useState, createContext, useEffect } from "react"
 import { MobileAds } from 'react-native-google-mobile-ads';
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { CalendarContextProps, ConfigInfo, EmployerProps, ShiftProps, UserInfo } from "@/types"
 import theme from "@/theme/theme";
-import { getUserInfo, saveUserInfo } from "@/api/UserInfoAPI";
+import { saveUserInfo } from "@/api/UserInfoAPI";
+import { Alert } from "react-native";
+import { useNavigate } from "react-router-native";
+import { translate } from "@/utils";
 
 interface props {
   children: JSX.Element | JSX.Element[]
@@ -15,6 +18,12 @@ const CalendarContext = createContext<CalendarContextProps>({} as CalendarContex
 
 const CalendarProvider = ({ children }: props) => {
   const queryClient = useQueryClient()
+  const navigate = useNavigate()
+
+  //this way avoid of calling useCalendar in utils and translate can be used inside if functions
+  function translateFn(text: string) {
+    return translate({ text, lenguage })
+  }
 
   const initialCompanysInfo = {
     baseColor: theme.colors.verdeBase, 
@@ -57,15 +66,21 @@ const CalendarProvider = ({ children }: props) => {
       console.log(error)
     },
     onSuccess: (data) => {
-      console.log(data)
-    }
-  })
+      //if premium finishes sets userinfo as not premium and shows an alert and ask if the user wants to renew the premium
+      if(data.endPremium) {
+        setUserInfo({...userInfo, premium: false})
+        queryClient.invalidateQueries({ queryKey: ["UserInfoDB"] })
 
-  //gets UserInfo when login in
-  const getUserInfoQuery = useQuery({
-    queryKey: ["UserInfoDB"],
-    queryFn: getUserInfo,
-    enabled: false
+        Alert.alert(
+          `${translateFn("importantMessage")}`, 
+          `${translateFn("premiumEndsMessage")}`,
+          [
+            { text: translateFn("renew"), onPress: () => navigate("/premium-purchase"), style: "cancel"},
+            { text: translateFn("close"), style: "cancel" }
+          ]
+        )
+      }
+    }
   })
 
   useEffect(() => {
@@ -73,6 +88,7 @@ const CalendarProvider = ({ children }: props) => {
   }, [])
 
   useEffect(() => {
+    //saves any change in the phone storage
     const userData = {userInfo, configInfo, companysInfo, shifts, lenguage, lastUpdate: Date.now(), lastShiftCreated}
     AsyncStorage.setItem("userData", JSON.stringify(userData))
 

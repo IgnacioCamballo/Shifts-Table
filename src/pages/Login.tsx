@@ -19,6 +19,7 @@ export default function Login() {
   const {setCompanysInfo, setConfigInfo, setLenguage, setShifts, setUserInfo} = useCalendar()
   const params = useParams()
   const lenguage = params.lg!
+  const type = params.type!
   const navigate = useNavigate()
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
@@ -30,12 +31,14 @@ export default function Login() {
   const [password, setPassword] = useState("")
   const [showPass, setShowPass] = useState(false)
   const [error, setError] = useState(false)
+  const [errorCode, seterrorCode] = useState("")
 
   //query to create user
   const { mutate, isPending } = useMutation({
     mutationFn: logIn,
+    retry: 0,
     onError: (error) => {
-      console.log(error.message)
+      seterrorCode(error.message)
     },
     onSuccess: (data) => {
       const userInfo = {
@@ -59,6 +62,7 @@ export default function Login() {
       setError(true)
     } else {
       setError(false)
+      seterrorCode("")
       const formData = {mail, password}
       mutate(formData)
     }
@@ -66,7 +70,7 @@ export default function Login() {
   
   return (
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.contentContainer} style={styles.container}>
-      <TransparentButton link={`/account/${lenguage}`} style={styles.arrow}>
+      <TransparentButton link={type === "2" ? "/account/prePurchaseLogin" : `/account/${lenguage}`} style={styles.arrow}>
         <IconArrow
           name="doubleleft"
           color={theme.colors.negro}
@@ -89,6 +93,7 @@ export default function Login() {
         />
         {error && mail === "" && <Text style={styles.error}>{translateFn("errorMail")}</Text>}
         {error && mail && !isEmail(mail) && <Text style={styles.error}>{translateFn("invalidMail")}</Text>}
+        {errorCode === "404" && <Text style={styles.error}>{translateFn("mailNoExist")}</Text>}
       </View>
 
       <View style={styles.inputContainer}>
@@ -114,6 +119,7 @@ export default function Login() {
 
         {error && password === "" && <Text style={styles.error}>{translateFn("errorPassword")}</Text>}
         {password.length < 8 && <Text style={[styles.lowerText, error && 0 < password.length && { color: theme.colors.rojo }]}>{translateFn("min8")}</Text>}
+        {errorCode === "401" && <Text style={styles.error}>{translateFn("incorrectPassword")}</Text>}
       </View>
 
       {isPending ?

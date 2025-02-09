@@ -26,6 +26,7 @@ import PassRecover from '@/pages/PassRecover'
 //Premium pages
 import PremiumPurchase from '@/pages/PremiumPurchase'
 import PremiumPurchaseSuccess from './PremiumPurchaseSuccess'
+import PrePurchaseLogin from './PrePurchaseLogin'
 
 export default function Main() {
   return (
@@ -50,9 +51,11 @@ export default function Main() {
 
           <Route path='/account/:lg' element={<AccountIntro />}/>
             <Route path='/account/lenguage' element={<SelectLenguage />}/>
-            <Route path='/account/:lg/login' element={<Login />}/>
+            <Route path='/account/:lg/login/:type' element={<Login />}/> {/* type 1 comes from first time opening the account, type 2 comes from prePurchase, used for back button */}
             <Route path='/account/:lg/recoverPassword' element={<PassRecover />}/>
-            <Route path='/account/:lg/createAccount' element={<CreateAccount />}/>
+            <Route path='/account/:lg/createAccount/:type' element={<CreateAccount />}/>
+            <Route path='/account/prePurchaseLogin' element={<PrePurchaseLogin />}/>
+
           <Route path="/premium-purchase" element={<PremiumPurchase />}/>
             <Route path="/premium-purchase/success" element={<PremiumPurchaseSuccess />}/>
         </Routes>

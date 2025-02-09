@@ -13,6 +13,7 @@ import Shift from '@/components/Molecules/Shift'
 import SwiftArrows from '@/components/Molecules/SwiftArrows'
 import TransparentButton from '@/components/Atoms/Buttons/ButtonTransparent'
 import Button from '@/components/Atoms/Buttons/Button'
+import BannerPremium from '@/components/Atoms/Buttons/BannerPremium'
 
 export default function Shifts() {
   const params = useParams()
@@ -65,7 +66,9 @@ export default function Shifts() {
             (mapedShift: ShiftProps) => <Shift shift={mapedShift} key={mapedShift.key}/>
           )
         }
+
       </ScrollView>
+        {!userInfo.premium && <BannerPremium style={styles.bannerPremium}/>}
 
       {!userInfo.premium && addsInitialized && (
         <View style={styles.banner}>
@@ -88,7 +91,9 @@ const styles = StyleSheet.create({
     padding: 10  
   },
   scrollView: {
-    marginTop: 16
+    position: "relative",
+    marginTop: 16,
+    overflow: "hidden",
   },
   link: {
     position: "absolute",
@@ -109,5 +114,10 @@ const styles = StyleSheet.create({
     justifyContent: "center", 
     alignContent: "center", 
     bottom: 80
+  },
+  bannerPremium: {
+    alignSelf: "flex-end",
+    marginBottom: 140,
+    left: 10
   }
 })

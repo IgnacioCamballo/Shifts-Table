@@ -9,6 +9,7 @@ import IconMenu from 'react-native-vector-icons/Feather'
 import useCalendar from '@/hooks/useCalendar'
 import theme from '@/theme/theme'
 import { firstLetterUpper, formattedMinutes, textDay, translate } from '@/utils'
+import { exportExcel, exportImg, exportPDF } from '@/utils/shiftsExports'
 
 import SwiftArrows from '@/components/Molecules/SwiftArrows'
 import TransparentButton from '@/components/Atoms/Buttons/ButtonTransparent'
@@ -210,6 +211,12 @@ export default function MonthDetail() {
 
       <Text style={styles.TotalHours}>{translateFn("totalHours")}: {findWorkedHours()}</Text>
 
+      <View style={styles.tableTopContainer}>
+        <Text style={styles.tableTop}>{translateFn("days")}</Text>
+        <Text style={styles.tableTop}>{translateFn("hours")}</Text>
+        <Text style={styles.tableTop}>{translateFn("total")}</Text>
+      </View>
+
       <ScrollView showsVerticalScrollIndicator={false} style={{height: userInfo.premium ? theme.heigth.monthDetailScrollViewPremium : theme.heigth.monthDetailScrollView}}>
         {monthlyShiftsFilteredPayment.map(shift => (
           <View key={shift.key} style={styles.line}>
@@ -237,10 +244,18 @@ export default function MonthDetail() {
       {modal && 
         <TouchableOpacity activeOpacity={1} style={styles.modalContainer} onPress={() => setModal(false)}>
           <View style={styles.modal}>
-            <Text style={styles.modalText} onPress={() => {}}>exportar imagen</Text>
-            <Text style={styles.modalText} onPress={() => {}}>exportar pdf</Text>
-            <Text style={styles.modalText} onPress={() => {}}>exportar excel</Text>
-            {userInfo.premium && <Text style={styles.modalText_s} onPress={() => {}}>i habilitado solo en premium</Text>}
+            <Text style={styles.modalText} disabled={!userInfo.premium} onPress={() => exportImg(monthlyShiftsFilteredPayment)}>{translateFn("exportImagen")}</Text>
+            <Text style={styles.modalText} disabled={!userInfo.premium} onPress={() => exportPDF(monthlyShiftsFilteredPayment)}>{translateFn("exportPdf")}</Text>
+            <Text style={styles.modalText} disabled={!userInfo.premium} onPress={() => exportExcel(monthlyShiftsFilteredPayment)}>{translateFn("exportExcel")}</Text>
+            {!userInfo.premium && 
+              <View style={{flexDirection: "row", alignItems: "center", gap: 4, marginTop: -12}}>
+                <IconMenu 
+                  name='info'
+                  size={20}
+                />
+                <Text style={styles.modalText_s} onPress={() => {}}>{translateFn("onlyInPremium")}</Text>
+              </View>
+            }
           </View>
         </TouchableOpacity>
       }
@@ -380,6 +395,16 @@ const styles = StyleSheet.create({
   },
   modalText_s: {
     fontSize: theme.fontSizes.F14,
-    marginTop: -8
+  },
+  tableTopContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+    paddingVertical: 2,
+    backgroundColor: theme.colors.grisOscuro
+  },
+  tableTop: {
+    color: theme.colors.blanco,
+    fontSize: theme.fontSizes.F18
   }
 })

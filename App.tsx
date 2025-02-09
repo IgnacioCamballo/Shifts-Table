@@ -14,10 +14,10 @@ const queryClient = new QueryClient()
 function InsideApp() {
   const { configInfo } = useCalendar()
   return (
-    <NativeRouter>
+    <>
       <StatusBar backgroundColor={configInfo.baseColor} />
       <Main />
-    </NativeRouter>
+    </>
   )
 }
 
@@ -25,9 +25,11 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <GestureHandlerRootView>
-        <CalendarProvider>
-          <InsideApp />
-        </CalendarProvider>
+        <NativeRouter>
+          <CalendarProvider>
+            <InsideApp />
+          </CalendarProvider>
+        </NativeRouter>
       </GestureHandlerRootView>
     </QueryClientProvider>
   );

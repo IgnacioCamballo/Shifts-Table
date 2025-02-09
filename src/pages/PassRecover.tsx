@@ -36,6 +36,7 @@ export default function PassRecover() {
 
   const { mutate } = useMutation({
     mutationFn: createPassRecoveryToken,
+    retry: 0,
     onError: (error) => {
       console.log(error.message)
       if (error.message.toString() === "404") {
@@ -52,6 +53,7 @@ export default function PassRecover() {
   //query to change password
     const changePassQuery = useMutation({
       mutationFn: changePassword,
+      retry: 0,
       onError: (error) => {
         if (error.message.toString() === "401") {
           setInvalidCode(true)

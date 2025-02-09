@@ -61,11 +61,11 @@ export default function AccountIntro() {
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.contentContainer} style={styles.container}>
       <Text style={styles.firstTitle}>{translateFn("titleAccountIntro")}</Text>
 
-      <TouchableOpacity activeOpacity={0.9} style={[styles.button]} onPress={() => navigate(`/account/${lenguage}/login`)}>
+      <TouchableOpacity activeOpacity={0.9} style={[styles.button]} onPress={() => navigate(`/account/${lenguage}/login/1`)}>
         <Text style={styles.buttonText}>{translateFn("login")}</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity activeOpacity={0.9} style={[styles.button]} onPress={() => navigate(`/account/${lenguage}/createAccount`)}>
+      <TouchableOpacity activeOpacity={0.9} style={[styles.button]} onPress={() => navigate(`/account/${lenguage}/createAccount/1`)}>
         <Text style={styles.buttonText}>{translateFn("createAccount")}</Text>
       </TouchableOpacity>
 
