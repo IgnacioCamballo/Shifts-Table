@@ -34,7 +34,7 @@ export default function MonthDetail() {
   const [employersList, setEmployersList] = useState<number[]>([])
   const [modal, setModal] = useState(false)
 
-  const monthlyShifts = shifts.filter(shift => shift.shiftEntry.getFullYear() === currentDay.getFullYear() && shift.shiftEntry.getMonth() === currentDay.getMonth())
+  const monthlyShifts = shifts.filter(shift => shift.shiftEntry.getFullYear() === currentDay.getFullYear() && shift.shiftEntry.getMonth() === currentDay.getMonth() && shift.shiftExit)
   const monthlyShiftsFiltered = employer === 0 ? monthlyShifts : monthlyShifts.filter(shift => shift.employer === employer)
   const monthlyShiftsFilteredPayment = shownDays === "Todos" ? monthlyShiftsFiltered : shownDays === "Pagos" ? monthlyShiftsFiltered.filter(shift => shift.paid === true) : monthlyShiftsFiltered.filter(shift => shift.paid === false)
   monthlyShiftsFilteredPayment.sort((a, b) => a.shiftEntry.getDate() - b.shiftEntry.getDate())
@@ -241,12 +241,12 @@ export default function MonthDetail() {
           />
         </View>
       )}
+
       {modal && 
         <TouchableOpacity activeOpacity={1} style={styles.modalContainer} onPress={() => setModal(false)}>
           <View style={styles.modal}>
-            <Text style={styles.modalText} disabled={!userInfo.premium} onPress={() => exportImg(monthlyShiftsFilteredPayment)}>{translateFn("exportImagen")}</Text>
-            <Text style={styles.modalText} disabled={!userInfo.premium} onPress={() => exportPDF(monthlyShiftsFilteredPayment)}>{translateFn("exportPdf")}</Text>
-            <Text style={styles.modalText} disabled={!userInfo.premium} onPress={() => exportExcel(monthlyShiftsFilteredPayment)}>{translateFn("exportExcel")}</Text>
+            <Text style={styles.modalText} disabled={!userInfo.premium} onPress={() => exportImg(monthlyShiftsFilteredPayment, lenguage)}>{translateFn("exportImagen")}</Text>
+            <Text style={styles.modalText} disabled={!userInfo.premium} onPress={() => exportPDF(monthlyShiftsFilteredPayment, lenguage)}>{translateFn("exportPdf")}</Text>
             {!userInfo.premium && 
               <View style={{flexDirection: "row", alignItems: "center", gap: 4, marginTop: -12}}>
                 <IconMenu 
@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
   absolute: {
     position: "absolute",
     right: 16,
-    top: 9,
+    top: 9
   },
   line: {
     paddingHorizontal: 15,

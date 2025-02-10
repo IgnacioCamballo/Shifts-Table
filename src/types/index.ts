@@ -77,12 +77,14 @@ export type CalendarContextProps = {
     shifts: ShiftProps[],
     lenguage: string,
     lastShiftCreated: Date,
+    lastBackup: Date | null | undefined,
     addsInitialized: boolean,
     setUserInfo: React.Dispatch<React.SetStateAction<UserInfo>>,
     setConfigInfo: React.Dispatch<React.SetStateAction<ConfigInfo>>,
     setCompanysInfo: React.Dispatch<React.SetStateAction<EmployerProps[]>>,
     setShifts: React.Dispatch<React.SetStateAction<ShiftProps[]>>,
     setLenguage: React.Dispatch<React.SetStateAction<string>>,
-    setLastShiftCreated: React.Dispatch<React.SetStateAction<Date>>
+    setLastShiftCreated: React.Dispatch<React.SetStateAction<Date>>,
+    setLastBackup: React.Dispatch<React.SetStateAction<Date | null | undefined>>
 }
 

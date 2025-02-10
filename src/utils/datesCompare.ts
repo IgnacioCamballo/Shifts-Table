@@ -85,7 +85,9 @@ export function getWorkedTime({ entry, exit, breakEntry, breakExit }: {
   return { workedHours, workedMinutes }
 }
 
-export function isSameDay({day1, day2} : {day1: Date, day2: Date}) {
+export function isSameDay({day1, day2} : {day1: Date | undefined | null, day2: Date | undefined | null}) {
+  if (!day1 || !day2) {return false}
+
   const d1 = new Date(day1)
   const d2 = new Date(day2)
   if(

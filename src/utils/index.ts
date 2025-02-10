@@ -19,8 +19,8 @@ export function formattedMinutes(date: Date) {
 }
 
 //if you give minutes returns a string with two digits
-export function formattedMinutesNumber(minutes: number) {
-  const formatted = minutes.toString().padStart(2, '0')
+export function formattedMinutesNumber(minutes: number | null) {
+  const formatted = minutes ? minutes.toString().padStart(2, '0') : "00"
   return formatted
 }
 

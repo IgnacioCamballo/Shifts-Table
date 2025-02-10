@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-native'
 import Spinner from '@/components/Atoms/Spinner'
 
 export default function LoadingPage() {
-  const {setCompanysInfo, setConfigInfo, setLenguage, setShifts, setUserInfo, setLastShiftCreated} = useCalendar()
+  const {setCompanysInfo, setConfigInfo, setLenguage, setShifts, setUserInfo, setLastShiftCreated, setLastBackup} = useCalendar()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   
@@ -37,6 +37,9 @@ export default function LoadingPage() {
 
         //Sets last shift created
         setLastShiftCreated(parsed.lastShiftCreated)
+        
+        //Sets last backup
+        setLastBackup(parsed.lastBackup)
         
         //Sets storaged UserInfo
         const parsedUserInfo: UserInfo = parsed.userInfo

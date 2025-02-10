@@ -35,9 +35,9 @@
     {"lenguage": "pt", "text": "Total"}
   ],
   "totalHours": [
-    {"lenguage": "es", "text": "Totale de horas"},
+    {"lenguage": "es", "text": "Total de horas"},
     {"lenguage": "en", "text": "Total hours"},
-    {"lenguage": "pt", "text": "Totale de horas"}
+    {"lenguage": "pt", "text": "Total de horas"}
   ],
   "workedDays": [
     {"lenguage": "es", "text": "Días trabajados"},
@@ -180,10 +180,25 @@
     {"lenguage": "en", "text": "When you log out, the device data will be deleted, make sure you have backed up to have all the data when you log in again"},
     {"lenguage": "pt", "text": "Quando você sair, os dados do dispositivo serão excluídos, certifique-se de ter feito backup para ter todos os dados quando você fizer login novamente"}
   ],
+  "secondSaveAlert": [
+    {"lenguage": "es", "text": "Solo puedes hacer copia de seguridad 1 vez por día, mejora tu cuenta a premium y disfruta del guardado automatico en la nube"},
+    {"lenguage": "en", "text": "You can only back up 1 time a day, upgrade your account to premium and enjoy the automatic cloud save"},
+    {"lenguage": "pt", "text": "Você só pode fazer backup 1 vez por dia, atualizar sua conta para premium e disfrutar de salvado automática na nuvem"}
+  ],
   "endSessionAlertPremium": [
     {"lenguage": "es", "text": "Seguro que deseas cerrar sesión"},
     {"lenguage": "en", "text": "Are you sure you want to log out"},
     {"lenguage": "pt", "text": "Tem certeza de que deseja sair"}
+  ],
+  "noShareAlert": [
+    {"lenguage": "es", "text": "No es posible compartir este archivo en este dispositivo."},
+    {"lenguage": "en", "text": "This file cannot be shared on this device."},
+    {"lenguage": "pt", "text": "Este arquivo não pode ser compartilhado neste dispositivo."}
+  ],
+  "createdFrom": [
+    {"lenguage": "es", "text": "Creado desde Shifts-Table"},
+    {"lenguage": "en", "text": "Created from Shifts-Table"},
+    {"lenguage": "pt", "text": "Criado de Shifts-Table"}
   ],
   "yes": [
     {"lenguage": "es", "text": "Si"},
@@ -354,6 +369,11 @@
     {"lenguage": "es", "text": "Horas"},
     {"lenguage": "en", "text": "Hours"},
     {"lenguage": "pt", "text": "Horas"}
+  ],
+  "day": [
+    {"lenguage": "es", "text": "Día"},
+    {"lenguage": "en", "text": "Day"},
+    {"lenguage": "pt", "text": "Dia"}
   ],
   "seeDetail": [
     {"lenguage": "es", "text": "Ver Detalle"},

@@ -48,6 +48,7 @@ const CalendarProvider = ({ children }: props) => {
   const [lenguage, setLenguage] = useState<string>("en")
   const [addsInitialized, setAddsInitialized] = useState(false)
   const [lastShiftCreated, setLastShiftCreated] = useState<Date>(new Date(new Date().getFullYear(), new Date().getMonth() - 1))
+  const [lastBackup, setLastBackup] = useState<Date | null>()
 
   //Initializes adds
   const addsInit = async () => {
@@ -89,7 +90,7 @@ const CalendarProvider = ({ children }: props) => {
 
   useEffect(() => {
     //saves any change in the phone storage
-    const userData = {userInfo, configInfo, companysInfo, shifts, lenguage, lastUpdate: Date.now(), lastShiftCreated}
+    const userData = {userInfo, configInfo, companysInfo, shifts, lenguage, lastUpdate: Date.now(), lastShiftCreated, lastBackup}
     AsyncStorage.setItem("userData", JSON.stringify(userData))
 
     //If User is premium saves in db
@@ -110,6 +111,8 @@ const CalendarProvider = ({ children }: props) => {
         shifts,
         lenguage,
         lastShiftCreated,
+        lastBackup,
+        setLastBackup,
         addsInitialized,
         setUserInfo,
         setConfigInfo,

@@ -15,6 +15,7 @@ import DropDownAutoHeight from '@/components/Molecules/DropDownAutoHeight'
 import ModalColorPicker from '@/components/Molecules/ModalColorPicker'
 import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
 import Spinner from '@/components/Atoms/Spinner'
+import { isSameDay } from '@/utils/datesCompare'
 
 export default function ConfigSettings() {
   const { 
@@ -22,7 +23,8 @@ export default function ConfigSettings() {
     shifts,
     userInfo,
     configInfo, setConfigInfo,
-    companysInfo
+    companysInfo,
+    lastBackup, setLastBackup
   } = useCalendar()
   const navigate = useNavigate()
 
@@ -45,7 +47,8 @@ export default function ConfigSettings() {
     onError: (error) => {
       console.log(error)
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
+      setLastBackup(new Date())
       setSuccessSave(true)
       Animated.timing(successAnimation, {
         toValue: 1,
@@ -114,8 +117,24 @@ export default function ConfigSettings() {
   }
 
   const securityCopy = () => {
-    const saveData = { configInfo, employers: companysInfo, lenguage, shifts }
-    mutate(saveData)
+    if(isSameDay({day1: lastBackup, day2: new Date()})) {
+      Alert.alert(
+        '',
+        translateFn("secondSaveAlert"),
+        [
+          {
+            text: "OK",
+            style: 'cancel'
+          },
+        ],
+        {
+          cancelable: true
+        }
+      )
+    } else { 
+      const saveData = { configInfo, employers: companysInfo, lenguage, shifts }
+      mutate(saveData)
+    }
   }
 
   return (
