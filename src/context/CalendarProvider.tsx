@@ -68,7 +68,7 @@ const CalendarProvider = ({ children }: props) => {
     },
     onSuccess: (data) => {
       //if premium finishes sets userinfo as not premium and shows an alert and ask if the user wants to renew the premium
-      if(data.endPremium) {
+      if(data.endPremium || (data.premiumEnds < Date.now() && userInfo.premium)) {
         setUserInfo({...userInfo, premium: false})
         queryClient.invalidateQueries({ queryKey: ["UserInfoDB"] })
 

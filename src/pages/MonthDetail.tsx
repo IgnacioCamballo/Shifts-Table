@@ -318,7 +318,9 @@ const styles = StyleSheet.create({
     width: "100%",
     textAlign: "center",
     alignSelf: "center",
-    color: theme.colors.gris
+    color: theme.colors.gris,
+    marginTop: 4,
+    marginBottom: -2
   },
   selector: {
     flexDirection: "row",
