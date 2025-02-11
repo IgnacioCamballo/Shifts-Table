@@ -230,6 +230,8 @@ export default function MonthDetail() {
         ))}
       </ScrollView>
 
+      <Text style={styles.breakMessage}>{translateFn("breakMessage")}</Text>
+
       {!userInfo.premium && addsInitialized && (
         <View style={styles.banner}>
           <BannerAd
@@ -311,6 +313,12 @@ const styles = StyleSheet.create({
     borderColor: theme.colors.grisClaro,
     color: theme.colors.gris,
     paddingBottom: 2
+  },
+  breakMessage: {
+    width: "100%",
+    textAlign: "center",
+    alignSelf: "center",
+    color: theme.colors.gris
   },
   selector: {
     flexDirection: "row",

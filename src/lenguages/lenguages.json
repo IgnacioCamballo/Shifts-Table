@@ -629,5 +629,25 @@
     {"lenguage": "es", "text": "Hubo un problema al iniciar el proceso de pago"},
     {"lenguage": "en", "text": "There was a problem starting the payment process"},
     {"lenguage": "pt", "text": "Houve um problema ao iniciar o processo de pagamento"}
+  ],
+  "congrats": [
+    {"lenguage": "es", "text": "🎉 Felicitaciones 🎉"},
+    {"lenguage": "en", "text": "🎉 Congratulations 🎉"},
+    {"lenguage": "pt", "text": "🎉 Parabéns 🎉"}
+  ],
+  "purchaseSuccess": [
+    {"lenguage": "es", "text": "Su compra fue exitosa"},
+    {"lenguage": "en", "text": "Your purchase was successful"},
+    {"lenguage": "pt", "text": "Sua compra foi bem sucedida"}
+  ],
+  "successMessage": [
+    {"lenguage": "es", "text": "Esperamos que disfrute Shifts-Table premium"},
+    {"lenguage": "en", "text": "We hope you enjoy Shifts-Table premium"},
+    {"lenguage": "pt", "text": "Esperamos que você aproveite Shifts-Table premium"}
+  ],
+  "breakMessage": [
+    {"lenguage": "es", "text": "Los descansos están considerados en los totales"},
+    {"lenguage": "en", "text": "Breaks are considered in totals"},
+    {"lenguage": "pt", "text": "As pausas são consideradas em totais"}
   ]
 }

@@ -69,6 +69,7 @@ export default function Config() {
       {!userInfo.premium && <BannerPremium />}
 
       <View style={{ height: 10 }} />
+
     </ScrollView>
   )
 }
