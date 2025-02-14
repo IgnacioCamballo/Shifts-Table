@@ -1,8 +1,12 @@
+import React, { useRef } from "react";
+import { Dimensions, View } from "react-native";
 import * as Print from "expo-print"
 import * as Sharing from "expo-sharing"
+import WebView from "react-native-webview";
+import ViewShot from "react-native-view-shot";
 
-import { firstLetterUpper, formattedMinutes, formattedMinutesNumber, translate } from "@/utils";
-import { ShiftProps } from "@/types"
+import { firstLetterUpper, formattedMinutes, formattedMinutesNumber, translate } from "../utils";
+import { ShiftProps } from "../types"
 
 export function createTable(shiftsList: ShiftProps[], lenguage: string) {
   function translateFn(text: string) {
@@ -75,6 +79,48 @@ export function createTable(shiftsList: ShiftProps[], lenguage: string) {
     </html>
   `
   return htmlContent
+}
+
+export const exportImg = async (shiftsList: ShiftProps[], lenguage: string, currentMonth: string) => {
+  const exportImgRef = useRef<ViewShot>(null);
+
+  function translateFn(text: string) {
+    return translate({ text, lenguage })
+  }
+  
+  const htmlContent = createTable(shiftsList, lenguage)
+  
+  const captureImgAndShareIt = async () => {
+    try {
+      const uri = await exportImgRef.current!.capture!()
+
+      //If posible shares the Img
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(uri);
+      } else {
+        alert(translateFn("noShareAlert"));
+      }
+    } catch (error) {
+      console.error("Error capturing the image:", error)
+    }
+  }
+
+  setTimeout(captureImgAndShareIt, 1000);
+  
+  return (
+    <View style={{ position: "absolute", left: Dimensions.get("window").width * 2 }}>
+      <ViewShot 
+        ref={exportImgRef} 
+        options={{ 
+          format: "png", 
+          quality: 1, 
+          fileName: currentMonth
+        }}          
+      >
+        <WebView source={{ html: htmlContent }} />
+      </ViewShot>
+    </View>
+  )
 }
 
 export async function exportPDF(shiftsList: ShiftProps[], lenguage: string) {

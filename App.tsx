@@ -1,3 +1,6 @@
+import "intl";
+import "intl/locale-data/jsonp/en";
+import "intl/locale-data/jsonp/es";
 import React from 'react';
 import { StatusBar } from 'react-native';
 import { NativeRouter } from 'react-router-native';
