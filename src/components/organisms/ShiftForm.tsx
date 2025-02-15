@@ -248,7 +248,7 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
           <TouchableOpacity
             activeOpacity={0.8}
             style={styles.line}
-            disabled={shiftEntryForm === null}
+            disabled={shiftEntryForm === null && shiftExitForm === null}
             onPress={() => { setTimeType("salida"), setModalOpen(true) }}
           >
             <Text style={styles.textLine}>{translateFn("exitHour")}:</Text>
@@ -276,7 +276,7 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
             <TouchableOpacity
               activeOpacity={0.8}
               style={styles.line}
-              disabled={shiftEntryForm === null}
+              disabled={shiftEntryForm === null && shiftBreakEntryForm === null}
               onPress={() => { setTimeType("descansoEntrada"), setModalOpen(true) }}
             >
               <Text style={styles.textLineCenter}>{translateFn("breakStart")}:</Text>
@@ -288,7 +288,7 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
             <TouchableOpacity
               activeOpacity={0.8}
               style={styles.line}
-              disabled={shiftBreakEntryForm === null}
+              disabled={shiftBreakEntryForm === null && shiftBreakExitForm === null}
               onPress={() => { setTimeType("descansoSalida"), setModalOpen(true) }}
             >
               <Text style={styles.textLine}>{translateFn("breakEnd")}:</Text>

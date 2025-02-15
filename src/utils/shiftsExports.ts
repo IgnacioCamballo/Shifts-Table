@@ -1,5 +1,6 @@
 import * as Print from "expo-print"
 import * as Sharing from "expo-sharing"
+import * as FileSystem from "expo-file-system";
 
 import { firstLetterUpper, formattedMinutes, formattedMinutesNumber, translate } from "@/utils";
 import { ShiftProps } from "@/types"
@@ -77,7 +78,7 @@ export function createTable(shiftsList: ShiftProps[], lenguage: string) {
   return htmlContent
 }
 
-export async function exportPDF(shiftsList: ShiftProps[], lenguage: string) {
+export async function exportPDF(shiftsList: ShiftProps[], lenguage: string, newUri: string) {
   function translateFn(text: string) {
     return translate({ text, lenguage })
   }
@@ -87,9 +88,14 @@ export async function exportPDF(shiftsList: ShiftProps[], lenguage: string) {
   // Creates the PDF
   const { uri } = await Print.printToFileAsync({ html: htmlContent });
 
+  await FileSystem.moveAsync({
+    from: uri,
+    to: newUri,
+  });
+
   // If posible shares the PDF
   if (await Sharing.isAvailableAsync()) {
-    await Sharing.shareAsync(uri);
+    await Sharing.shareAsync(newUri);
   } else {
     alert(translateFn("noShareAlert"));
   }

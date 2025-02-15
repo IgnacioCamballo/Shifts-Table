@@ -300,10 +300,22 @@ export default function MonthDetail() {
       {modal && 
         <TouchableOpacity activeOpacity={1} style={styles.modalContainer} onPress={() => setModal(false)}>
           <View style={styles.modal}>
-            <Text style={styles.modalText} disabled={userInfo.premium} onPress={() => exportImg()}>
+            <Text 
+              style={styles.modalText} 
+              disabled={!userInfo.premium} 
+              onPress={() => exportImg()}
+            >
               {translateFn("exportImagen")}
             </Text>
-            <Text style={styles.modalText} disabled={!userInfo.premium} onPress={() => exportPDF(monthlyShiftsFilteredPayment, lenguage)}>
+            <Text 
+              style={styles.modalText} 
+              disabled={!userInfo.premium} 
+              onPress={() => exportPDF(
+                monthlyShiftsFilteredPayment, 
+                lenguage,
+                `${FileSystem.cacheDirectory}${userInfo.userName}-${firstLetterUpper(currentDay.toLocaleDateString(lenguage, { month: 'long' }))}-${currentDay.toLocaleDateString(lenguage, { year: 'numeric' })}-Shifts-Table.pdf`
+              )}
+            >
               {translateFn("exportPdf")}
             </Text>
 
