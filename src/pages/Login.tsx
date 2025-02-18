@@ -14,6 +14,7 @@ import { logIn } from '@/api/UserAPI'
 import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
 import TransparentButton from '@/components/Atoms/Buttons/ButtonTransparent'
 import Spinner from '@/components/Atoms/Spinner'
+import { ShiftProps } from '@/types'
 
 export default function Login() {
   const {setCompanysInfo, setConfigInfo, setLenguage, setShifts, setUserInfo} = useCalendar()
@@ -41,6 +42,7 @@ export default function Login() {
       seterrorCode(error.message)
     },
     onSuccess: (data) => {
+      //sets userInfo
       const userInfo = {
         userName: data.userName, 
         mail, 
@@ -50,8 +52,40 @@ export default function Login() {
       setUserInfo(userInfo),
       setCompanysInfo(data.userInfo.employers)
       setLenguage(data.userInfo.lenguage)
-      setShifts(data.userInfo.shifts)
-      setConfigInfo(data.userInfo.configInfo)
+      //Sets storaged Shifts
+      const parsedShifts = data.userInfo.shifts
+      const maped = parsedShifts.map((shift: ShiftProps) => {
+        const item = {
+          key: shift.key,
+          employer: shift.employer,
+          short: shift.short,
+          shiftEntry: new Date(shift.shiftEntry),
+          shiftExit: shift.shiftExit ? new Date(shift.shiftExit) : null,
+          shiftBreak: shift.shiftBreak ? new Date(shift.shiftBreak) : null,
+          shiftBreakEntry: shift.shiftBreakEntry ? new Date(shift.shiftBreakEntry) : null,
+          shiftBreakExit: shift.shiftBreakExit ? new Date(shift.shiftBreakExit) : null,
+          workedHours: shift.workedHours,
+          workedMinutes: shift.workedMinutes,
+          paid: shift.paid,
+          salary: shift.salary,
+          note: shift.note,
+          color: shift.color
+        }
+        return (item)
+      })
+      setShifts(maped)
+      //Sets configInfo
+      const parsedConfigInfo = data.userInfo.configInfo
+      const config = {
+        baseColor: parsedConfigInfo.baseColor || theme.colors.verdeBase,
+        buttonsColor: parsedConfigInfo.buttonsColor || theme.colors.verdeBoton,
+        entry: parsedConfigInfo.entry === null ? null : new Date(parsedConfigInfo.entry),
+        exit: parsedConfigInfo.exit === null ? null : new Date(parsedConfigInfo.exit),
+        configBreakEntry: parsedConfigInfo.configBreakEntry === null ? null : new Date(parsedConfigInfo.configBreakEntry),
+        configBreakExit: parsedConfigInfo.configBreakExit === null ? null : new Date(parsedConfigInfo.configBreakExit)
+      }
+      setConfigInfo(config)
+
       navigate("/calendar")
     }
   })
