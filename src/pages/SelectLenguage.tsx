@@ -4,9 +4,14 @@ import { TouchableOpacity } from 'react-native-gesture-handler'
 
 import theme from '@/theme/theme'
 import { useNavigate } from 'react-router-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 export default function SelectLenguage() {
   const navigate = useNavigate()
+
+  //gets variable heigth for the screen without statusbar
+  const insets = useSafeAreaInsets()
+  const noFooterNoHeaderHeight = theme.heigth.screenHeight - insets.top - insets.bottom - theme.heigth.noFooterNoHeader
 
   const [lenguageSelected, setLenguageSelected] = useState("")
   const [error, setError] = useState(false)
@@ -20,7 +25,7 @@ export default function SelectLenguage() {
   }
   
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {height: noFooterNoHeaderHeight}]}>
       <Text style={styles.title}>Select Lenguage</Text>
 
       <TouchableOpacity activeOpacity={0.9} style={[styles.button, lenguageSelected === "en" && styles.selected]} onPress={() => {setError(false), setLenguageSelected("en")}}>
@@ -51,7 +56,6 @@ export default function SelectLenguage() {
 
 const styles = StyleSheet.create({
   container: {
-    height: theme.heigth.noFooterNoHeader, 
     alignItems: "center",
     justifyContent: "center",
     gap: 12

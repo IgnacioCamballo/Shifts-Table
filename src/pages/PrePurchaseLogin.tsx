@@ -8,9 +8,14 @@ import { translate } from '@/utils'
 import theme from '@/theme/theme'
 
 import TransparentButton from '@/components/Atoms/Buttons/ButtonTransparent'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 export default function PrePurchaseLogin() {
   const { lenguage } = useCalendar()
+
+  //gets variable heigth for the screen without statusbar
+  const insets = useSafeAreaInsets()
+  const noFooterNoHeaderHeight = theme.heigth.screenHeight - insets.top - insets.bottom - theme.heigth.noFooterNoHeader
 
   const navigate = useNavigate()
 
@@ -20,7 +25,7 @@ export default function PrePurchaseLogin() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {height: noFooterNoHeaderHeight}]}>
       <TransparentButton link="/calendar" style={styles.link}>
         <Icon 
           name="doubleleft" 
@@ -46,7 +51,6 @@ export default function PrePurchaseLogin() {
 
 const styles = StyleSheet.create({
   container: {
-    height: theme.heigth.noFooterNoHeader,
     alignItems: "center",
     justifyContent: "center",
     marginTop: -60,

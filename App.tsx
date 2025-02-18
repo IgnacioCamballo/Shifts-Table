@@ -6,6 +6,7 @@ import { StatusBar } from 'react-native';
 import { NativeRouter } from 'react-router-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { CalendarProvider } from './src/context/CalendarProvider';
 import useCalendar from './src/hooks/useCalendar';
@@ -26,15 +27,17 @@ function InsideApp() {
 
 export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <GestureHandlerRootView>
-        <NativeRouter>
-          <CalendarProvider>
-            <InsideApp />
-          </CalendarProvider>
-        </NativeRouter>
-      </GestureHandlerRootView>
-    </QueryClientProvider>
+    <SafeAreaProvider>
+      <QueryClientProvider client={queryClient}>
+        <GestureHandlerRootView>
+          <NativeRouter>
+            <CalendarProvider>
+              <InsideApp />
+            </CalendarProvider>
+          </NativeRouter>
+        </GestureHandlerRootView>
+      </QueryClientProvider>
+    </SafeAreaProvider>
   );
 }
 

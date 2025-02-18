@@ -15,6 +15,7 @@ import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
 import TransparentButton from '@/components/Atoms/Buttons/ButtonTransparent'
 import Spinner from '@/components/Atoms/Spinner'
 import { ShiftProps } from '@/types'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 export default function Login() {
   const {setCompanysInfo, setConfigInfo, setLenguage, setShifts, setUserInfo} = useCalendar()
@@ -22,6 +23,10 @@ export default function Login() {
   const lenguage = params.lg!
   const type = params.type!
   const navigate = useNavigate()
+
+  //gets variable heigth for the screen without statusbar
+  const insets = useSafeAreaInsets()
+  const noFooterNoHeaderHeight = theme.heigth.screenHeight - insets.top - insets.bottom - theme.heigth.noFooterNoHeader
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text: string) {
@@ -103,7 +108,11 @@ export default function Login() {
   }
   
   return (
-    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.contentContainer} style={styles.container}>
+    <ScrollView 
+      showsVerticalScrollIndicator={false} 
+      contentContainerStyle={[styles.contentContainer, {height: noFooterNoHeaderHeight}]} 
+      style={[styles.container, {maxHeight: noFooterNoHeaderHeight}]}
+    >
       <TransparentButton link={type === "2" ? "/account/prePurchaseLogin" : `/account/${lenguage}`} style={styles.arrow}>
         <IconArrow
           name="doubleleft"
@@ -174,11 +183,9 @@ export default function Login() {
 
 const styles = StyleSheet.create({
   container: {
-    maxHeight: theme.heigth.noFooterNoHeader,
     position: "relative",
   },
   contentContainer: {
-    height: theme.heigth.noFooterNoHeader,
     alignItems: "center",
     justifyContent: "center",
     marginTop: -60,

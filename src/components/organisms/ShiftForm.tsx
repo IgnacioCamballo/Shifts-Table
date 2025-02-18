@@ -14,6 +14,7 @@ import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
 import Button from '@/components/Atoms/Buttons/Button'
 import DropDownAutoHeight from '@/components/Molecules/DropDownAutoHeight'
 import ModalDatePicker from '@/components/Molecules/ModalDatePicker'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 type ShiftFormProps = {
   isCreate: boolean,
@@ -26,6 +27,11 @@ let screenWidth = Dimensions.get("window").width
 
 export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmit }: ShiftFormProps) {
   const { configInfo, companysInfo, shifts, lenguage } = useCalendar()
+
+  //gets variable heigth for the screen without statusbar
+  const insets = useSafeAreaInsets()
+  const newEditHeight = theme.heigth.screenHeight - insets.top - insets.bottom - theme.heigth.shiftNewEditScrollView
+ 
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text: string) {
@@ -211,7 +217,7 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
         <Text style={styles.textoConf}>{isCreate ? translateFn("newShift") : translateFn("editShifts")} {firstLetterUpper(pressedDate.toLocaleDateString(lenguage, { month: 'short' }))} / {pressedDate.toLocaleDateString(lenguage, { day: "numeric" })}</Text>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
+      <ScrollView showsVerticalScrollIndicator={false} style={{maxHeight: newEditHeight}}>
         <View style={styles.empleador}>
           <View style={styles.line}>
             <Text style={styles.textLine}>{translateFn("employer")}:</Text>
@@ -544,8 +550,5 @@ const styles = StyleSheet.create({
     fontSize: theme.fontSizes.F20,
     fontWeight: "500",
     lineHeight: theme.fontSizes.F20
-  },
-  scrollView: {
-    maxHeight: theme.heigth.shiftNewEditScrollView
   }
 })

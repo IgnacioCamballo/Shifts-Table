@@ -10,10 +10,16 @@ import { createPaymentIntent } from '@/api/PaymentsAPI'
 import useCalendar from '@/hooks/useCalendar'
 import { translate } from '@/utils'
 import theme from '@/theme/theme'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 export default function PremiumPurchase() {
   const { userInfo, setUserInfo, lenguage } = useCalendar()
   const navigate = useNavigate()
+
+  //gets variable heigth for the screen without statusbar
+  const insets = useSafeAreaInsets()
+  const noFooterNoHeaderHeight = theme.heigth.screenHeight - insets.top - insets.bottom - theme.heigth.noFooterNoHeader
+
   const { initPaymentSheet, presentPaymentSheet } = useStripe()
   const STRIPE_KEY = 'pk_test_51Qn5P2FtUznWbAOcu33hIJABd6qgSRMrPk9v1xvtupZEh7UUtX36W7AAt1UuvznbHdQMnAYU1FKO6AJlYPLGf3PP00fgLe5LmN'
 
@@ -63,7 +69,7 @@ export default function PremiumPurchase() {
     <StripeProvider publishableKey={STRIPE_KEY}>
         <ImageBackground
           source={require("@/../assets/purchaseBg.jpg")}
-          style={styles.background}
+          style={[styles.background, {height: noFooterNoHeaderHeight}]}
         >
             <Text style={styles.preTitle}>Mejora tu cuenta a</Text>
 
@@ -104,7 +110,6 @@ export default function PremiumPurchase() {
 
 const styles = StyleSheet.create({
   background: {
-    height: theme.heigth.noFooterNoHeader,
     padding: 52,
     justifyContent: "center"
   },

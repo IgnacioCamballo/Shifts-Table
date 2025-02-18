@@ -4,7 +4,7 @@ import { Dimensions } from "react-native"
 import { Navigate } from "react-router-native"
 import Icon from 'react-native-vector-icons/AntDesign';
 import Icon2 from 'react-native-vector-icons/FontAwesome';
-import Constants from "expo-constants"
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import useCalendar from "@/hooks/useCalendar"
 import { DayProps } from "@/types"
@@ -24,6 +24,10 @@ const containerWidth = (screenWidth - 20)/7
 export default function RenderDayCalendar({item, currentDay, pressedDate, nav, onPress}: RenderDayCalendarProps) {
   const {shifts, companysInfo, userInfo} = useCalendar()
 
+  //gets variable heigth for the screen without statusbar
+  const insets = useSafeAreaInsets()
+  const dayContainerHeight = (theme.heigth.screenHeight - insets.top - insets.bottom - (userInfo.premium ? theme.heigth.daysContainerPremium : theme.heigth.daysContainer)) / 6
+
   const {day, key, isCurrentDay, shadowed} = item
 
   const date = new Date(currentDay.getFullYear(), currentDay.getMonth(), day)
@@ -36,7 +40,7 @@ export default function RenderDayCalendar({item, currentDay, pressedDate, nav, o
       key={key}
       onPress={() => onPress(key)}
     >
-      <View style={[shadowed ? styles.dayContainerEmpty : styles.dayContainer, {height: userInfo.premium ? theme.heigth.daysContainerPremium : theme.heigth.daysContainer}]}>
+      <View style={[shadowed ? styles.dayContainerEmpty : styles.dayContainer, {height: dayContainerHeight}]}>
         {nav && <Navigate to={`/calendar/shifts/${pressedDate}`}/>}
         {shadowed === true ? <View></View> : colorShifts.map(shiftColor => 
           <View 

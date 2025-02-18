@@ -14,12 +14,17 @@ import SwiftArrows from '@/components/Molecules/SwiftArrows'
 import TransparentButton from '@/components/Atoms/Buttons/ButtonTransparent'
 import Button from '@/components/Atoms/Buttons/Button'
 import BannerPremium from '@/components/Atoms/Buttons/BannerPremium'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 export default function Shifts() {
   const params = useParams()
   const pressedDate = params.date!
 
   const {shifts, lenguage, addsInitialized, configInfo, userInfo} = useCalendar()
+  
+  //gets variable heigth for the screen without statusbar
+  const insets = useSafeAreaInsets()
+  const shiftsViewHeight = theme.heigth.screenHeight - insets.top - insets.bottom - (userInfo.premium ? theme.heigth.shiftScrollViewPremium : theme.heigth.shiftScrollView)
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text:string){
@@ -59,7 +64,7 @@ export default function Shifts() {
         <Text style={styles.textoBoton}>{translateFn("createNewShift")}</Text>
       </Button>
 
-      <ScrollView showsVerticalScrollIndicator={false} style={[styles.scrollView, {maxHeight: userInfo.premium ? theme.heigth.shiftScrollViewPremium : theme.heigth.shiftScrollView}]}>
+      <ScrollView showsVerticalScrollIndicator={false} style={[styles.scrollView, {maxHeight: shiftsViewHeight}]}>
         {shifts.length === 0 ? <View></View> : 
           shifts.filter(shift => shift.shiftEntry.getFullYear() === date.getFullYear() && shift.shiftEntry.getMonth() === date.getMonth() && shift.shiftEntry.getDate() === date.getDate())
           .map(

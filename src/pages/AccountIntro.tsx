@@ -5,12 +5,18 @@ import { useNavigate, useParams } from 'react-router-native'
 import useCalendar from '@/hooks/useCalendar'
 import theme from '@/theme/theme'
 import { translate } from '@/utils'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 export default function AccountIntro() {
   const {setCompanysInfo, setLenguage, setConfigInfo, setShifts, setUserInfo} = useCalendar()
   const params = useParams()
   const lenguage = params.lg!
   const navigate = useNavigate()
+
+  //gets variable heigth for the screen without statusbar
+  const insets = useSafeAreaInsets()
+  const noFooterNoHeaderHeight = theme.heigth.screenHeight - insets.top - insets.bottom - theme.heigth.noFooterNoHeader
+  
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text: string) {
@@ -58,7 +64,11 @@ export default function AccountIntro() {
     }
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.contentContainer} style={styles.container}>
+    <ScrollView 
+      showsVerticalScrollIndicator={false} 
+      contentContainerStyle={[styles.contentContainer, {height: noFooterNoHeaderHeight}]} 
+      style={{maxHeight: noFooterNoHeaderHeight}}
+    >
       <Text style={styles.firstTitle}>{translateFn("titleAccountIntro")}</Text>
 
       <TouchableOpacity activeOpacity={0.9} style={[styles.button]} onPress={() => navigate(`/account/${lenguage}/login/1`)}>
@@ -81,11 +91,7 @@ export default function AccountIntro() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    maxHeight: theme.heigth.noFooterNoHeader,
-  },
   contentContainer: {
-    height: theme.heigth.noFooterNoHeader,
     alignItems: "center",
     justifyContent: "center",
     marginTop: -60,

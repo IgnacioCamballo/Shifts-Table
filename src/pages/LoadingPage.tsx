@@ -9,11 +9,17 @@ import { getUserInfo } from '@/api/UserInfoAPI'
 import theme from '@/theme/theme'
 import { useNavigate } from 'react-router-native'
 import Spinner from '@/components/Atoms/Spinner'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 export default function LoadingPage() {
   const {setCompanysInfo, setConfigInfo, setLenguage, setShifts, setUserInfo, setLastShiftCreated, setLastBackup} = useCalendar()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+
+  //gets variable heigth for the screen without statusbar
+  const insets = useSafeAreaInsets()
+  const noFooterNoHeaderHeight = theme.heigth.screenHeight - insets.top - insets.bottom - theme.heigth.noFooterNoHeader
+  
   
   //gets UserInfo when login in
   const getUserInfoQuery = useQuery({
@@ -127,7 +133,7 @@ export default function LoadingPage() {
   }, [])
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {height: noFooterNoHeaderHeight}]}>
       <Spinner size={50} borderWidth={10}/>
       <Text>Loading Data</Text>
     </View>
@@ -136,7 +142,6 @@ export default function LoadingPage() {
 
 const styles = StyleSheet.create({
   container: {
-    height: theme.heigth.noFooterNoHeader,
     alignItems: "center",
     justifyContent: "center",
     gap: 12

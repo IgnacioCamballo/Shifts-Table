@@ -13,11 +13,16 @@ import { changePassword, createPassRecoveryToken } from '@/api/UserAPI'
 import TransparentButton from '@/components/Atoms/Buttons/ButtonTransparent'
 import Spinner from '@/components/Atoms/Spinner'
 import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 export default function PassRecover() {
   const params = useParams()
   const lenguage = params.lg!
   const navigate = useNavigate()
+
+  //gets variable heigth for the screen without statusbar
+  const insets = useSafeAreaInsets()
+  const noFooterNoHeaderHeight = theme.heigth.screenHeight - insets.top - insets.bottom - theme.heigth.noFooterNoHeader  
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text: string) {
@@ -92,7 +97,11 @@ export default function PassRecover() {
   }
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.contentContainer} style={styles.container}>
+    <ScrollView 
+      showsVerticalScrollIndicator={false} 
+      contentContainerStyle={[styles.contentContainer, {height: noFooterNoHeaderHeight}]} 
+      style={[styles.container, {maxHeight: noFooterNoHeaderHeight}]}
+    >
 
       {loader ?
         <>
@@ -190,11 +199,9 @@ export default function PassRecover() {
 
 const styles = StyleSheet.create({
   container: {
-    maxHeight: theme.heigth.noFooterNoHeader,
     position: "relative",
   },
   contentContainer: {
-    height: theme.heigth.noFooterNoHeader,
     alignItems: "center",
     justifyContent: "center",
     marginTop: -60,

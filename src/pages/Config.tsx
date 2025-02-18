@@ -12,9 +12,14 @@ import Employer from '@/components/Molecules/Employer'
 import ConfigDefaultTimes from '@/components/organisms/ConfigDefaultTimes'
 import DropDownAutoHeight from '@/components/Molecules/DropDownAutoHeight'
 import BannerPremium from '@/components/Atoms/Buttons/BannerPremium'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 export default function Config() {
   const { companysInfo, lenguage, configInfo, userInfo } = useCalendar()
+
+  //gets variable heigth for the screen without statusbar
+  const insets = useSafeAreaInsets()
+  const noFooterNoHeaderHeight = theme.heigth.screenHeight - insets.top - insets.bottom - theme.heigth.noFooterNoHeader
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text: string) {
@@ -24,7 +29,7 @@ export default function Config() {
   const [employersOpen, setEmployersOpen] = useState(false)
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
+    <ScrollView showsVerticalScrollIndicator={false} style={{maxHeight: noFooterNoHeaderHeight}}>
       <View style={styles.p8}>
 
         <ConfigDefaultTimes />
@@ -75,9 +80,6 @@ export default function Config() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    maxHeight: theme.heigth.noFooterNoHeader,
-  },
   p8: {
     padding: 8
   },

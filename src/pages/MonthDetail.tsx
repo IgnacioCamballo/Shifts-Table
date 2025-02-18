@@ -16,6 +16,7 @@ import { exportPDF } from '@/utils/shiftsExports'
 
 import SwiftArrows from '@/components/Molecules/SwiftArrows'
 import TransparentButton from '@/components/Atoms/Buttons/ButtonTransparent'
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 let screenWidth = Dimensions.get("window").width
 
@@ -25,6 +26,12 @@ export default function MonthDetail() {
   const employerParam = param.employer ? parseInt(param.employer) : 0
 
   const { shifts, lenguage, addsInitialized, companysInfo, userInfo } = useCalendar()
+  
+  //gets variable heigth for the screen without statusbar
+  const insets = useSafeAreaInsets()
+  const monthDetailHeight = theme.heigth.screenHeight - insets.top - insets.bottom - (userInfo.premium ? theme.heigth.monthDetailScrollViewPremium : theme.heigth.monthDetailScrollView)
+  const noFooterNoHeaderHeight = theme.heigth.screenHeight - insets.top - insets.bottom - theme.heigth.noFooterNoHeader
+
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text: string) {
@@ -246,7 +253,7 @@ export default function MonthDetail() {
         <Text style={styles.tableTop}>{translateFn("total")}</Text>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} style={{height: userInfo.premium ? theme.heigth.monthDetailScrollViewPremium : theme.heigth.monthDetailScrollView}}>
+      <ScrollView showsVerticalScrollIndicator={false} style={{height: monthDetailHeight}}>
         {monthlyShiftsFilteredPayment.map(shift => (
           <View key={shift.key} style={styles.line}>
             <View style={[styles.flexRow, { gap: 2, width: 60 }]}>
@@ -298,7 +305,7 @@ export default function MonthDetail() {
       )}
 
       {modal && 
-        <TouchableOpacity activeOpacity={1} style={styles.modalContainer} onPress={() => setModal(false)}>
+        <TouchableOpacity activeOpacity={1} style={[styles.modalContainer, {height: noFooterNoHeaderHeight}]} onPress={() => setModal(false)}>
           <View style={styles.modal}>
             <Text 
               style={styles.modalText} 
@@ -454,7 +461,6 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     width: screenWidth,
-    height: theme.heigth.noFooterNoHeader,
     backgroundColor: "transparent"
   },
   modal: {

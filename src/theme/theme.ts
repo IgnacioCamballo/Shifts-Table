@@ -33,15 +33,15 @@ const theme = {
     },
     heigth: {
         publicidad: 80,
-        daysContainer: (screenHeight - Constants.statusBarHeight - 265)/6,
-        daysContainerPremium: (screenHeight - Constants.statusBarHeight - 195)/6,
-        configScrollView: (screenHeight - Constants.statusBarHeight - 540),
-        shiftScrollView: (screenHeight - Constants.statusBarHeight - 300),
-        shiftScrollViewPremium: (screenHeight - Constants.statusBarHeight - 230),
-        monthDetailScrollView: (screenHeight - Constants.statusBarHeight - 390),
-        monthDetailScrollViewPremium: (screenHeight - Constants.statusBarHeight - 320),
-        shiftNewEditScrollView: (screenHeight - Constants.statusBarHeight - 200),
-        noFooterNoHeader: (screenHeight - Constants.statusBarHeight - 110)
+        screenHeight: Dimensions.get("window").height,
+        daysContainer: 290,
+        daysContainerPremium: 220,
+        shiftScrollView: 300,
+        shiftScrollViewPremium: 250,
+        monthDetailScrollView: 415,
+        monthDetailScrollViewPremium: 350,
+        shiftNewEditScrollView: 200,
+        noFooterNoHeader: 130
     },
     banners: {
         // calendar: "ca-app-pub-4926030013898312/2502969552",
