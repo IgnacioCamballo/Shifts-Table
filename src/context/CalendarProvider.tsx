@@ -25,7 +25,7 @@ const CalendarProvider = ({ children }: props) => {
     return translate({ text, lenguage })
   }
 
-  const initialCompanysInfo = {
+  const initialConfigInfo = {
     baseColor: theme.colors.verdeBase, 
     buttonsColor: theme.colors.verdeBoton, 
     configBreakEntry: null, 
@@ -42,7 +42,7 @@ const CalendarProvider = ({ children }: props) => {
   }
   
   const [userInfo, setUserInfo] = useState<UserInfo>(initialUserInfo)
-  const [configInfo, setConfigInfo] = useState<ConfigInfo>(initialCompanysInfo)
+  const [configInfo, setConfigInfo] = useState<ConfigInfo>(initialConfigInfo)
   const [companysInfo, setCompanysInfo] = useState<EmployerProps[]>([])
   const [shifts, setShifts] = useState<ShiftProps[]>([])
   const [lenguage, setLenguage] = useState<string>("en")

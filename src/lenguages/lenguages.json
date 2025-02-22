@@ -90,6 +90,11 @@
     {"lenguage": "en", "text": "Log Out"},
     {"lenguage": "pt", "text": "Fechar Sessão"}
   ],
+  "deleteAccount": [
+    {"lenguage": "es", "text": "Eliminar Cuenta"},
+    {"lenguage": "en", "text": "Delete Account"},
+    {"lenguage": "pt", "text": "Remover Conta"}
+  ],
   "createEmployer": [
     {"lenguage": "es", "text": "Crear Empleador"},
     {"lenguage": "en", "text": "Create Employer"},
@@ -194,6 +199,11 @@
     {"lenguage": "es", "text": "No es posible compartir este archivo en este dispositivo."},
     {"lenguage": "en", "text": "This file cannot be shared on this device."},
     {"lenguage": "pt", "text": "Este arquivo não pode ser compartilhado neste dispositivo."}
+  ],
+  "deleteSuccess": [
+    {"lenguage": "es", "text": "Su cuenta fue eliminada exitosamente."},
+    {"lenguage": "en", "text": "Your account was successfully deleted."},
+    {"lenguage": "pt", "text": "Sua conta foi removida com sucesso."}
   ],
   "createdFrom": [
     {"lenguage": "es", "text": "Creado desde Shifts-Table"},
@@ -515,6 +525,11 @@
     {"lenguage": "en", "text": "The name is obligatory"},
     {"lenguage": "pt", "text": "O nome é obrigatório"}
   ],
+  "confirmMail": [
+    {"lenguage": "es", "text": "Confirma el email"},
+    {"lenguage": "en", "text": "Confirm the email"},
+    {"lenguage": "pt", "text": "Confirma o email"}
+  ],
   "errorMail": [
     {"lenguage": "es", "text": "El email es obligatorio"},
     {"lenguage": "en", "text": "The email is obligatory"},
@@ -590,20 +605,35 @@
     {"lenguage": "en", "text": "Send recovery code"},
     {"lenguage": "pt", "text": "Enviar código de recuperação"}
   ],
+  "sendConfirmCode": [
+    {"lenguage": "es", "text": "Enviar código de verificación"},
+    {"lenguage": "en", "text": "Send verification code"},
+    {"lenguage": "pt", "text": "Enviar código de verificação"}
+  ],
   "sendingCode": [
     {"lenguage": "es", "text": "Enviando código"},
     {"lenguage": "en", "text": "Sending code"},
     {"lenguage": "pt", "text": "Enviando código"}
   ],
   "changingPass": [
-    {"lenguage": "es", "text": "Guardando cambio"},
-    {"lenguage": "en", "text": "Saving change"},
-    {"lenguage": "pt", "text": "Salvando alteração"}
+  {"lenguage": "es", "text": "Guardando cambio"},
+  {"lenguage": "en", "text": "Saving change"},
+  {"lenguage": "pt", "text": "Salvando alteração"}
+  ],
+  "deletingAccount": [
+    {"lenguage": "es", "text": "Eliminando Cuenta"},
+    {"lenguage": "en", "text": "Deleting Account"},
+    {"lenguage": "pt", "text": "Removendo Conta"}
   ],
   "userNotExist": [
     {"lenguage": "es", "text": "El usuario no existe"},
     {"lenguage": "en", "text": "User doesn´t exist"},
     {"lenguage": "pt", "text": "O usuário não existe"}
+  ],
+  "diferentUser": [
+    {"lenguage": "es", "text": "El email no corresponde al usuario"},
+    {"lenguage": "en", "text": "The email does not correspond to user"},
+    {"lenguage": "pt", "text": "O e-mail não corresponde ao usuário"}
   ],
   "invalidCode": [
     {"lenguage": "es", "text": "Código inválido"},

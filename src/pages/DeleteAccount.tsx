@@ -1,24 +1,24 @@
 import React, { useState } from 'react'
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import { useNavigate, useParams } from 'react-router-native'
+import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { useNavigate } from 'react-router-native'
 import { useMutation } from '@tanstack/react-query'
 import { isEmail } from 'validator'
 import IconArrow from 'react-native-vector-icons/AntDesign'
-import Icon from 'react-native-vector-icons/Feather'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
+import useCalendar from '@/hooks/useCalendar'
 import theme from '@/theme/theme'
 import { translate } from '@/utils'
-import { changePassword, createPassRecoveryToken } from '@/api/UserAPI'
+import { createDeleteToken, deletePassword } from '@/api/UserAPI'
 
 import TransparentButton from '@/components/Atoms/Buttons/ButtonTransparent'
 import Spinner from '@/components/Atoms/Spinner'
 import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
-export default function PassRecover() {
-  const params = useParams()
-  const lenguage = params.lg!
+export default function DeleteAccount() {
   const navigate = useNavigate()
+  const { lenguage } = useCalendar()
 
   //gets variable heigth for the screen without statusbar
   const insets = useSafeAreaInsets()
@@ -31,33 +31,37 @@ export default function PassRecover() {
 
   const [mail, setMail] = useState("")
   const [code, setCode] = useState("")
-  const [newPass, setNewPass] = useState("")
-  const [showPass, setShowPass] = useState(false)
   const [tokenId, setTokenId] = useState("")
   const [loader, setLoader] = useState(false)
   const [error, setError] = useState(false)
   const [invalidUser, setInvalidUser] = useState(false)
+  const [diferentUser, setDiferentUser] = useState(false)
   const [invalidCode, setInvalidCode] = useState(false)
 
   const { mutate } = useMutation({
-    mutationFn: createPassRecoveryToken,
+    mutationFn: createDeleteToken,
     retry: 0,
     onError: (error) => {
       console.log(error.message)
+      setLoader(false)
       if (error.message.toString() === "404") {
         setInvalidUser(true)
+      }
+      if (error.message.toString() === "403") {
+        setDiferentUser(true)
       }
     },
     onSuccess: (data) => {
       setInvalidUser(false)
+      setDiferentUser(false)
       setLoader(false)
       setTokenId(data.tokenid)
     }
   })
 
   //query to change password
-    const changePassQuery = useMutation({
-      mutationFn: changePassword,
+    const deleteAccountQuery = useMutation({
+      mutationFn: deletePassword,
       retry: 0,
       onError: (error) => {
         if (error.message.toString() === "401") {
@@ -67,30 +71,45 @@ export default function PassRecover() {
         setError(true)
       },
       onSuccess: () => {
-        navigate(`/account/${lenguage}/login/1`)
+        Alert.alert(
+          '',
+          `${translateFn("deleteSuccess")}`,
+          [
+            {
+              text: 'OK',
+              onPress: async () => {             
+                await AsyncStorage.multiRemove(["userData", "userToken"])
+                navigate("/")
+              },
+              style: 'cancel'
+            },
+          ]
+        )
+        
       }
     })
 
-  const handleSendPassRestoreCode = () => {
+  const handleSendDeleteCode = () => {
     if (!mail || !isEmail(mail)) {
       setError(true)
     } else {
       setError(false)
       setInvalidUser(false)
+      setDiferentUser(false)
       setLoader(true)
       const formData = { mail, lenguage }
       mutate(formData)
     }
   }
 
-  const handleChangePassword = () => {
-    if (!code || code.length !== 6 || !newPass || newPass.length < 8) {
+  const handleDeleteAccount = () => {
+    if (!code || code.length !== 6) {
       setError(true)
     } else {
       setError(false)
       setInvalidCode(false)
-      const {mutate} = changePassQuery
-      const formData = { mail, code, tokenId, newPass }
+      const {mutate} = deleteAccountQuery
+      const formData = { mail, code, tokenId }
       mutate(formData)
       setLoader(true)
     }
@@ -106,11 +125,11 @@ export default function PassRecover() {
       {loader ?
         <>
           <Spinner size={50} borderWidth={10} style={{ marginTop: 60 }} />
-          <Text>{tokenId ? translateFn("changingPass") : translateFn("sendingCode")}</Text>
+          <Text>{tokenId ? translateFn("deletingAccount") : translateFn("sendingCode")}</Text>
         </>
         :
         <>
-          <TransparentButton link={`/account/${lenguage}`} style={styles.arrow}>
+          <TransparentButton link={`/config`} style={styles.arrow}>
             <IconArrow
               name="doubleleft"
               color={theme.colors.negro}
@@ -121,10 +140,10 @@ export default function PassRecover() {
 
           {!tokenId ?
             <>
-              <Text style={styles.title}>{translateFn("recoverPass")}</Text>
+              <Text style={styles.title}>{translateFn("deleteAccount")}</Text>
               
               <View style={styles.inputContainer}>
-                <Text style={styles.text}>{translateFn("mail")}</Text>
+                <Text style={styles.text}>{translateFn("confirmMail")}</Text>
                 <TextInput
                   textContentType='emailAddress'
                   style={styles.input}
@@ -137,13 +156,14 @@ export default function PassRecover() {
                 {error && mail === "" && <Text style={styles.error}>{translateFn("errorMail")}</Text>}
                 {error && mail && !isEmail(mail) && <Text style={styles.error}>{translateFn("invalidMail")}</Text>}
                 {invalidUser && <Text style={styles.error}>{translateFn("userNotExist")}</Text>}
+                {diferentUser && <Text style={styles.error}>{translateFn("diferentUser")}</Text>}
               </View>
 
-              <Text style={styles.text2} onPress={() => handleSendPassRestoreCode()}>{translateFn("sendRestoreCode")}</Text>
+              <Text style={styles.text2} onPress={() => handleSendDeleteCode()}>{translateFn("sendConfirmCode")}</Text>
             </>
             :
             <>
-              <Text style={styles.title}>{translateFn("changePass")}</Text>
+              <Text style={styles.title}>{translateFn("deleteAccount")}</Text>
 
               <Text style={styles.text}>{mail}</Text>
 
@@ -158,34 +178,9 @@ export default function PassRecover() {
                 {error && (code === "" || code.length !== 6 || invalidCode) && <Text style={styles.error}>{translateFn("invalidCode")}</Text>}
               </View>
 
-              <View style={styles.inputContainer}>
-                <Text style={styles.text}>{translateFn("newPassword")}</Text>
-
-                <TextInput
-                  style={[styles.input, { zIndex: 0 }]}
-                  secureTextEntry={!showPass}
-                  onChangeText={setNewPass}
-                  value={newPass}
-                  maxLength={25}
-                  placeholder={translateFn("password")}
-                  placeholderTextColor={theme.colors.grisMedio}
-                  pointerEvents='none'
-                />
-
-                <TouchableOpacity activeOpacity={0.9} onPressIn={() => setShowPass(!showPass)} style={styles.eye}>
-                  <Icon
-                    name={showPass ? "eye" : "eye-off"}
-                    size={20}
-                  />
-                </TouchableOpacity>
-
-                {error && newPass === "" && <Text style={styles.error}>{translateFn("errorPassword")}</Text>}
-                {newPass.length < 8 && <Text style={[styles.lowerText, error && 0 < newPass.length && { color: theme.colors.rojo }]}>{translateFn("min8")}</Text>}
-              </View>
-
-              <TouchableOpacity activeOpacity={0.9} onPress={() => handleChangePassword()}>
+              <TouchableOpacity activeOpacity={0.9} onPress={() => handleDeleteAccount()}>
               <ButtonSmall color={theme.colors.grisMasClaro} buttonStyles={styles.button}>
-                <Text style={styles.textButton}>{translateFn("changePass")}</Text>
+                <Text style={styles.textButton}>{translateFn("deleteAccount")}</Text>
               </ButtonSmall>
             </TouchableOpacity>
             </>

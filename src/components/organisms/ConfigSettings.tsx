@@ -20,10 +20,10 @@ import { isSameDay } from '@/utils/datesCompare'
 export default function ConfigSettings() {
   const { 
     lenguage, setLenguage,
-    shifts,
-    userInfo,
+    shifts, setShifts,
+    userInfo, setUserInfo,
     configInfo, setConfigInfo,
-    companysInfo,
+    companysInfo, setCompanysInfo,
     lastBackup, setLastBackup
   } = useCalendar()
   const navigate = useNavigate()
@@ -103,8 +103,25 @@ export default function ConfigSettings() {
         },
         {
           text: translateFn("logOut"),
-          onPress: async () => {             
+          onPress: async () => {
             await AsyncStorage.multiRemove(["userData", "userToken"])
+            setShifts([])
+            setCompanysInfo([])
+            setUserInfo({
+              userName: "",
+              mail: "",
+              lastBackUp: null,
+              premium: false
+            })
+            setConfigInfo({
+              baseColor: theme.colors.verdeBase, 
+              buttonsColor: theme.colors.verdeBoton, 
+              configBreakEntry: null, 
+              configBreakExit: null, 
+              entry: null, 
+              exit: null
+            })
+            setLastBackup(null)
             navigate("/")
           },
           style: 'cancel'
@@ -142,7 +159,7 @@ export default function ConfigSettings() {
       duration={400}
       isOpen={isOpen}
       setIsOpen={setIsOpen}
-      maxHeight={340}
+      maxHeight={320}
       title={translateFn("userSettings")!}
       arrowColor={configInfo.baseColor}
       titleContainerStyle={[styles.tituloConf, styles.configGeneral]}
@@ -262,6 +279,12 @@ export default function ConfigSettings() {
       
       <Text style={styles.centeredText} onPress={() => Linking.openURL("https://cambadev.netlify.app/Shifts-Table/privacy-policy")}>{translateFn("privacyPolicies")}</Text>
       <Text style={styles.centeredText} onPress={() => Linking.openURL("https://cambadev.netlify.app/Shifts-Table/guide")}>{translateFn("guide")}</Text>
+      {userInfo.mail ? 
+        <TouchableOpacity activeOpacity={0.8} onPress={() => navigate('/account/deleteAccount')}>
+          <Text style={[styles.textLine, styles.deleteAccount]}>{translateFn("deleteAccount")}</Text> 
+        </TouchableOpacity>
+        : <></>      
+      }
       <View style={{ height: 40 }} />
     </DropDownAutoHeight>
   )
@@ -347,6 +370,14 @@ const styles = StyleSheet.create({
     color: theme.colors.rojo,
     fontWeight: 600,
     fontSize: theme.fontSizes.F18
+  },
+  deleteAccount: {
+    marginBottom: 2,
+    marginTop: 16,
+    color: theme.colors.rojo,
+    fontWeight: 600,
+    fontSize: theme.fontSizes.F16,
+    textAlign: "center"
   },
   backup: {
     marginBottom: 2,

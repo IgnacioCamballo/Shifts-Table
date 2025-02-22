@@ -86,3 +86,38 @@ export async function getUser() {
     }
   }  
 }
+
+export async function createDeleteToken(formData: {mail: string, lenguage: string}) {
+  const token = await AsyncStorage.getItem("userToken")
+
+  try {
+    const {data} = await api.post("/users/send-delete-account-code", formData, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    return data
+  } catch (error) {
+    if(isAxiosError(error) && error.response) {
+      throw new Error(error.response.status.toString())
+    }
+  }
+}
+
+export async function deletePassword(formData: {mail: string, code: string, tokenId: string}) {
+  const token = await AsyncStorage.getItem("userToken")
+
+  try {
+    const {data} = await api.delete("/users/delete-account", {
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      data: formData
+    })
+    return data
+  } catch (error) {
+    if(isAxiosError(error) && error.response) {
+      throw new Error(error.response.status.toString())
+    }
+  }
+}

@@ -23,10 +23,11 @@ import SelectLenguage from '@/pages/SelectLenguage'
 import Login from '@/pages/Login'
 import CreateAccount from '@/pages/CreateAccount'
 import PassRecover from '@/pages/PassRecover'
+import DeleteAccount from './DeleteAccount'
+import PrePurchaseLogin from './PrePurchaseLogin'
 //Premium pages
 import PremiumPurchase from '@/pages/PremiumPurchase'
 import PremiumPurchaseSuccess from './PremiumPurchaseSuccess'
-import PrePurchaseLogin from './PrePurchaseLogin'
 
 export default function Main() {
   return (
@@ -55,6 +56,7 @@ export default function Main() {
             <Route path='/account/:lg/recoverPassword' element={<PassRecover />}/>
             <Route path='/account/:lg/createAccount/:type' element={<CreateAccount />}/>
             <Route path='/account/prePurchaseLogin' element={<PrePurchaseLogin />}/>
+            <Route path='/account/deleteAccount' element={<DeleteAccount />}/>
 
           <Route path="/premium-purchase" element={<PremiumPurchase />}/>
             <Route path="/premium-purchase/success" element={<PremiumPurchaseSuccess />}/>

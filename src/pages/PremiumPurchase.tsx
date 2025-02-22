@@ -21,7 +21,10 @@ export default function PremiumPurchase() {
   const noFooterNoHeaderHeight = theme.heigth.screenHeight - insets.top - insets.bottom - theme.heigth.noFooterNoHeader
 
   const { initPaymentSheet, presentPaymentSheet } = useStripe()
-  const STRIPE_KEY = 'pk_test_51Qn5P2FtUznWbAOcu33hIJABd6qgSRMrPk9v1xvtupZEh7UUtX36W7AAt1UuvznbHdQMnAYU1FKO6AJlYPLGf3PP00fgLe5LmN'
+  //test STRIPE_KEY
+  //const STRIPE_KEY = 'pk_test_51Qn5P2FtUznWbAOcu33hIJABd6qgSRMrPk9v1xvtupZEh7UUtX36W7AAt1UuvznbHdQMnAYU1FKO6AJlYPLGf3PP00fgLe5LmN'
+  //real STRIPE_KEY
+  const STRIPE_KEY = 'pk_live_51Qn5OoCHSb7q7vgIzYp4xY0edmu7VEebzT64HKGe1AvSv6J6qDnpU7Cjrj2IHoL5Ew8OJ5M43EMGjTG4hMtDVLES00EeZt0v8T'
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text: string) {
