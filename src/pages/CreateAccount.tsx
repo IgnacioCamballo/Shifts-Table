@@ -137,7 +137,7 @@ export default function CreateAccount() {
             <TextInput
               textContentType='emailAddress'
               style={styles.input}
-              onChangeText={setMail}
+              onChangeText={value => setMail(value.toLowerCase())}
               value={mail}
               maxLength={25}
               placeholder={translateFn("placeholderMail")}
