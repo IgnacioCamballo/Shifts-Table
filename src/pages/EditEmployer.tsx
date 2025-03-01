@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, Text, TextInput, TouchableOpacity, View, Modal, Platform, Alert } from 'react-native'
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, Modal, Platform, Alert, NativeSyntheticEvent, TextInputFocusEventData } from 'react-native'
 import ColorPicker, { HueSlider, Panel1, Preview, returnedResults } from 'reanimated-color-picker'
 import { Link, useParams } from 'react-router-native'
 import Constants from "expo-constants"
@@ -27,13 +27,19 @@ export default function EditEmployer() {
 
   const [inputName, setInputName] = useState(name)
   const [shortName, setShortName] = useState(short)
-  const [salary, setSalary] = useState(wage.toString())
+  const [salary, setSalary] = useState(formatSalary(wage))
+  const [previousSalary, setPreviousSalary] = useState(formatSalary(wage))
   const [defColor, setDefColor] = useState(color)
 
   const [repeatedName, setRepeatedName] = useState(false)
   const [changeWageInShifts, setChangeWageInShifts] = useState(false)
   const [modal, setModal] = useState(false)
   const [tempColor, setTempColor] = useState(color)
+
+  // Function to format salary
+  function formatSalary(wage: number) {
+    return Number.isInteger(wage) ? wage.toString() : wage.toFixed(2)
+  }
 
   //checks for repeted names
   useEffect(() => {
@@ -55,27 +61,30 @@ export default function EditEmployer() {
   }
 
   //alert called when wage is changed
-  const wageChangedAlert = () => { 
-    Alert.alert(
-      '',
-      translateFn("wageChangeAlert"),
-      [
-        {
-          text: translateFn("no"),
-          onPress: () => {
-            setChangeWageInShifts(false)
+  const wageChangedAlert = () => {
+    if(salary !== previousSalary) {
+      Alert.alert(
+        '',
+        translateFn("wageChangeAlert"),
+        [
+          {
+            text: translateFn("no"),
+            onPress: () => {
+              setChangeWageInShifts(false)
+            },
+            style: 'cancel'
+          }, 
+          {
+            text: translateFn("yes"),
+            onPress: () => {
+              setChangeWageInShifts(true)
+            },
+            style: 'cancel'
           },
-          style: 'cancel'
-        }, 
-        {
-          text: translateFn("yes"),
-          onPress: () => {
-            setChangeWageInShifts(true)
-          },
-          style: 'cancel'
-        },
-      ]
-    )
+        ]
+      )
+      setPreviousSalary(salary)
+    }
   }
 
   //saves the edited emplyer info
@@ -86,7 +95,8 @@ export default function EditEmployer() {
       const copyShifts = [...shifts]
       copyShifts.forEach(shift => {
         if(shift.employer === key && shift.workedHours && shift.isHourlyRate) {
-          shift.salary = (shift.workedHours + shift.workedMinutes!/60) * parseInt(salary)
+          shift.salary = (shift.workedHours + shift.workedMinutes!/60) * parseFloat(salary)
+          shift.wage = parseFloat(salary)
         }  
         return shift
       })      
@@ -97,7 +107,7 @@ export default function EditEmployer() {
       key: key,
       name: inputName,
       short: shortName,
-      wage: parseInt(salary),
+      wage: parseFloat(salary),
       color: defColor
     }
     const updatedCompanys = [...companysInfo]
@@ -159,7 +169,7 @@ export default function EditEmployer() {
               style={styles.textLine}
               inputMode='numeric'
               keyboardType='numeric'
-              onEndEditing={wageChangedAlert}
+              onBlur={wageChangedAlert}
               onChangeText={setSalary}
               value={salary}
               placeholder="0"
@@ -219,7 +229,7 @@ export default function EditEmployer() {
 
       <Button 
         press={() => handleSaveEmployer()}
-        block={inputName === "" || salary === "" || repeatedName ? true : false} 
+        block={inputName === "" || !salary || repeatedName ? true : false} 
         to='/config' 
         color={configInfo.buttonsColor}
       >
