@@ -71,6 +71,8 @@ export default function Login() {
           shiftBreakExit: shift.shiftBreakExit ? new Date(shift.shiftBreakExit) : null,
           workedHours: shift.workedHours,
           workedMinutes: shift.workedMinutes,
+          isHourlyRate: shift.isHourlyRate === false ? false : true,
+          wage: shift.wage || data.userInfo.employers.find((company: { key: number }) => company.key === shift.employer)?.wage || 0,
           paid: shift.paid,
           salary: shift.salary,
           note: shift.note,
