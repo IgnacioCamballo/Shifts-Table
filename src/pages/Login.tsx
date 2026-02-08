@@ -39,7 +39,7 @@ export default function Login() {
   const [error, setError] = useState(false)
   const [errorCode, seterrorCode] = useState("")
 
-  //query to create user
+  //query to login
   const { mutate, isPending } = useMutation({
     mutationFn: logIn,
     retry: 0,
@@ -152,7 +152,6 @@ export default function Login() {
           maxLength={25}
           placeholder={translateFn("password")}
           placeholderTextColor={theme.colors.grisMedio}
-          pointerEvents='none'
         />
 
         <TouchableOpacity activeOpacity={0.9} onPressIn={() => setShowPass(!showPass)} style={styles.eye}>
@@ -234,7 +233,7 @@ const styles = StyleSheet.create({
   },
   eye: {
     position: "absolute",
-    top: 38,
+    top: 32,
     right: 12,
     zIndex: 1
   },

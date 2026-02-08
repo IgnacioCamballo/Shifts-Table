@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { Text, View, StyleSheet } from 'react-native'
+import { Text, View, StyleSheet, Platform } from 'react-native'
 import { Link, useParams } from 'react-router-native'
 import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads'
+import RNPickerSelect from 'react-native-picker-select'
 import { Picker } from '@react-native-picker/picker'
 
 import useCalendar from '@/hooks/useCalendar'
@@ -15,11 +16,11 @@ export default function Totals() {
   const param = useParams()
   const currentMonth = param.month ? new Date(param.month) : new Date()
 
-  const {shifts, lenguage, addsInitialized, companysInfo, configInfo, userInfo} = useCalendar()
+  const { shifts, lenguage, addsInitialized, companysInfo, configInfo, userInfo } = useCalendar()
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
-  function translateFn(text:string){
-    return translate({text, lenguage})
+  function translateFn(text: string) {
+    return translate({ text, lenguage })
   }
 
   const [currentDay, setCurrentDay] = useState(currentMonth);
@@ -32,12 +33,12 @@ export default function Totals() {
   const [salaryPaid, setSalaryPaid] = useState(0)
 
   const monthlyShifts = shifts.filter(shift => shift.shiftEntry.getFullYear() === currentDay.getFullYear() && shift.shiftEntry.getMonth() === currentDay.getMonth())
-  const monthlyShiftsFiltered = employer === 0 ? monthlyShifts : monthlyShifts.filter(shift => shift.employer === employer)
+  const monthlyShiftsFiltered = employer == 0 ? monthlyShifts : monthlyShifts.filter(shift => shift.employer == employer)
 
   function findWorkedDays() {
     let dayscounter = 0
-    for(let i = 0; i < 31; i++) {
-      if (monthlyShiftsFiltered.some(shift => shift.shiftEntry.getDate() === i+1)) {
+    for (let i = 0; i < 31; i++) {
+      if (monthlyShiftsFiltered.some(shift => shift.shiftEntry.getDate() === i + 1)) {
         dayscounter += 1
       }
       setWorkedDays(dayscounter)
@@ -50,7 +51,7 @@ export default function Totals() {
       const sum = total + (shift.workedMinutes || 0);
       if (sum >= 60) {
         initialHours += 1
-        return(sum - 60)
+        return (sum - 60)
       } else {
         return sum
       }
@@ -60,7 +61,7 @@ export default function Totals() {
     }, initialHours);
     setWorkedHours(`${totalHours}:${formattedMinutesNumber(totalMinutes)}`);
   }
-  
+
   function findFullSalary() {
     const fullSalary = monthlyShiftsFiltered.reduce((total, shift) => {
       const sum = total + (shift.salary || 0)
@@ -71,7 +72,7 @@ export default function Totals() {
 
   function findPaidSalary() {
     const PaidSalary = monthlyShiftsFiltered.reduce((total, shift) => {
-        return total + (shift.paid ? shift.salary || 0 : 0)
+      return total + (shift.paid ? shift.salary || 0 : 0)
     }, 0)
     setSalaryPaid(parseFloat(PaidSalary.toFixed(2)))
   }
@@ -79,14 +80,16 @@ export default function Totals() {
   //Creates an array with the employers on the shifts of that month used in the employer filter
   useEffect(() => {
     const copyList = [...employersList]
-    if(!monthlyShifts){
+    if (!monthlyShifts) {
       return
     } else {
-      monthlyShifts.forEach(shift => {if(copyList.some(employer => employer === shift.employer)) {
-        return
-      } else {
-        copyList.push(shift.employer)
-      }})
+      monthlyShifts.forEach(shift => {
+        if (copyList.some(employer => employer === shift.employer)) {
+          return
+        } else {
+          copyList.push(shift.employer)
+        }
+      })
     }
     setEmployersList(copyList)
   }, [currentDay])
@@ -111,30 +114,50 @@ export default function Totals() {
 
   return (
     <View style={styles.container}>
-      <SwiftArrows 
-        leftAction={prevMonth} 
+      <SwiftArrows
+        leftAction={prevMonth}
         text={`${firstLetterUpper(currentDay.toLocaleDateString(lenguage, { month: 'long' }))} / ${currentDay.toLocaleDateString(lenguage, { year: '2-digit' })}`}
-        rightAction={nextMonth} 
+        rightAction={nextMonth}
       />
 
       <View style={styles.employersContainer}>
         <View style={styles.line}>
           <Text style={styles.textLine}>{translateFn("employer")}:</Text>
-          
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={employer}
-              onValueChange={newValue => setEmployer(newValue)}
-              style={styles.picker}
-              accessibilityLabel={translateFn("selectEmployer")}
-              mode='dropdown'
+
+          {Platform.OS === 'ios' ? (
+            <View style={styles.pickerContainerIos}>
+              <RNPickerSelect
+                value={employer}
+                onValueChange={value => setEmployer(value)}
+                items={[
+                  { label: translateFn("all") || "All", value: 0 },
+                  ...employersList.map(employer => ({
+                    label: companysInfo.find(emp => emp.key == employer)!.name,
+                    value: employer,
+                    key: employer
+                  }))
+                ]}
+                placeholder={{}}
+                style={{ inputIOS: styles.pickerInput }}
+                useNativeAndroidPickerStyle={false}
+              />
+            </View>
+          ) : (
+            <View style={styles.pickerContainerAndroid}>
+              <Picker
+                selectedValue={employer}
+                onValueChange={newValue => setEmployer(newValue)}
+                style={styles.picker}
+                accessibilityLabel={translateFn("selectEmployer")}
+                mode='dropdown'
               >
-                <Picker.Item style={styles.pickerItem} label={translateFn("all")} value={0}/>
-              {employersList.map(employer => 
-                <Picker.Item style={styles.pickerItem} label={companysInfo.find(emp => emp.key === employer)!.name} value={employer} key={employer}/>
-              )}
-            </Picker>
-          </View>
+                <Picker.Item style={styles.pickerItem} label={translateFn("all")} value={0} />
+                {employersList.map(employer =>
+                  <Picker.Item style={styles.pickerItem} label={companysInfo.find(emp => emp.key === employer)!.name} value={employer} key={employer} />
+                )}
+              </Picker>
+            </View>
+          )}
         </View>
       </View>
 
@@ -149,22 +172,22 @@ export default function Totals() {
           </Link>}
         </View>
       </View>
-      
+
       <View style={styles.line}>
         <Text style={styles.textLine}>{translateFn("workedHours")}:</Text>
         <Text style={styles.textLine}>{workedHours}</Text>
       </View>
-      
+
       <View style={styles.line}>
         <Text style={styles.textLine}>{translateFn("totalSalary")}:</Text>
         <Text style={styles.textLine}>${salary.toFixed(2)}</Text>
       </View>
-      
+
       <View style={styles.line}>
         <Text style={styles.textLine}>{translateFn("paid")}:</Text>
         <Text style={styles.textLine}>${salaryPaid}</Text>
       </View>
-      
+
       <View style={styles.line}>
         <Text style={styles.textLine}>{translateFn("unpaidSalary")}:</Text>
         <Text style={styles.textLine}>${salary - salaryPaid === 0 ? "0" : (salary - salaryPaid).toFixed(2)}</Text>
@@ -172,12 +195,12 @@ export default function Totals() {
 
       {!userInfo.premium && addsInitialized && (
         <View style={styles.banner}>
-        <BannerAd 
-          size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-          unitId={theme.banners.totals}
-          requestOptions={{
-            requestNonPersonalizedAdsOnly: true
-          }}
+          <BannerAd
+            size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+            unitId={theme.banners.totals}
+            requestOptions={{
+              requestNonPersonalizedAdsOnly: true
+            }}
           />
         </View>
       )}
@@ -188,13 +211,14 @@ export default function Totals() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10  
+    padding: 10
   },
   line: {
-    paddingHorizontal: 15,
+    paddingHorizontal: 14,
     paddingVertical: 8,
     flexDirection: "row",
     justifyContent: 'space-between',
+    alignItems: "center",
     borderBottomWidth: 1,
     borderColor: theme.colors.grisClaro
   },
@@ -207,18 +231,38 @@ const styles = StyleSheet.create({
     marginTop: 24,
     borderColor: theme.colors.negro,
   },
-  pickerContainer: {
+  pickerContainerIos: {
+    height: 20,
+    justifyContent: "center",
+    shadowOffset: { width: 2, height: 2 },
+    shadowColor: theme.colors.negro,
+    shadowOpacity: 0.6,
+    shadowRadius: 2,
+    elevation: 4,
+    borderColor: theme.colors.grisClaro,
+    borderWidth: Platform.OS === "android" ? 1 : 0
+  },
+  pickerContainerAndroid: {
     flex: 1,
     height: 20,
     justifyContent: "center",
   },
   picker: {
     marginLeft: 0,
-    transform: [{translateX: 18}, {translateY: 4}]
+    transform: [{ translateX: 18 }, { translateY: 4 }]
   },
   pickerItem: {
     fontSize: 18,
     color: "black"
+  },
+  pickerInput: {
+    fontSize: theme.fontSizes.F20,
+    backgroundColor: theme.colors.grisClaro,
+    height: 28,
+    minWidth: 116,
+    color: 'black',
+    textAlign: 'center',
+    borderRadius: 12,
   },
   botonVer: {
     flexDirection: "row",
@@ -230,11 +274,11 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     lineHeight: theme.fontSizes.F20
   },
-  banner:{
-    height: 70, 
+  banner: {
+    height: 70,
     position: 'absolute',
-    justifyContent: "center", 
-    alignContent: "center", 
+    justifyContent: "center",
+    alignContent: "center",
     bottom: 80
   }
 })

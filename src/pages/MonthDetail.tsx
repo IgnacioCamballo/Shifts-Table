@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { Text, TouchableOpacity, View, StyleSheet, ScrollView, Dimensions } from 'react-native'
+import { Text, TouchableOpacity, View, StyleSheet, ScrollView, Dimensions, Platform } from 'react-native'
 import { captureRef } from 'react-native-view-shot'
 import * as Sharing from "expo-sharing"
 import * as FileSystem from "expo-file-system";
 import { useParams } from 'react-router-native'
 import { Picker } from '@react-native-picker/picker'
+import RNPickerSelect from 'react-native-picker-select'
 import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads'
 import Icon from 'react-native-vector-icons/AntDesign'
 import IconMenu from 'react-native-vector-icons/Feather'
@@ -26,7 +27,7 @@ export default function MonthDetail() {
   const employerParam = param.employer ? parseInt(param.employer) : 0
 
   const { shifts, lenguage, addsInitialized, companysInfo, userInfo } = useCalendar()
-  
+
   //gets variable heigth for the screen without statusbar
   const insets = useSafeAreaInsets()
   const monthDetailHeight = theme.heigth.screenHeight - insets.top - insets.bottom - (userInfo.premium ? theme.heigth.monthDetailScrollViewPremium : theme.heigth.monthDetailScrollView)
@@ -46,7 +47,7 @@ export default function MonthDetail() {
   const exportImgRef = useRef<View>(null);
 
   const monthlyShifts = shifts.filter(shift => shift.shiftEntry.getFullYear() === currentDay.getFullYear() && shift.shiftEntry.getMonth() === currentDay.getMonth() && shift.shiftExit)
-  const monthlyShiftsFiltered = employer === 0 ? monthlyShifts : monthlyShifts.filter(shift => shift.employer === employer)
+  const monthlyShiftsFiltered = employer === 0 ? monthlyShifts : monthlyShifts.filter(shift => shift.employer == employer)
   const monthlyShiftsFilteredPayment = shownDays === "Todos" ? monthlyShiftsFiltered : shownDays === "Pagos" ? monthlyShiftsFiltered.filter(shift => shift.paid === true) : monthlyShiftsFiltered.filter(shift => shift.paid === false)
   monthlyShiftsFilteredPayment.sort((a, b) => a.shiftEntry.getDate() - b.shiftEntry.getDate())
 
@@ -155,14 +156,15 @@ export default function MonthDetail() {
         format: 'png',
         quality: 1
       })
-
+      const fromUri = uri.startsWith("file://") ? uri : `file://${uri}`;
       //rename the file
-      const newUri = `${FileSystem.cacheDirectory}${userInfo.userName}-${firstLetterUpper(currentDay.toLocaleDateString(lenguage, { month: 'long' }))}-${currentDay.toLocaleDateString(lenguage, { year: 'numeric' })}-Shifts-Table.png`;
-      await FileSystem.moveAsync({
-        from: uri,
+      const rawName = `${userInfo.userName}-${firstLetterUpper(currentDay.toLocaleDateString(lenguage, { month: 'long' }))}-${currentDay.toLocaleDateString(lenguage, { year: 'numeric' })}-Shifts-Table.png`;
+      const safeName = rawName.replace(/[^a-z0-9._-]/gi, "_");
+      const newUri = `${FileSystem.cacheDirectory}${safeName}`;
+      await FileSystem.copyAsync({
+        from: fromUri,
         to: newUri,
       });
-
       //If posible shares the Img
       if (await Sharing.isAvailableAsync()) {
         await Sharing.shareAsync(newUri);
@@ -171,7 +173,7 @@ export default function MonthDetail() {
       }
     } catch (error) {
       console.error("Error capturing the image:", error)
-    }    
+    }
   }
 
   return (
@@ -202,20 +204,40 @@ export default function MonthDetail() {
         <View style={[styles.line, { borderBottomWidth: 0, paddingBottom: 0 }]}>
           <Text style={styles.textLine}>{translateFn("employer")}:</Text>
 
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={employer}
-              onValueChange={newValue => setEmployer(newValue)}
-              style={styles.picker}
-              accessibilityLabel={translateFn("selectEmployer")}
-              mode='dropdown'
-            >
-              <Picker.Item style={styles.pickerItem} label={translateFn("all")} value={0} />
-              {employersList.map(employer =>
-                <Picker.Item style={styles.pickerItem} label={companysInfo.find(emp => emp.key === employer)!.name} value={employer} key={employer} />
-              )}
-            </Picker>
-          </View>
+          {Platform.OS === 'ios' ? (
+            <View style={styles.pickerContainerIos}>
+              <RNPickerSelect
+                value={employer}
+                onValueChange={value => setEmployer(value)}
+                items={[
+                  { label: translateFn("all") || "All", value: 0 },
+                  ...employersList.map(employer => ({
+                    label: companysInfo.find(emp => emp.key == employer)!.name,
+                    value: employer,
+                    key: employer
+                  }))
+                ]}
+                placeholder={{}}
+                style={{ inputIOS: styles.pickerInput }}
+                useNativeAndroidPickerStyle={false}
+              />
+            </View>
+          ) : (
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={employer}
+                onValueChange={newValue => setEmployer(newValue)}
+                style={styles.picker}
+                accessibilityLabel={translateFn("selectEmployer")}
+                mode='dropdown'
+              >
+                <Picker.Item style={styles.pickerItem} label={translateFn("all")} value={0} />
+                {employersList.map(employer =>
+                  <Picker.Item style={styles.pickerItem} label={companysInfo.find(emp => emp.key == employer)!.name} value={employer} key={employer} />
+                )}
+              </Picker>
+            </View>
+          )}
         </View>
       </View>
 
@@ -243,7 +265,7 @@ export default function MonthDetail() {
 
           <Text style={styles.textSelector}>{translateFn("unPaid")}</Text>
         </TouchableOpacity>
-      </View> 
+      </View>
 
       <Text style={styles.TotalHours}>{translateFn("totalHours")}: {findWorkedHours()}</Text>
 
@@ -253,26 +275,26 @@ export default function MonthDetail() {
         <Text style={styles.tableTop}>{translateFn("total")}</Text>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} style={{height: monthDetailHeight}}>
+      <ScrollView showsVerticalScrollIndicator={false} style={{ height: monthDetailHeight }}>
         {monthlyShiftsFilteredPayment.map(shift => (
           <View key={shift.key} style={styles.line}>
             <View style={[styles.flexRow, { gap: 2, width: 60 }]}>
               <Text style={styles.textLine}>{textDay(shift.shiftEntry, lenguage)}/</Text>
               <Text style={styles.textLine}>{shift.shiftEntry.getDate()}</Text>
             </View>
-            <Text style={[styles.textLine, {width: 180, textAlign: "center"}]}>{entryExitHours(shift.shiftEntry, shift.shiftExit)}</Text>
+            <Text style={[styles.textLine, { width: 180, textAlign: "center" }]}>{entryExitHours(shift.shiftEntry, shift.shiftExit)}</Text>
             <Text style={[styles.textLine, { width: 70, textAlign: "right" }]}>{calculateHours(shift.shiftEntry, shift.shiftExit, shift.shiftBreak)}</Text>
           </View>
         ))}
       </ScrollView>
 
       <Text style={styles.breakMessage}>{translateFn("breakMessage")}</Text>
-      
+
       {/* this view is used for creating an image, rendered outside of the screen */}
-      <View ref={exportImgRef} style={{backgroundColor: "#fff", padding: 20, position: "absolute", left: Dimensions.get("screen").width *2, height: "auto", width: 600}}>
+      <View ref={exportImgRef} style={{ backgroundColor: "#fff", padding: 20, position: "absolute", left: Dimensions.get("screen").width * 2, height: "auto", width: 600 }}>
         <View style={styles.tableTopContainer}>
           <Text style={styles.tableTop}>{translateFn("days")}</Text>
-          <Text style={[styles.tableTop, {width: 180, textAlign: "center"}]}>{translateFn("hours")}</Text>
+          <Text style={[styles.tableTop, { width: 180, textAlign: "center" }]}>{translateFn("hours")}</Text>
           <Text style={styles.tableTop}>{translateFn("break")}</Text>
           <Text style={styles.tableTop}>{translateFn("total")}</Text>
         </View>
@@ -283,7 +305,7 @@ export default function MonthDetail() {
               <Text style={styles.textLine}>{textDay(shift.shiftEntry, lenguage)}/</Text>
               <Text style={styles.textLine}>{shift.shiftEntry.getDate()}</Text>
             </View>
-            <Text style={[styles.textLine, {width: 180, textAlign: "center"}]}>{entryExitHours(shift.shiftEntry, shift.shiftExit)}</Text>
+            <Text style={[styles.textLine, { width: 180, textAlign: "center" }]}>{entryExitHours(shift.shiftEntry, shift.shiftExit)}</Text>
             <Text style={styles.textLine}>{shift.shiftBreak ? `${shift.shiftBreak!.getHours()}:${shift.shiftBreak!.getMinutes()}` : 0}</Text>
             <Text style={[styles.textLine, { width: 70, textAlign: "right" }]}>{calculateHours(shift.shiftEntry, shift.shiftExit, shift.shiftBreak)}</Text>
           </View>
@@ -304,21 +326,21 @@ export default function MonthDetail() {
         </View>
       )}
 
-      {modal && 
-        <TouchableOpacity activeOpacity={1} style={[styles.modalContainer, {height: noFooterNoHeaderHeight}]} onPress={() => setModal(false)}>
+      {modal &&
+        <TouchableOpacity activeOpacity={1} style={[styles.modalContainer, { height: noFooterNoHeaderHeight }]} onPress={() => setModal(false)}>
           <View style={styles.modal}>
-            <Text 
-              style={styles.modalText} 
-              disabled={!userInfo.premium} 
+            <Text
+              style={styles.modalText}
+              disabled={!userInfo.premium}
               onPress={() => exportImg()}
             >
               {translateFn("exportImagen")}
             </Text>
-            <Text 
-              style={styles.modalText} 
-              disabled={!userInfo.premium} 
+            <Text
+              style={styles.modalText}
+              disabled={!userInfo.premium}
               onPress={() => exportPDF(
-                monthlyShiftsFilteredPayment, 
+                monthlyShiftsFilteredPayment,
                 lenguage,
                 `${FileSystem.cacheDirectory}${userInfo.userName}-${firstLetterUpper(currentDay.toLocaleDateString(lenguage, { month: 'long' }))}-${currentDay.toLocaleDateString(lenguage, { year: 'numeric' })}-Shifts-Table.pdf`
               )}
@@ -326,13 +348,13 @@ export default function MonthDetail() {
               {translateFn("exportPdf")}
             </Text>
 
-            {!userInfo.premium && 
-              <View style={{flexDirection: "row", alignItems: "center", gap: 4, marginTop: -12}}>
-                <IconMenu 
+            {!userInfo.premium &&
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: -12 }}>
+                <IconMenu
                   name='info'
                   size={20}
                 />
-                <Text style={styles.modalText_s} onPress={() => {}}>{translateFn("onlyInPremium")}</Text>
+                <Text style={styles.modalText_s} onPress={() => { }}>{translateFn("onlyInPremium")}</Text>
               </View>
             }
           </View>
@@ -350,7 +372,8 @@ const styles = StyleSheet.create({
   absolute: {
     position: "absolute",
     right: 16,
-    top: 9
+    top: 9,
+    zIndex: 20
   },
   line: {
     paddingHorizontal: 15,
@@ -374,6 +397,17 @@ const styles = StyleSheet.create({
     height: 20,
     justifyContent: "center",
   },
+  pickerContainerIos: {
+    height: 20,
+    justifyContent: "center",
+    shadowOffset: { width: 2, height: 2 },
+    shadowColor: theme.colors.negro,
+    shadowOpacity: 0.6,
+    shadowRadius: 2,
+    elevation: 4,
+    borderColor: theme.colors.grisClaro,
+    borderWidth: Platform.OS === "android" ? 1 : 0
+  },
   picker: {
     marginLeft: 0,
     transform: [{ translateX: 18 }, { translateY: 4 }]
@@ -381,6 +415,15 @@ const styles = StyleSheet.create({
   pickerItem: {
     fontSize: 18,
     color: "black"
+  },
+  pickerInput: {
+    fontSize: theme.fontSizes.F20,
+    backgroundColor: theme.colors.grisClaro,
+    height: 28,
+    minWidth: 116,
+    color: 'black',
+    textAlign: 'center',
+    borderRadius: 12,
   },
   TotalHours: {
     width: "100%",

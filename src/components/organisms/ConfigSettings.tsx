@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, Linking, Alert, Animated, Easing } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Linking, Alert, Animated, Easing, Platform } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-native'
 import { Picker } from '@react-native-picker/picker'
+import RNPickerSelect from 'react-native-picker-select'
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import useCalendar from '@/hooks/useCalendar'
@@ -18,7 +19,7 @@ import Spinner from '@/components/Atoms/Spinner'
 import { isSameDay } from '@/utils/datesCompare'
 
 export default function ConfigSettings() {
-  const { 
+  const {
     lenguage, setLenguage,
     shifts, setShifts,
     userInfo, setUserInfo,
@@ -52,7 +53,7 @@ export default function ConfigSettings() {
       setSuccessSave(true)
       Animated.timing(successAnimation, {
         toValue: 1,
-        duration: 400, 
+        duration: 400,
         easing: Easing.inOut(Easing.ease),
         useNativeDriver: false
       }).start(() => {
@@ -114,11 +115,11 @@ export default function ConfigSettings() {
               premium: false
             })
             setConfigInfo({
-              baseColor: theme.colors.verdeBase, 
-              buttonsColor: theme.colors.verdeBoton, 
-              configBreakEntry: null, 
-              configBreakExit: null, 
-              entry: null, 
+              baseColor: theme.colors.verdeBase,
+              buttonsColor: theme.colors.verdeBoton,
+              configBreakEntry: null,
+              configBreakExit: null,
+              entry: null,
               exit: null
             })
             setLastBackup(null)
@@ -134,7 +135,7 @@ export default function ConfigSettings() {
   }
 
   const securityCopy = () => {
-    if(isSameDay({day1: lastBackup, day2: new Date()})) {
+    if (isSameDay({ day1: lastBackup, day2: new Date() })) {
       Alert.alert(
         '',
         translateFn("secondSaveAlert"),
@@ -148,7 +149,7 @@ export default function ConfigSettings() {
           cancelable: true
         }
       )
-    } else { 
+    } else {
       const saveData = { configInfo, employers: companysInfo, lenguage, shifts }
       mutate(saveData)
     }
@@ -159,7 +160,7 @@ export default function ConfigSettings() {
       duration={400}
       isOpen={isOpen}
       setIsOpen={setIsOpen}
-      maxHeight={320}
+      maxHeight={340}
       title={translateFn("userSettings")!}
       arrowColor={configInfo.baseColor}
       titleContainerStyle={[styles.tituloConf, styles.configGeneral]}
@@ -168,41 +169,58 @@ export default function ConfigSettings() {
       <View style={[styles.line, styles.lineLenguage]}>
         <Text style={styles.textLine}>{translateFn("lenguage")}</Text>
 
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={lenguage}
-            onValueChange={newValue => setLenguage(newValue)}
-            style={styles.picker}
-            accessibilityLabel={translateFn("selectLenguage")}
-            mode='dropdown'
-          >
-            <Picker.Item style={styles.pickerItem} label='English' value="en" />
-            <Picker.Item style={styles.pickerItem} label='Español' value="es" />
-            <Picker.Item style={styles.pickerItem} label='Portugues' value="pt" />
-          </Picker>
-        </View>
+        {Platform.OS === 'ios' ? (
+          <View style={styles.pickerContainerIos}>
+            <RNPickerSelect
+              value={lenguage}
+              onValueChange={value => setLenguage(value)}
+              items={[
+                { label: 'English', value: 'en' },
+                { label: 'Español', value: 'es' },
+                { label: 'Portugues', value: 'pt' }
+              ]}
+              placeholder={{}}
+              style={{ inputIOS: styles.pickerInput }}
+              useNativeAndroidPickerStyle={false}
+            />
+          </View>
+        ) : (
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={lenguage}
+              onValueChange={newValue => setLenguage(newValue)}
+              style={styles.picker}
+              accessibilityLabel={translateFn("selectLenguage")}
+              mode='dropdown'
+            >
+              <Picker.Item style={styles.pickerItem} label='English' value="en" />
+              <Picker.Item style={styles.pickerItem} label='Español' value="es" />
+              <Picker.Item style={styles.pickerItem} label='Portugues' value="pt" />
+            </Picker>
+          </View>
+        )}
       </View>
 
       {!userInfo.premium ? <></> :
         <>
-          <View style={[styles.line, {flexDirection: "column", alignItems: "flex-start"}]}>
-            <Text style={{fontSize: 20}}>{translateFn("color")}:</Text>
+          <View style={[styles.line, { flexDirection: "column", alignItems: "flex-start" }]}>
+            <Text style={{ fontSize: 20 }}>{translateFn("color")}:</Text>
             <View style={styles.colorsContainer}>
-              <TouchableOpacity 
-                activeOpacity={0.8} 
-                style={{alignItems: "center"}}
+              <TouchableOpacity
+                activeOpacity={0.8}
+                style={{ alignItems: "center" }}
                 onPress={() => setColorModal(true)}
-                >
-                <Text style={{fontSize: 20}}>{translateFn("baseColor")}</Text>
-                <View style={[styles.colorRectangle, {backgroundColor: baseColor}]}/>
+              >
+                <Text style={{ fontSize: 20 }}>{translateFn("baseColor")}</Text>
+                <View style={[styles.colorRectangle, { backgroundColor: baseColor }]} />
               </TouchableOpacity>
               <TouchableOpacity
                 activeOpacity={0.8}
-                style={{alignItems: "center"}}
+                style={{ alignItems: "center" }}
                 onPress={() => setButtonsColorModal(true)}
-                >
-                <Text style={{fontSize: 20}}>{translateFn("buttonsColor")}</Text>
-                <View style={[styles.colorRectangle, {backgroundColor: buttonsColor}]} />
+              >
+                <Text style={{ fontSize: 20 }}>{translateFn("buttonsColor")}</Text>
+                <View style={[styles.colorRectangle, { backgroundColor: buttonsColor }]} />
               </TouchableOpacity>
             </View>
           </View>
@@ -220,19 +238,19 @@ export default function ConfigSettings() {
             {!userInfo.premium &&
               <>
                 {isPending ?
-                  <Spinner borderWidth={6} size={28} style={{marginBottom: 15}}/>
-                  : successSave ? 
-                  <Animated.View style={[opacity, rotate, {padding: 10, borderRadius: 8, alignItems: "center", justifyContent: "center", marginTop: -16}]}>
-                    <Icon 
-                      name='check-circle'
-                      size={38}
-                      color={theme.colors.verdeMedio}
+                  <Spinner borderWidth={6} size={28} style={{ marginBottom: 15 }} />
+                  : successSave ?
+                    <Animated.View style={[opacity, rotate, { padding: 10, borderRadius: 8, alignItems: "center", justifyContent: "center", marginTop: -16 }]}>
+                      <Icon
+                        name='check-circle'
+                        size={38}
+                        color={theme.colors.verdeMedio}
 
-                    />
-                  </Animated.View>
-                  :
+                      />
+                    </Animated.View>
+                    :
                     <TouchableOpacity activeOpacity={0.8} onPress={() => securityCopy()}>
-                      <Animated.View style={reverseOpacity}>  
+                      <Animated.View style={reverseOpacity}>
                         <ButtonSmall color={theme.colors.azulClaro} buttonStyles={{ marginBottom: 8 }}>
                           <Text style={[styles.textLine, styles.backup]}>{translateFn("securityCopy")}</Text>
                         </ButtonSmall>
@@ -276,14 +294,14 @@ export default function ConfigSettings() {
         />
         : <></>
       }
-      
+
       <Text style={styles.centeredText} onPress={() => Linking.openURL("https://cambadev.netlify.app/Shifts-Table/privacy-policy")}>{translateFn("privacyPolicies")}</Text>
       <Text style={styles.centeredText} onPress={() => Linking.openURL("https://cambadev.netlify.app/Shifts-Table/guide")}>{translateFn("guide")}</Text>
-      {userInfo.mail ? 
+      {userInfo.mail ?
         <TouchableOpacity activeOpacity={0.8} onPress={() => navigate('/account/deleteAccount')}>
-          <Text style={[styles.textLine, styles.deleteAccount]}>{translateFn("deleteAccount")}</Text> 
+          <Text style={[styles.textLine, styles.deleteAccount]}>{translateFn("deleteAccount")}</Text>
         </TouchableOpacity>
-        : <></>      
+        : <></>
       }
       <View style={{ height: 40 }} />
     </DropDownAutoHeight>
@@ -334,9 +352,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "100%"
   },
-  colorRectangle: { 
-    width: 100, 
-    height: 20, 
+  colorRectangle: {
+    width: 100,
+    height: 20,
     borderRadius: 10,
     marginBottom: 4
   }
@@ -350,6 +368,17 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 4
   },
+  pickerContainerIos: {
+    height: 48,
+    justifyContent: "center",
+    shadowOffset: { width: 2, height: 2 },
+    shadowColor: theme.colors.negro,
+    shadowOpacity: 0.6,
+    shadowRadius: 2,
+    elevation: 4,
+    borderColor: theme.colors.grisClaro,
+    borderWidth: Platform.OS === "android" ? 1 : 0
+  },
   picker: {
     width: "auto",
     minWidth: 200
@@ -358,6 +387,15 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 20,
     color: "black"
+  },
+  pickerInput: {
+    fontSize: theme.fontSizes.F20,
+    backgroundColor: theme.colors.grisClaro,
+    height: 28,
+    minWidth: 116,
+    color: 'black',
+    textAlign: 'center',
+    borderRadius: 12,
   },
   user: {
     flexDirection: "column",
@@ -395,8 +433,8 @@ const styles = StyleSheet.create({
   },
   colorsContainer: {
     marginTop: -8,
-    flexDirection: "row", 
-    width: "100%", 
+    flexDirection: "row",
+    width: "100%",
     justifyContent: "space-around"
   }
 })

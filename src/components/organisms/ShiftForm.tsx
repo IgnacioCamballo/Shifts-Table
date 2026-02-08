@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { StyleSheet, Text, TextInput, TouchableOpacity, View, ScrollView, Animated, Dimensions } from 'react-native'
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, ScrollView, Animated, Dimensions, Platform } from 'react-native'
 import { Link, Navigate } from 'react-router-native'
 import { Picker } from '@react-native-picker/picker'
+import RNPickerSelect from 'react-native-picker-select'
 
 import useCalendar from '@/hooks/useCalendar'
 import { ShiftProps } from '@/types'
@@ -31,7 +32,7 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
   //gets variable heigth for the screen without statusbar
   const insets = useSafeAreaInsets()
   const newEditHeight = theme.heigth.screenHeight - insets.top - insets.bottom - theme.heigth.shiftNewEditScrollView
- 
+
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text: string) {
@@ -72,8 +73,8 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
 
   useEffect(() => {
     if (employerForm > 1) {
-      const companyWage = companysInfo.find(company => company.key === employerForm)!.wage
-      setWageForm(companyWage)
+      const company = companysInfo.find(company => company.key == employerForm)
+      setWageForm(company?.wage || 0)
     }
   }, [employerForm])
 
@@ -118,8 +119,8 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
   const handleSubmit = () => {
     const FormData: ShiftProps = {
       key: editingShift?.key || `${new Date().getTime()}`,
-      employer: companysInfo.find(emp => emp.key === employerForm)!.key,
-      short: companysInfo.find(company => company.key === employerForm)!.short,
+      employer: companysInfo.find(emp => emp.key == employerForm)!.key,
+      short: companysInfo.find(company => company.key == employerForm)!.short,
       shiftEntry: shiftEntryForm!,
       shiftExit: shiftExitForm,
       shiftBreak: shiftBreakForm,
@@ -131,7 +132,7 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
       isHourlyRate: isHourlyRateForm,
       wage: wageForm,
       salary: salaryForm,
-      color: companysInfo.find(company => company.key === employerForm)!.color || editingShift!.color,
+      color: companysInfo.find(company => company.key == employerForm)!.color || editingShift!.color,
       note: noteForm
     }
     onSubmit(FormData)
@@ -146,22 +147,22 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
 
   //checks there is no repeted shifts
   useEffect(() => {
-    if(employerForm) {
-      const currentExcluded = shifts.filter(shift => 
+    if (employerForm) {
+      const currentExcluded = shifts.filter(shift =>
         shift.key !== editingShift?.key &&
         shift.shiftEntry.getFullYear() === shiftEntryForm?.getFullYear() &&
         shift.shiftEntry.getMonth() === shiftEntryForm?.getMonth() &&
         shift.shiftEntry.getDate() === shiftEntryForm?.getDate()
       )
-      if (currentExcluded.some(shift => 
+      if (currentExcluded.some(shift =>
         shift.employer === employerForm &&
         shift.shiftEntry.getHours() === shiftEntryForm?.getHours() &&
         shift.shiftEntry.getMinutes() === shiftEntryForm?.getMinutes()
       )) {
         setMissing(translateFn("repetedShiftAlert")!)
-        setBlockSubmit(true)  
+        setBlockSubmit(true)
         return
-      }     
+      }
     }
     setMissing("")
     setBlockSubmit(false)
@@ -217,27 +218,50 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
         <Text style={styles.textoConf}>{isCreate ? translateFn("newShift") : translateFn("editShifts")} {firstLetterUpper(pressedDate.toLocaleDateString(lenguage, { month: 'short' }))} / {pressedDate.toLocaleDateString(lenguage, { day: "numeric" })}</Text>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} style={{maxHeight: newEditHeight}}>
+      <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: newEditHeight }}>
         <View style={styles.empleador}>
           <View style={styles.line}>
             <Text style={styles.textLine}>{translateFn("employer")}:</Text>
 
-            <View style={styles.pickerContainer}>
-              <Picker
-                selectedValue={employerForm}
-                onValueChange={newValue => setEmployerForm(newValue)}
-                style={styles.picker}
-                accessibilityLabel={translateFn("selectEmployer")}
-                mode='dropdown'
-              >
-                {isCreate && <Picker.Item style={styles.pickerItem} label={translateFn("selectEmployer")} value={0} enabled={false} />}
-                {companysInfo.map(employer =>
-                  <Picker.Item style={styles.pickerItem} label={employer.name} value={employer.key} key={employer.key} />
-                )}
-                {isCreate && <Picker.Item style={styles.pickerItem} label={translateFn("createNewEmployerTab")} value={1}/>}
-              </Picker>
-              {employerForm === 1 && <Navigate to={`/config/newEmployer/${pressedDate}`}/>}
-            </View>
+            {Platform.OS === 'ios' ? (
+              <View style={styles.pickerContainerIos}>
+                <RNPickerSelect
+                  value={employerForm}
+                  onValueChange={newValue => setEmployerForm(newValue)}
+                  items={[
+                    {label: translateFn("selectEmployer") || "Select Employer", value: 0},
+                    ...companysInfo.map(employer => ({
+                      label: employer.name,
+                      value: employer.key,
+                      key: employer.key
+                    })),
+                    ...(isCreate ? [{label: translateFn("createNewEmployerTab") || "Create New Employer", value: 1}] : [])
+                  ]}
+                  placeholder={{}}
+                  style={{ inputIOS: styles.pickerInput }}
+                  useNativeAndroidPickerStyle={false}
+                />
+                {employerForm === 1 && <Navigate to={`/config/newEmployer/${pressedDate}`} />}
+
+              </View>
+            ) : (
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={employerForm}
+                  onValueChange={newValue => setEmployerForm(newValue)}
+                  style={styles.picker}
+                  accessibilityLabel={translateFn("selectEmployer")}
+                  mode='dropdown'
+                >
+                  {isCreate && <Picker.Item style={styles.pickerItem} label={translateFn("selectEmployer")} value={0} enabled={false} />}
+                  {companysInfo.map(employer =>
+                    <Picker.Item style={styles.pickerItem} label={employer.name} value={employer.key} key={employer.key} />
+                  )}
+                  {isCreate && <Picker.Item style={styles.pickerItem} label={translateFn("createNewEmployerTab")} value={1} />}
+                </Picker>
+                {employerForm === 1 && <Navigate to={`/config/newEmployer/${pressedDate}`} />}
+              </View>
+            )}
           </View>
 
           <TouchableOpacity
@@ -311,7 +335,7 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
 
           <DropDownAutoHeight
             title={translateFn("salary")!}
-            textRight={salaryForm && !salaryOpen ? `$ ${Math.floor(salaryForm * 100)/ 100}` : ""}
+            textRight={salaryForm && !salaryOpen ? `$ ${Math.floor(salaryForm * 100) / 100}` : ""}
             duration={300}
             maxHeight={200}
             arrowColor={configInfo.baseColor}
@@ -338,7 +362,7 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
                   />
                 </View>
 
-                <Text style={styles.textLine}>{translateFn("total")}: $ {Math.floor(salaryForm * 100)/ 100}</Text>
+                <Text style={styles.textLine}>{translateFn("total")}: $ {Math.floor(salaryForm * 100) / 100}</Text>
               </View>
 
               <View style={styles.line}>
@@ -351,7 +375,7 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
                     inputMode='numeric'
                     keyboardType='numeric'
                     onChangeText={(e) => setSalaryForm(parseInt(e || "0"))}
-                    value={(Math.floor(salaryForm * 100)/ 100).toString()}
+                    value={(Math.floor(salaryForm * 100) / 100).toString()}
                     placeholder="0"
                     placeholderTextColor={theme.colors.grisMedio}
                   />
@@ -377,7 +401,7 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
           />
         </View>
 
-        <ModalDatePicker 
+        <ModalDatePicker
           entry={shiftEntryForm} setEntry={setShiftEntryForm}
           exit={shiftExitForm} setExit={setShiftExitForm}
           entryBreak={shiftBreakEntryForm} setEntryBreak={setShiftBreakEntryForm}
@@ -385,7 +409,7 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
           modalOpen={modalOpen} setModalOpen={setModalOpen}
           timeType={timeType} setTimeType={setTimeType}
           pressedDate={pressedDate}
-        />        
+        />
 
         {missing &&
           <Text style={styles.textAlert}>{missing}</Text>
@@ -402,8 +426,8 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
             <Text style={styles.textoBoton}>{isCreate ? translateFn("createNewShift") : translateFn("saveChanges")}</Text>
           </Button>
         </TouchableOpacity>
-         
-        <View style={{height: 20}}/>
+
+        <View style={{ height: 20 }} />
       </ScrollView>
     </View>
   )
@@ -534,6 +558,17 @@ const styles = StyleSheet.create({
     height: 20,
     justifyContent: "center",
   },
+  pickerContainerIos: {
+    height: 20,
+    justifyContent: "center",
+    shadowOffset: { width: 2, height: 2 },
+    shadowColor: theme.colors.negro,
+    shadowOpacity: 0.6,
+    shadowRadius: 2,
+    elevation: 4,
+    borderColor: theme.colors.grisClaro,
+    borderWidth: Platform.OS === "android" ? 1 : 0
+  },
   picker: {
     marginLeft: 0,
     transform: [{ translateX: 18 }]
@@ -541,6 +576,17 @@ const styles = StyleSheet.create({
   pickerItem: {
     fontSize: 18,
     color: "black"
+  },
+  pickerInput: {
+    fontSize: theme.fontSizes.F20,
+    backgroundColor: theme.colors.grisClaro,
+    height: 28,
+    minWidth: 116,
+    maxWidth: 300,
+    color: 'black',
+    textAlign: 'center',
+    textDecorationColor: "black",
+    borderRadius: 12,
   },
   textoBoton: {
     fontSize: theme.fontSizes.F18,

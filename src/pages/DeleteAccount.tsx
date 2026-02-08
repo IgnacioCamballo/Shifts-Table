@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
   },
   eye: {
     position: "absolute",
-    top: 36,
+    top: 32,
     right: 12,
     zIndex: 1
   },

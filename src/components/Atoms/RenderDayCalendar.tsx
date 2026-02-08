@@ -19,7 +19,7 @@ type RenderDayCalendarProps = {
 }
 
 let screenWidth = Dimensions.get("window").width
-const containerWidth = (screenWidth - 20)/7
+const containerWidth = (screenWidth - 22)/7
 
 export default function RenderDayCalendar({item, currentDay, pressedDate, nav, onPress}: RenderDayCalendarProps) {
   const {shifts, companysInfo, userInfo} = useCalendar()

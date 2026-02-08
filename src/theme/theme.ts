@@ -1,4 +1,4 @@
-import { Dimensions } from "react-native"
+import { Dimensions, Platform } from "react-native"
 
 const theme = {
     colors: {
@@ -31,14 +31,14 @@ const theme = {
     heigth: {
         publicidad: 80,
         screenHeight: Dimensions.get("screen").height,
-        daysContainer: 315,
-        daysContainerPremium: 245,
+        daysContainer: Platform.OS === 'ios' ? 234 : 315,
+        daysContainerPremium: Platform.OS === 'ios' ? 170 : 245,
         shiftScrollView: 300,
-        shiftScrollViewPremium: 270,
-        monthDetailScrollView: 440,
-        monthDetailScrollViewPremium: 370,
+        shiftScrollViewPremium: Platform.OS === 'ios' ? 200 : 270,
+        monthDetailScrollView: Platform.OS === 'ios' ? 340 : 440,
+        monthDetailScrollViewPremium: Platform.OS === 'ios' ? 280 : 370,
         shiftNewEditScrollView: 230,
-        noFooterNoHeader: 150
+        noFooterNoHeader: Platform.OS === 'ios' ? 90 : 150
     },
     banners: {
         // calendar: "ca-app-pub-4926030013898312/2502969552",
