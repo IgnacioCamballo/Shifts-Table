@@ -123,7 +123,7 @@ export default function ConfigSettings() {
               exit: null
             })
             setLastBackup(null)
-            navigate("/")
+            navigate(`/account/${lenguage}`)
           },
           style: 'cancel'
         },

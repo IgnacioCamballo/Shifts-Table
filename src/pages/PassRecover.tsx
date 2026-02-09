@@ -46,6 +46,7 @@ export default function PassRecover() {
       console.log(error.message)
       if (error.message.toString() === "404") {
         setInvalidUser(true)
+        setLoader(false)
       }
     },
     onSuccess: (data) => {
@@ -78,7 +79,8 @@ export default function PassRecover() {
       setError(false)
       setInvalidUser(false)
       setLoader(true)
-      const formData = { mail, lenguage }
+      const lowerCaseMail = mail.toLowerCase()
+      const formData = { mail: lowerCaseMail, lenguage }
       mutate(formData)
     }
   }
@@ -90,7 +92,8 @@ export default function PassRecover() {
       setError(false)
       setInvalidCode(false)
       const {mutate} = changePassQuery
-      const formData = { mail, code, tokenId, newPass }
+      const lowerCaseMail = mail.toLowerCase()
+      const formData = { mail: lowerCaseMail, code, tokenId, newPass }
       mutate(formData)
       setLoader(true)
     }
@@ -130,7 +133,7 @@ export default function PassRecover() {
                   style={styles.input}
                   onChangeText={setMail}
                   value={mail}
-                  maxLength={25}
+                  maxLength={60}
                   placeholder={translateFn("placeholderMail")}
                   placeholderTextColor={theme.colors.grisMedio}
                 />
