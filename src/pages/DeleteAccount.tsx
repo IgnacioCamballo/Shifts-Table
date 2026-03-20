@@ -149,7 +149,7 @@ export default function DeleteAccount() {
                   style={styles.input}
                   onChangeText={setMail}
                   value={mail}
-                  maxLength={25}
+                  maxLength={50}
                   placeholder={translateFn("placeholderMail")}
                   placeholderTextColor={theme.colors.grisMedio}
                 />

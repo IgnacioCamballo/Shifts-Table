@@ -39,7 +39,7 @@ export default function LayoutHeader() {
 
 const styles = StyleSheet.create({
   container: {
-    height: 88,
+    height: Platform.OS === "ios" ? 88 : 36,
     paddingTop: Platform.OS === "ios" ? 52 : 0,
     paddingBottom: 10,
     alignItems: "center",

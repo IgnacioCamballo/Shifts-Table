@@ -133,7 +133,7 @@ export default function PassRecover() {
                   style={styles.input}
                   onChangeText={setMail}
                   value={mail}
-                  maxLength={60}
+                  maxLength={50}
                   placeholder={translateFn("placeholderMail")}
                   placeholderTextColor={theme.colors.grisMedio}
                 />
@@ -169,7 +169,7 @@ export default function PassRecover() {
                   secureTextEntry={!showPass}
                   onChangeText={setNewPass}
                   value={newPass}
-                  maxLength={25}
+                  maxLength={30}
                   placeholder={translateFn("password")}
                   placeholderTextColor={theme.colors.grisMedio}
                   pointerEvents='none'

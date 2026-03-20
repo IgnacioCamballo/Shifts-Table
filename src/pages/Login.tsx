@@ -132,7 +132,7 @@ export default function Login() {
           style={styles.input}
           onChangeText={value => setMail(value.toLowerCase())}
           value={mail}
-          maxLength={25}
+          maxLength={50}
           placeholder={translateFn("placeholderMail")}
           placeholderTextColor={theme.colors.grisMedio}
         />
@@ -149,7 +149,7 @@ export default function Login() {
           secureTextEntry={!showPass}
           onChangeText={setPassword}
           value={password}
-          maxLength={25}
+          maxLength={30}
           placeholder={translateFn("password")}
           placeholderTextColor={theme.colors.grisMedio}
         />
