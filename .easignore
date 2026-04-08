@@ -1,0 +1,38 @@
+# EAS upload ignore list
+# Note: we intentionally DO NOT ignore android/ or ios/ so cloud builds receive gradlew and native projects.
+
+# dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+.idea/
+.env
+
+# Native secrets/artifacts
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+.env*.local
+
+# typescript
+*.tsbuildinfo

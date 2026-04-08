@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, View } from 'react-native'
+import { Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, View, Platform } from 'react-native'
 import { useNavigate, useParams } from 'react-router-native'
 import { useMutation } from '@tanstack/react-query'
 import Icon from 'react-native-vector-icons/Feather'
@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
   },
   eye: {
     position: "absolute",
-    top: 32,
+    top: Platform.OS === 'ios' ? 32 : 36,
     right: 12,
     zIndex: 1
   },

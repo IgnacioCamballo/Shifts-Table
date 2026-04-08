@@ -1,4 +1,3 @@
-const appJsonConfig = require('./app.json');
 const { withDangerousMod } = require('@expo/config-plugins');
 
 // Plugin personalizado para configurar Podfile con static frameworks
@@ -37,7 +36,7 @@ function withCustomPodfile(config) {
 
 module.exports = ({ config }) => {
   // Aplicar el plugin personalizado
-  config = withCustomPodfile(appJsonConfig.expo);
+  config = withCustomPodfile(config);
   
   return config;
 };

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Text, View, StyleSheet, ScrollView } from 'react-native'
+import { Text, View, StyleSheet, ScrollView, Platform } from 'react-native'
 import { TextInput, TouchableOpacity } from 'react-native-gesture-handler'
 import { useMutation } from '@tanstack/react-query'
 import { useNavigate, useParams } from 'react-router-native'
@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
   },
   eye: {
     position: "absolute",
-    bottom: 12,
+    bottom: Platform.OS === "ios" ? 10 : 12,
     right: 12,
     zIndex: 1
   },
