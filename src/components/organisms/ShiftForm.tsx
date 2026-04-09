@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react'
 import { StyleSheet, Text, TextInput, TouchableOpacity, View, ScrollView, Animated, Dimensions, Platform } from 'react-native'
 import { Link, Navigate } from 'react-router-native'
 import { Picker } from '@react-native-picker/picker'
-import RNPickerSelect from 'react-native-picker-select'
 
 import useCalendar from '@/hooks/useCalendar'
 import { ShiftProps } from '@/types'
@@ -14,6 +13,7 @@ import Slider from '@/components/Atoms/Slider'
 import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
 import Button from '@/components/Atoms/Buttons/Button'
 import DropDownAutoHeight from '@/components/Molecules/DropDownAutoHeight'
+import IosPickerModal from '@/components/Molecules/IosPickerModal'
 import ModalDatePicker from '@/components/Molecules/ModalDatePicker'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
@@ -225,9 +225,9 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
 
             {Platform.OS === 'ios' ? (
               <View style={styles.pickerContainerIos}>
-                <RNPickerSelect
+                <IosPickerModal
                   value={employerForm}
-                  onValueChange={newValue => setEmployerForm(newValue)}
+                  onValueChange={newValue => setEmployerForm(Number(newValue))}
                   items={[
                     {label: translateFn("selectEmployer") || "Select Employer", value: 0},
                     ...companysInfo.map(employer => ({
@@ -237,9 +237,9 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
                     })),
                     ...(isCreate ? [{label: translateFn("createNewEmployerTab") || "Create New Employer", value: 1}] : [])
                   ]}
-                  placeholder={{}}
-                  style={{ inputIOS: styles.pickerInput }}
-                  useNativeAndroidPickerStyle={false}
+                  inputStyle={styles.pickerInput}
+                  placeholderLabel={translateFn("selectEmployer") || "Select Employer"}
+                  modalTitle={translateFn("employer") || "Employer"}
                 />
                 {employerForm === 1 && <Navigate to={`/config/newEmployer/${pressedDate}`} />}
 

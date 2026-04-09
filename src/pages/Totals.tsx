@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { Text, View, StyleSheet, Platform } from 'react-native'
 import { Link, useParams } from 'react-router-native'
 import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads'
-import RNPickerSelect from 'react-native-picker-select'
 import { Picker } from '@react-native-picker/picker'
 
 import useCalendar from '@/hooks/useCalendar'
@@ -10,6 +9,7 @@ import { firstLetterUpper, formattedMinutesNumber, translate } from '@/utils'
 import theme from '@/theme/theme'
 
 import SwiftArrows from '@/components/Molecules/SwiftArrows'
+import IosPickerModal from '@/components/Molecules/IosPickerModal'
 import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
 
 export default function Totals() {
@@ -126,9 +126,9 @@ export default function Totals() {
 
           {Platform.OS === 'ios' ? (
             <View style={styles.pickerContainerIos}>
-              <RNPickerSelect
+              <IosPickerModal
                 value={employer}
-                onValueChange={value => setEmployer(value)}
+                onValueChange={value => setEmployer(Number(value))}
                 items={[
                   { label: translateFn("all") || "All", value: 0 },
                   ...employersList.map(employer => ({
@@ -137,9 +137,8 @@ export default function Totals() {
                     key: employer
                   }))
                 ]}
-                placeholder={{}}
-                style={{ inputIOS: styles.pickerInput }}
-                useNativeAndroidPickerStyle={false}
+                inputStyle={styles.pickerInput}
+                modalTitle={translateFn("employer") || "Employer"}
               />
             </View>
           ) : (

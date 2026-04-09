@@ -5,7 +5,6 @@ import * as Sharing from "expo-sharing"
 import * as FileSystem from "expo-file-system";
 import { useParams } from 'react-router-native'
 import { Picker } from '@react-native-picker/picker'
-import RNPickerSelect from 'react-native-picker-select'
 import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads'
 import Icon from 'react-native-vector-icons/AntDesign'
 import IconMenu from 'react-native-vector-icons/Feather'
@@ -16,6 +15,7 @@ import { firstLetterUpper, formattedMinutes, textDay, translate } from '@/utils'
 import { exportPDF } from '@/utils/shiftsExports'
 
 import SwiftArrows from '@/components/Molecules/SwiftArrows'
+import IosPickerModal from '@/components/Molecules/IosPickerModal'
 import TransparentButton from '@/components/Atoms/Buttons/ButtonTransparent'
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -206,9 +206,9 @@ export default function MonthDetail() {
 
           {Platform.OS === 'ios' ? (
             <View style={styles.pickerContainerIos}>
-              <RNPickerSelect
+              <IosPickerModal
                 value={employer}
-                onValueChange={value => setEmployer(value)}
+                onValueChange={value => setEmployer(Number(value))}
                 items={[
                   { label: translateFn("all") || "All", value: 0 },
                   ...employersList.map(employer => ({
@@ -217,9 +217,8 @@ export default function MonthDetail() {
                     key: employer
                   }))
                 ]}
-                placeholder={{}}
-                style={{ inputIOS: styles.pickerInput }}
-                useNativeAndroidPickerStyle={false}
+                inputStyle={styles.pickerInput}
+                modalTitle={translateFn("employer") || "Employer"}
               />
             </View>
           ) : (

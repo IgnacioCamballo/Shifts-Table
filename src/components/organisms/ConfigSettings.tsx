@@ -4,7 +4,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-native'
 import { Picker } from '@react-native-picker/picker'
-import RNPickerSelect from 'react-native-picker-select'
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import useCalendar from '@/hooks/useCalendar'
@@ -13,6 +12,7 @@ import theme from '@/theme/theme'
 import { saveUserInfo } from '@/api/UserInfoAPI'
 
 import DropDownAutoHeight from '@/components/Molecules/DropDownAutoHeight'
+import IosPickerModal from '@/components/Molecules/IosPickerModal'
 import ModalColorPicker from '@/components/Molecules/ModalColorPicker'
 import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
 import Spinner from '@/components/Atoms/Spinner'
@@ -171,17 +171,16 @@ export default function ConfigSettings() {
 
         {Platform.OS === 'ios' ? (
           <View style={styles.pickerContainerIos}>
-            <RNPickerSelect
+            <IosPickerModal
               value={lenguage}
-              onValueChange={value => setLenguage(value)}
+              onValueChange={value => setLenguage(String(value))}
               items={[
                 { label: 'English', value: 'en' },
                 { label: 'Español', value: 'es' },
                 { label: 'Portugues', value: 'pt' }
               ]}
-              placeholder={{}}
-              style={{ inputIOS: styles.pickerInput }}
-              useNativeAndroidPickerStyle={false}
+              inputStyle={styles.pickerInput}
+              modalTitle={translateFn("lenguage") || "Language"}
             />
           </View>
         ) : (

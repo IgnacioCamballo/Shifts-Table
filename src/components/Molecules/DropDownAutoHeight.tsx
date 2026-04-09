@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { JSX, useEffect, useRef } from 'react'
 import { Text, Animated, TouchableOpacity, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
 
@@ -23,15 +23,18 @@ export default function DropDownAutoHeight({ isOpen, setIsOpen, children, textRi
 
   //manage the break animations
   const value = useRef(new Animated.Value(isOpen ? 1 : 0)).current
+
+  // Keep animated value in sync even when isOpen changes from outside this component.
+  useEffect(() => {
+    Animated.timing(value, {
+      toValue: isOpen ? 1 : 0,
+      duration,
+      useNativeDriver: false,
+    }).start()
+  }, [duration, isOpen, value])
+
   const handlePress = () => {
-    Animated.parallel([
-      Animated.timing(value, {
-        toValue: isOpen ? 0 : 1,
-        duration: duration,
-        useNativeDriver: false,
-      })
-    ]).start();
-    setIsOpen(!isOpen);
+    setIsOpen(prev => !prev)
   }
   const heightChange = {
     maxHeight: value.interpolate({
@@ -54,7 +57,7 @@ export default function DropDownAutoHeight({ isOpen, setIsOpen, children, textRi
       <TouchableOpacity
         activeOpacity={0.8}
         style={[styles.lineCenter, titleContainerStyle]}
-        onPress={() => handlePress()}
+        onPress={handlePress}
       >
         <Animated.View style={[styles.arrowCont, rotateArrow]}>
           <Icon
@@ -104,11 +107,12 @@ const styles = StyleSheet.create({
     overflow: "hidden"
   },
   arrowCont: {
-    position: "relative",
+    width: 20,
+    height: 20,
+    alignItems: "center",
+    justifyContent: "center"
   },
   arrow: {
-    position: "absolute",
-    left: -10,
-    top: -10
+    lineHeight: 20
   }
 })

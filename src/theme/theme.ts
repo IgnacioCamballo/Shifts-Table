@@ -41,18 +41,18 @@ const theme = {
         noFooterNoHeader: Platform.OS === 'ios' ? 90 : 150
     },
     banners: {
-        // calendar: "ca-app-pub-4926030013898312/2502969552",
-        // detail: "ca-app-pub-4926030013898312/4565563096",
-        // shifts: "ca-app-pub-4926030013898312/8504808104",
-        // totals: "ca-app-pub-4926030013898312/7191726433",
-        // intersticial: "ca-app-pub-4926030013898312/8353147676"
+        calendar: "ca-app-pub-4926030013898312/2502969552",
+        detail: "ca-app-pub-4926030013898312/4565563096",
+        shifts: "ca-app-pub-4926030013898312/8504808104",
+        totals: "ca-app-pub-4926030013898312/7191726433",
+        intersticial: "ca-app-pub-4926030013898312/8353147676"
 
         // the bottom ones are test ads
-        calendar: "ca-app-pub-3940256099942544/9214589741",
-        detail: "ca-app-pub-3940256099942544/9214589741",
-        shifts: "ca-app-pub-3940256099942544/9214589741",
-        totals: "ca-app-pub-3940256099942544/9214589741",
-        intersticial: "ca-app-pub-3940256099942544/1033173712"
+        // calendar: "ca-app-pub-3940256099942544/9214589741",
+        // detail: "ca-app-pub-3940256099942544/9214589741",
+        // shifts: "ca-app-pub-3940256099942544/9214589741",
+        // totals: "ca-app-pub-3940256099942544/9214589741",
+        // intersticial: "ca-app-pub-3940256099942544/1033173712"
     }
 }
 
