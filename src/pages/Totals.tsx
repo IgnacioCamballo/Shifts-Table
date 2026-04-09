@@ -12,7 +12,7 @@ import SwiftArrows from '@/components/Molecules/SwiftArrows'
 import IosPickerModal from '@/components/Molecules/IosPickerModal'
 import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
 
-export default function Totals() {
+export default function Totals() { 
   const param = useParams()
   const currentMonth = param.month ? new Date(param.month) : new Date()
 
