@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-native";
 import { translate } from "@/utils";
 
 interface props {
-  children: JSX.Element | JSX.Element[]
+  children: React.ReactNode
 }
 
 const CalendarContext = createContext<CalendarContextProps>({} as CalendarContextProps)
