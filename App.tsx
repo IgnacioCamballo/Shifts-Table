@@ -19,6 +19,7 @@ const queryClient = new QueryClient()
 //function created to be able to use context variable
 function InsideApp() {
   const { configInfo } = useCalendar()
+
   return (
     <>
       <StatusBar backgroundColor={configInfo.baseColor} />

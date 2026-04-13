@@ -227,6 +227,7 @@ export default function MonthDetail() {
                 selectedValue={employer}
                 onValueChange={newValue => setEmployer(newValue)}
                 style={styles.picker}
+                dropdownIconColor={theme.colors.gris}
                 accessibilityLabel={translateFn("selectEmployer")}
                 mode='dropdown'
               >
@@ -413,7 +414,8 @@ const styles = StyleSheet.create({
   },
   pickerItem: {
     fontSize: 18,
-    color: "black"
+    color: "black",
+    textAlign: 'center'
   },
   pickerInput: {
     fontSize: theme.fontSizes.F20,

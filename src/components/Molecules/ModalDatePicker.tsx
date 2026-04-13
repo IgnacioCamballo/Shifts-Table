@@ -25,7 +25,7 @@ type modalDatePickerPorps = {
 }
 
 export default function ModalDatePicker(modalDatePickerPorps: modalDatePickerPorps) {
-  const { lenguage } = useCalendar()
+  const { lenguage = 'en' } = useCalendar() || {}
   const {
     timeType, setTimeType,
     entry, setEntry,
@@ -58,9 +58,15 @@ export default function ModalDatePicker(modalDatePickerPorps: modalDatePickerPor
       case "descansoEntrada":
         setDate(entryBreak || pressedDate)
         setShowDelete(entryBreak ? true : false)
+        break
       case "descansoSalida":
         setDate(exitBreak || (entryBreak || pressedDate))
         setShowDelete(exitBreak ? true : false)
+        break
+      default:
+        setDate(pressedDate)
+        setShowDelete(false)
+        break
     }
   }
 
@@ -71,6 +77,7 @@ export default function ModalDatePicker(modalDatePickerPorps: modalDatePickerPor
       case "salida": return translateFn("exitHour")
       case "descansoEntrada": return translateFn("breakStart")
       case "descansoSalida": return translateFn("breakEnd")
+      default: return translateFn("entryHour")
     }
   }
 
@@ -103,6 +110,7 @@ export default function ModalDatePicker(modalDatePickerPorps: modalDatePickerPor
       case "salida": return "datetime"
       case "descansoEntrada": return exit && exit.getDate() === pressedDate.getDate() ? "time" : "datetime"
       case "descansoSalida": return exit && exit.getDate() === pressedDate.getDate() ? "time" : "datetime"
+      default: return "time"
     }
   }
 
@@ -112,6 +120,7 @@ export default function ModalDatePicker(modalDatePickerPorps: modalDatePickerPor
       case "salida": return entry || pressedDate
       case "descansoEntrada": return entry || entryBreak || pressedDate
       case "descansoSalida": return entryBreak || (entry || pressedDate)
+      default: return undefined
     }
   }
 
@@ -122,6 +131,7 @@ export default function ModalDatePicker(modalDatePickerPorps: modalDatePickerPor
       case "salida": return new Date(pressedDate.getFullYear(), pressedDate.getMonth(), pressedDate.getDate() + 2, 23, 59)
       case "descansoEntrada": return exit || undefined
       case "descansoSalida": return exit || new Date(pressedDate.getFullYear(), pressedDate.getMonth(), pressedDate.getDate() + 2, 23, 59)
+      default: return undefined
     }
   }
 
@@ -173,7 +183,7 @@ export default function ModalDatePicker(modalDatePickerPorps: modalDatePickerPor
             minimumDate={minDate()}
             maximumDate={maxDate()}
             locale={lenguage}
-            date={date!}
+            date={date || pressedDate}
             onDateChange={setDate}
             dividerColor={theme.colors.verdeBase}
             is24hourSource={timeType === "descanso" ? "locale" : "device"}
