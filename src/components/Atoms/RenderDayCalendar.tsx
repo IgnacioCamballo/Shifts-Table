@@ -26,7 +26,7 @@ export default function RenderDayCalendar({item, currentDay, pressedDate, nav, o
 
   //gets variable heigth for the screen without statusbar
   const insets = useSafeAreaInsets()
-  const dayContainerHeight = (theme.heigth.screenHeight - insets.top - insets.bottom - (userInfo.premium ? theme.heigth.daysContainerPremium : theme.heigth.daysContainer)) / 6
+  const dayContainerHeight = (theme.heigth.screenHeight - insets.top - Math.max(insets.bottom, theme.heigth.bottomSystemBar) - (userInfo.premium ? theme.heigth.daysContainerPremium : theme.heigth.daysContainer)) / 6
 
   const {day, key, isCurrentDay, shadowed} = item
 

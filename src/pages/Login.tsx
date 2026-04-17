@@ -26,7 +26,7 @@ export default function Login() {
 
   //gets variable heigth for the screen without statusbar
   const insets = useSafeAreaInsets()
-  const noFooterNoHeaderHeight = theme.heigth.screenHeight - insets.top - insets.bottom - theme.heigth.noFooterNoHeader
+  const noFooterNoHeaderHeight = theme.heigth.screenHeight - insets.top - Math.max(insets.bottom, theme.heigth.bottomSystemBar) - theme.heigth.noFooterNoHeader
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text: string) {
@@ -145,7 +145,7 @@ export default function Login() {
         <Text style={styles.text}>{translateFn("password")}</Text>
 
         <TextInput
-          style={[styles.input, { zIndex: 0 }]}
+          style={[styles.input, styles.passwordInput, { zIndex: 0 }]}
           secureTextEntry={!showPass}
           onChangeText={setPassword}
           value={password}
@@ -220,6 +220,10 @@ const styles = StyleSheet.create({
     fontSize: theme.fontSizes.F18,
     paddingHorizontal: 16,
     paddingVertical: 4,
+  },
+  passwordInput: {
+    backgroundColor: theme.colors.blanco,
+    color: theme.colors.negro,
   },
   lowerText: {
     marginLeft: 4,

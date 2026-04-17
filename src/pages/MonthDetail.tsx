@@ -30,8 +30,8 @@ export default function MonthDetail() {
 
   //gets variable heigth for the screen without statusbar
   const insets = useSafeAreaInsets()
-  const monthDetailHeight = theme.heigth.screenHeight - insets.top - insets.bottom - (userInfo.premium ? theme.heigth.monthDetailScrollViewPremium : theme.heigth.monthDetailScrollView)
-  const noFooterNoHeaderHeight = theme.heigth.screenHeight - insets.top - insets.bottom - theme.heigth.noFooterNoHeader
+  const monthDetailHeight = theme.heigth.screenHeight - insets.top - Math.max(insets.bottom, theme.heigth.bottomSystemBar) - (userInfo.premium ? theme.heigth.monthDetailScrollViewPremium : theme.heigth.monthDetailScrollView)
+  const noFooterNoHeaderHeight = theme.heigth.screenHeight - insets.top - Math.max(insets.bottom, theme.heigth.bottomSystemBar) - theme.heigth.noFooterNoHeader
 
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions

@@ -18,7 +18,7 @@ export default function PremiumPurchase() {
 
   //gets variable heigth for the screen without statusbar
   const insets = useSafeAreaInsets()
-  const noFooterNoHeaderHeight = theme.heigth.screenHeight - insets.top - insets.bottom - theme.heigth.noFooterNoHeader
+  const noFooterNoHeaderHeight = theme.heigth.screenHeight - insets.top - Math.max(insets.bottom, theme.heigth.bottomSystemBar) - theme.heigth.noFooterNoHeader
 
   const { initPaymentSheet, presentPaymentSheet } = useStripe()
   //test STRIPE_KEY

@@ -365,7 +365,8 @@ const styles = StyleSheet.create({
     marginTop: 4,
     borderColor: theme.colors.grisMedio,
     borderWidth: 1,
-    borderRadius: 4
+    borderRadius: 4,
+    overflow: "hidden"
   },
   pickerContainerIos: {
     height: 48,
@@ -380,12 +381,13 @@ const styles = StyleSheet.create({
   },
   picker: {
     width: "auto",
-    minWidth: 200
+    minWidth: 200,
+    backgroundColor: "white"
   },
   pickerItem: {
     textAlign: "center",
     fontSize: 20,
-    color: "black"
+    backgroundColor: "white"
   },
   pickerInput: {
     fontSize: theme.fontSizes.F20,

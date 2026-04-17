@@ -640,6 +640,11 @@
     {"lenguage": "en", "text": "Invalid code"},
     {"lenguage": "pt", "text": "Código inválido"}
   ],
+  "expiredCode": [
+    {"lenguage": "es", "text": "Código expirado"},
+    {"lenguage": "en", "text": "Expired code"},
+    {"lenguage": "pt", "text": "Código expirado"}
+  ],
   "premiumEndsMessage": [
     {"lenguage": "es", "text": "Tu año de membresía premium a llegado a su fin y estamos muy agradecidos de que hayas confiado en nosotros, deseas renovar tu suscripción y seguir disfrutando de los beneficios de la membresía premium?"},
     {"lenguage": "en", "text": "Your year of premium membership has come to an end and we are very grateful that you have trusted us, do you want to renew your subscription and continue enjoying the benefits of premium membership?"},

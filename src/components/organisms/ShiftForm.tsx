@@ -31,7 +31,7 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
 
   //gets variable heigth for the screen without statusbar
   const insets = useSafeAreaInsets()
-  const newEditHeight = theme.heigth.screenHeight - insets.top - insets.bottom - theme.heigth.shiftNewEditScrollView
+  const newEditHeight = theme.heigth.screenHeight - insets.top - Math.max(insets.bottom, theme.heigth.bottomSystemBar) - theme.heigth.shiftNewEditScrollView
 
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
@@ -558,6 +558,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 20,
     justifyContent: "center",
+    overflow: "hidden"
   },
   pickerContainerIos: {
     height: 20,
@@ -572,12 +573,14 @@ const styles = StyleSheet.create({
   },
   picker: {
     marginLeft: 0,
-    transform: [{ translateX: 18 }]
+    transform: [{ translateX: 18 }],
+    backgroundColor: "white"
   },
   pickerItem: {
     fontSize: 18,
     color: "black",
-    textAlign: 'center'
+    textAlign: 'center',
+    backgroundColor: "white"
   },
   pickerInput: {
     fontSize: theme.fontSizes.F20,

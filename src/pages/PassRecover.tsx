@@ -14,6 +14,7 @@ import TransparentButton from '@/components/Atoms/Buttons/ButtonTransparent'
 import Spinner from '@/components/Atoms/Spinner'
 import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { set } from 'zod'
 
 export default function PassRecover() {
   const params = useParams()
@@ -22,7 +23,7 @@ export default function PassRecover() {
 
   //gets variable heigth for the screen without statusbar
   const insets = useSafeAreaInsets()
-  const noFooterNoHeaderHeight = theme.heigth.screenHeight - insets.top - insets.bottom - theme.heigth.noFooterNoHeader  
+  const noFooterNoHeaderHeight = theme.heigth.screenHeight - insets.top - Math.max(insets.bottom, theme.heigth.bottomSystemBar) - theme.heigth.noFooterNoHeader  
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text: string) {
@@ -38,6 +39,7 @@ export default function PassRecover() {
   const [error, setError] = useState(false)
   const [invalidUser, setInvalidUser] = useState(false)
   const [invalidCode, setInvalidCode] = useState(false)
+  const [expiredCode, setExpiredCode] = useState(false)
 
   const { mutate } = useMutation({
     mutationFn: createPassRecoveryToken,
@@ -61,6 +63,9 @@ export default function PassRecover() {
       mutationFn: changePassword,
       retry: 0,
       onError: (error) => {
+        if (error.message.toString() === "410") {
+          setExpiredCode(true)
+        }
         if (error.message.toString() === "401") {
           setInvalidCode(true)
         }
@@ -91,6 +96,7 @@ export default function PassRecover() {
     } else {
       setError(false)
       setInvalidCode(false)
+      setExpiredCode(false)
       const {mutate} = changePassQuery
       const lowerCaseMail = mail.toLowerCase()
       const formData = { mail: lowerCaseMail, code, tokenId, newPass }
@@ -158,14 +164,14 @@ export default function PassRecover() {
                   onChangeText={setCode}
                   value={code}
                   />
-                {error && (code === "" || code.length !== 6 || invalidCode) && <Text style={styles.error}>{translateFn("invalidCode")}</Text>}
+                {error && (code === "" || code.length !== 6 || invalidCode || expiredCode) && <Text style={styles.error}>{translateFn(expiredCode ? "expiredCode" : "invalidCode")}</Text>}
               </View>
 
               <View style={styles.inputContainer}>
                 <Text style={styles.text}>{translateFn("newPassword")}</Text>
 
                 <TextInput
-                  style={[styles.input, { zIndex: 0 }]}
+                  style={[styles.input, styles.passwordInput, { zIndex: 0 }]}
                   secureTextEntry={!showPass}
                   onChangeText={setNewPass}
                   value={newPass}
@@ -248,6 +254,10 @@ const styles = StyleSheet.create({
     fontSize: theme.fontSizes.F18,
     paddingHorizontal: 16,
     paddingVertical: 4,
+  },
+  passwordInput: {
+    backgroundColor: theme.colors.blanco,
+    color: theme.colors.negro,
   },
   error: {
     color: theme.colors.rojo,

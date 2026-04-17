@@ -246,15 +246,18 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 20,
     justifyContent: "center",
+    overflow: "hidden"
   },
   picker: {
     marginLeft: 0,
-    transform: [{ translateX: 18 }, { translateY: 4 }]
+    transform: [{ translateX: 18 }, { translateY: 0 }],
+    backgroundColor: "white"
   },
   pickerItem: {
     fontSize: 18,
     color: "black",
-    textAlign: 'center'
+    backgroundColor: "white",
+    textAlign: "center",
   },
   pickerInput: {
     fontSize: theme.fontSizes.F20,
