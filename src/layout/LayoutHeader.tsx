@@ -29,9 +29,11 @@ function NombreLayout () {
 
 export default function LayoutHeader() {
   const {configInfo} = useCalendar()
+  const { pathname } = useLocation()
+  const backgroundColor = pathname === "/" ? theme.colors.blanco : configInfo.baseColor
 
   return (
-    <View style={[styles.container, {backgroundColor: configInfo.baseColor}]}>
+    <View style={[styles.container, {backgroundColor}]}>
       <Text style={styles.text}>{NombreLayout()}</Text>
     </View>
   )

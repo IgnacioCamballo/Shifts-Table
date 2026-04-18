@@ -5,7 +5,7 @@ import "intl/locale-data/jsonp/en";
 import "intl/locale-data/jsonp/es";
 import React from 'react';
 import { StatusBar } from 'react-native';
-import { NativeRouter } from 'react-router-native';
+import { NativeRouter, useLocation } from 'react-router-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -19,10 +19,12 @@ const queryClient = new QueryClient()
 //function created to be able to use context variable
 function InsideApp() {
   const { configInfo } = useCalendar()
+  const { pathname } = useLocation()
+  const statusBarColor = pathname === "/" ? "#ffffff" : configInfo.baseColor
 
   return (
     <>
-      <StatusBar backgroundColor={configInfo.baseColor} />
+      <StatusBar backgroundColor={statusBarColor} />
       <Main />
     </>
   )

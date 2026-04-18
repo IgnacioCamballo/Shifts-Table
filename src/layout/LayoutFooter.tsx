@@ -12,10 +12,11 @@ import LogoConfig from '@/components/Atoms/Logos/LogoConfig';
 export default function LayoutFooter() {
   const { pathname } = useLocation()
   const { configInfo } = useCalendar()
+  const backgroundColor = pathname === "/" ? theme.colors.blanco : configInfo.baseColor
 
   return (
     <View style={styles.containerGrande}>
-      <View style={[styles.container, { backgroundColor: configInfo.baseColor }]}>
+      <View style={[styles.container, { backgroundColor }]}>
         {pathname.startsWith("/account") || pathname === "/" ? <></> : <>
           <LogoCalendar to='/calendar' pathName={pathname} />
           <LogoTotals to='/totals' pathName={pathname} />
