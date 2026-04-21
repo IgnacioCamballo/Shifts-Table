@@ -147,6 +147,7 @@ export default function Totals() {
                 selectedValue={employer}
                 onValueChange={newValue => setEmployer(newValue)}
                 style={styles.picker}
+                itemStyle={styles.pickerItem}
                 dropdownIconColor={theme.colors.gris}
                 accessibilityLabel={translateFn("selectEmployer")}
                 mode='dropdown'

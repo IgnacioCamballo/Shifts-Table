@@ -250,6 +250,7 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
                   selectedValue={employerForm}
                   onValueChange={newValue => setEmployerForm(newValue)}
                   style={styles.picker}
+                  itemStyle={styles.pickerItem}
                   dropdownIconColor={theme.colors.gris}
                   accessibilityLabel={translateFn("selectEmployer")}
                   mode='dropdown'

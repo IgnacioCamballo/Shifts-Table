@@ -227,6 +227,7 @@ export default function MonthDetail() {
                 selectedValue={employer}
                 onValueChange={newValue => setEmployer(newValue)}
                 style={styles.picker}
+                itemStyle={styles.pickerItem}
                 dropdownIconColor={theme.colors.gris}
                 accessibilityLabel={translateFn("selectEmployer")}
                 mode='dropdown'
@@ -394,8 +395,9 @@ const styles = StyleSheet.create({
   },
   pickerContainer: {
     flex: 1,
-    height: 20,
+    height: 24,
     justifyContent: "center",
+    overflow: "hidden"
   },
   pickerContainerIos: {
     height: 20,
@@ -410,12 +412,15 @@ const styles = StyleSheet.create({
   },
   picker: {
     marginLeft: 0,
-    transform: [{ translateX: 18 }, { translateY: 4 }]
+    transform: [{ translateX: 18 }, { translateY: 2 }],
+    backgroundColor: "white",
+    color: "black"
   },
   pickerItem: {
     fontSize: 18,
     color: "black",
-    textAlign: 'center'
+    textAlign: 'center',
+    backgroundColor: "white"
   },
   pickerInput: {
     fontSize: theme.fontSizes.F20,

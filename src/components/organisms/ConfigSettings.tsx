@@ -189,6 +189,7 @@ export default function ConfigSettings() {
               selectedValue={lenguage}
               onValueChange={newValue => setLenguage(newValue)}
               style={styles.picker}
+              itemStyle={styles.pickerItem}
               accessibilityLabel={translateFn("selectLenguage")}
               mode='dropdown'
             >
@@ -387,7 +388,8 @@ const styles = StyleSheet.create({
   pickerItem: {
     textAlign: "center",
     fontSize: 20,
-    backgroundColor: "white"
+    backgroundColor: "white",
+    color: "black"
   },
   pickerInput: {
     fontSize: theme.fontSizes.F20,

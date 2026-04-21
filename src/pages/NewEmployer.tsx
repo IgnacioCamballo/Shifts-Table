@@ -225,7 +225,8 @@ const styles = StyleSheet.create ({
     justifyContent: 'space-between',
     alignItems: "center",
     borderBottomWidth: 1,
-    borderColor: theme.colors.grisClaro
+    borderColor: theme.colors.grisClaro,
+    height: 68
   },
   textLine: {
     fontSize: theme.fontSizes.F20,
@@ -233,7 +234,8 @@ const styles = StyleSheet.create ({
     textAlign: "right"
   },
   row: {
-    flexDirection: "row"
+    flexDirection: "row",
+    alignItems: "center"
   },
   contColor: {
     flexDirection: "row",
