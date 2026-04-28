@@ -11,7 +11,7 @@
   "dependencies": {
     "@expo/metro-runtime": "~5.0.5",
     "@expo/vector-icons": "^14.1.0",
-    "@react-native-async-storage/async-storage": "^2.2.0",
+    "@react-native-async-storage/async-storage": "2.1.2",
     "@react-native-community/checkbox": "^0.5.17",
     "@react-native-firebase/app": "^24.0.0",
     "@react-native-firebase/crashlytics": "^24.0.0",
