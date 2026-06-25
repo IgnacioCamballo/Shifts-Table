@@ -17,6 +17,7 @@ export async function getUserInfo() {
     if(isAxiosError(error) && error.response) {
       throw new Error(error.response.data.error)
     }
+    throw error
   }  
 }
 

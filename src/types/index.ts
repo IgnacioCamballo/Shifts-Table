@@ -85,6 +85,7 @@ export type CalendarContextProps = {
     setShifts: React.Dispatch<React.SetStateAction<ShiftProps[]>>,
     setLenguage: React.Dispatch<React.SetStateAction<string>>,
     setLastShiftCreated: React.Dispatch<React.SetStateAction<Date>>,
-    setLastBackup: React.Dispatch<React.SetStateAction<Date | null | undefined>>
+    setLastBackup: React.Dispatch<React.SetStateAction<Date | null | undefined>>,
+    syncPremiumStatus: () => Promise<void>
 }
 

@@ -58,6 +58,7 @@
       [
         "@stripe/stripe-react-native",
         {
+          "merchantIdentifier": "merchant.com.shiftstable",
           "enableGooglePay": true
         }
       ]

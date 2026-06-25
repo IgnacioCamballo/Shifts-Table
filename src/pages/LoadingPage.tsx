@@ -11,7 +11,16 @@ import { useNavigate } from 'react-router-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 export default function LoadingPage() {
-  const {setCompanysInfo, setConfigInfo, setLenguage, setShifts, setUserInfo, setLastShiftCreated, setLastBackup} = useCalendar()
+  const {
+    setCompanysInfo, 
+    setConfigInfo, 
+    setLenguage, 
+    setShifts, 
+    setUserInfo, 
+    setLastShiftCreated, 
+    setLastBackup,
+    syncPremiumStatus
+  } = useCalendar()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const logoTranslateY = useRef(new Animated.Value(-theme.heigth.screenHeight * 0.35)).current
@@ -65,6 +74,7 @@ export default function LoadingPage() {
       const storagedData = await AsyncStorage.getItem("userData")
       //if there is data in the movil storage =>
       if(storagedData) {
+        const token = await AsyncStorage.getItem("userToken")
         const parsed = JSON.parse(storagedData)
         
         //Sets storaged CompanysInfo
@@ -125,6 +135,11 @@ export default function LoadingPage() {
           return (item)
         })
         setShifts(maped)
+
+        if(token) {
+          syncPremiumStatus()
+        }
+
         return "/calendar"
         //if there is not data in the movil storage => 
       } else {

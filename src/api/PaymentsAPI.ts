@@ -16,5 +16,8 @@ export async function createPaymentIntent(amount: number) {
     if(isAxiosError(error) && error.response) {
       throw new Error(error.response.data.error)
     }
+
+    // Network or unexpected errors should also fail the mutation.
+    throw error
   }
 }

@@ -5,7 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { CalendarContextProps, ConfigInfo, EmployerProps, ShiftProps, UserInfo } from "@/types"
 import theme from "@/theme/theme";
-import { saveUserInfo } from "@/api/UserInfoAPI";
+import { getUserInfo, saveUserInfo } from "@/api/UserInfoAPI";
 import { Alert } from "react-native";
 import { useNavigate } from "react-router-native";
 import { translate } from "@/utils";
@@ -49,6 +49,24 @@ const CalendarProvider = ({ children }: props) => {
   const [addsInitialized, setAddsInitialized] = useState(false)
   const [lastShiftCreated, setLastShiftCreated] = useState<Date>(new Date(new Date().getFullYear(), new Date().getMonth() - 1))
   const [lastBackup, setLastBackup] = useState<Date | null>()
+
+  const syncPremiumStatus = async () => {
+    try {
+      const data = await getUserInfo()
+
+      if(!data || typeof data.premiumEnds === 'undefined') return
+
+      const isPremium = data.premiumEnds !== null && data.premiumEnds > Date.now()
+      setUserInfo(previous => ({
+        ...previous,
+        premium: isPremium,
+        lastBackUp: data.userInformation?.updatedAt || previous.lastBackUp
+      }))
+    } catch (error) {
+      // network or unexpected errors: skip silently
+      console.log(error)
+    }
+  }
 
   //Initializes adds
   const addsInit = async () => {
@@ -119,7 +137,8 @@ const CalendarProvider = ({ children }: props) => {
         setCompanysInfo,
         setShifts,
         setLenguage,
-        setLastShiftCreated
+        setLastShiftCreated,
+        syncPremiumStatus
       }}
     >
       {children}
