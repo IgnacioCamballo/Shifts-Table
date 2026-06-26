@@ -1,36 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  Dimensions
-} from 'react-native';
+import { View, Text, StyleSheet, Dimensions} from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { 
-  Easing, 
-  useAnimatedStyle, 
-  useSharedValue, 
-  withSequence, 
-  withTiming 
-} from 'react-native-reanimated';
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
 import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import useCalendar from '@/hooks/useCalendar';
 import theme from '@/theme/theme';
 import { firstLetterUpper, weekdays } from '@/utils';
 import SwiftArrows from '@/components/Molecules/SwiftArrows';
-import { DayProps } from '@/types';
+import { DayProps, RootStackParamList } from '@/types';
 import RenderDayCalendar from '@/components/Atoms/RenderDayCalendar';
 
 let screenWidth = Dimensions.get("window").width
 
 export default function Calendar() {
   const {lenguage, addsInitialized, userInfo} = useCalendar()
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
 
   const [currentDay, setCurrentDay] = useState(new Date());
   const [monthdays, setMonthDays] = useState<DayProps[]>([])
-  const [nav, setNav] = useState(false)
-  const [pressedDate, setPressedDate] = useState<Date>()
 
   const translationX = useSharedValue(0)
   const prevTranslationX = useSharedValue(0)
@@ -80,17 +70,20 @@ export default function Calendar() {
   const handleDayPress = (key: string) => {
     const selected = monthdays.find(arrayDay => arrayDay.key === key)
 
-    if (selected!.shadowed === false) {
-      const pressed = new Date(currentDay.getFullYear(), currentDay.getMonth(), selected?.day)
-      setPressedDate(pressed)
-    } else if (parseInt(selected!.key) < 0) {
-      const pressed = new Date(currentDay.getFullYear(), currentDay.getMonth()-1, selected?.day)
-      setPressedDate(pressed)
-    } else {
-      const pressed = new Date(currentDay.getFullYear(), currentDay.getMonth()+1, selected?.day)
-      setPressedDate(pressed)
+    function getDate() {
+      if (selected!.shadowed === false) {
+        const pressed = new Date(currentDay.getFullYear(), currentDay.getMonth(), selected?.day)
+        return pressed
+      } else if (parseInt(selected!.key) < 0) {
+        const pressed = new Date(currentDay.getFullYear(), currentDay.getMonth()-1, selected?.day)
+        return pressed
+      } else {
+        const pressed = new Date(currentDay.getFullYear(), currentDay.getMonth()+1, selected?.day)
+        return pressed
+      }
     }
-    setNav(true)
+    const date = getDate()
+    navigation.navigate("Shifts", { date: date.toISOString() })
   };
 
   //change to previous month with animation
@@ -169,9 +162,7 @@ export default function Calendar() {
               <RenderDayCalendar 
                 currentDay={currentDay} 
                 item={monthDay} 
-                nav={nav} 
                 onPress={handleDayPress} 
-                pressedDate={pressedDate!}
                 key={monthDay.key}
               />
             )}
@@ -197,7 +188,8 @@ export default function Calendar() {
 const styles = StyleSheet.create({
    container: {
     flex: 1,
-    padding: 10
+    padding: 10,
+    backgroundColor: '#ffffff'
   },
   textDayContainer: {
     height: 20,

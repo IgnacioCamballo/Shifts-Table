@@ -1,23 +1,25 @@
 import React, { useState } from 'react'
-import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import { useNavigate } from 'react-router-native'
+import { Alert, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { useMutation } from '@tanstack/react-query'
 import { isEmail } from 'validator'
 import IconArrow from 'react-native-vector-icons/AntDesign'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useNavigation } from '@react-navigation/native'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import useCalendar from '@/hooks/useCalendar'
 import theme from '@/theme/theme'
 import { translate } from '@/utils'
 import { createDeleteToken, deletePassword } from '@/api/UserAPI'
+import { RootStackParamList } from '@/types'
 
 import TransparentButton from '@/components/Atoms/Buttons/ButtonTransparent'
 import Spinner from '@/components/Atoms/Spinner'
 import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
 
 export default function DeleteAccount() {
-  const navigate = useNavigate()
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
   const { lenguage } = useCalendar()
 
   //gets variable heigth for the screen without statusbar
@@ -79,7 +81,7 @@ export default function DeleteAccount() {
               text: 'OK',
               onPress: async () => {             
                 await AsyncStorage.multiRemove(["userData", "userToken"])
-                navigate("/")
+                navigation.goBack()
               },
               style: 'cancel'
             },
@@ -129,7 +131,7 @@ export default function DeleteAccount() {
         </>
         :
         <>
-          <TransparentButton link={`/config`} style={styles.arrow}>
+          <TransparentButton onPress={() => navigation.goBack()} style={styles.arrow}>
             <IconArrow
               name="doubleleft"
               color={theme.colors.negro}
@@ -195,6 +197,8 @@ export default function DeleteAccount() {
 const styles = StyleSheet.create({
   container: {
     position: "relative",
+    backgroundColor: theme.colors.blanco,
+    paddingTop: Platform.OS === "ios" ? 60 : 0,
   },
   contentContainer: {
     alignItems: "center",

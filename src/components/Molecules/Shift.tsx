@@ -1,9 +1,11 @@
 import React from 'react'
 import { View, Text, StyleSheet, Alert } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import useCalendar from '@/hooks/useCalendar'
 import theme from '@/theme/theme'
-import { ShiftProps } from '@/types'
+import { RootStackParamList, ShiftProps } from '@/types'
 import { firstLetterUpper, formattedMinutes, formattedMinutesNumber, textDay, translate } from '@/utils'
 
 import Slider from '@/components/Atoms/Slider'
@@ -11,6 +13,7 @@ import EditDeletButtons from '@/components/Molecules/EditDeletButtons'
 
 export default function Shift({shift}: {shift: ShiftProps}) {
   const {shifts, companysInfo, setShifts, lenguage} = useCalendar()
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text:string){
@@ -102,7 +105,7 @@ export default function Shift({shift}: {shift: ShiftProps}) {
 
         <EditDeletButtons 
           DeleteAlert={showAlert} 
-          link={`/calendar/shifts/${new Date(shiftEntry.getFullYear(), shiftEntry.getMonth(), shiftEntry.getDate())}/editShift/${key}`}
+          onPressEdit={() => navigation.navigate("EditShift", { date: `${new Date(shiftEntry.getFullYear(), shiftEntry.getMonth(), shiftEntry.getDate())}`, shift: key })}
         />
       </View>
     </View>

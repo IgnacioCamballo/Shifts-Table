@@ -11,24 +11,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { CalendarProvider } from './src/context/CalendarProvider';
-import useCalendar from './src/hooks/useCalendar';
 import Main from './src/pages/Main';
 
 const queryClient = new QueryClient()
-
-//function created to be able to use context variable
-function InsideApp() {
-  const { configInfo } = useCalendar()
-  const { pathname } = useLocation()
-  const statusBarColor = pathname === "/" ? "#ffffff" : configInfo.baseColor
-
-  return (
-    <>
-      <StatusBar backgroundColor={statusBarColor} />
-      <Main />
-    </>
-  )
-}
 
 export default function App() {
   return (
@@ -37,7 +22,7 @@ export default function App() {
         <GestureHandlerRootView>
           <NativeRouter>
             <CalendarProvider>
-              <InsideApp />
+              <Main />
             </CalendarProvider>
           </NativeRouter>
         </GestureHandlerRootView>

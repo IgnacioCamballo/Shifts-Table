@@ -1,28 +1,29 @@
 import React, { useState } from 'react'
 import { Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, View, Platform } from 'react-native'
-import { useNavigate, useParams } from 'react-router-native'
 import { useMutation } from '@tanstack/react-query'
 import Icon from 'react-native-vector-icons/Feather'
 import IconArrow from 'react-native-vector-icons/AntDesign'
 import { isEmail } from 'validator'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useNavigation } from '@react-navigation/native'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import useCalendar from '@/hooks/useCalendar'
 import theme from '@/theme/theme'
 import { translate } from '@/utils'
 import { logIn } from '@/api/UserAPI'
+import { RootStackParamList, ShiftProps } from '@/types'
 
 import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
 import TransparentButton from '@/components/Atoms/Buttons/ButtonTransparent'
 import Spinner from '@/components/Atoms/Spinner'
-import { ShiftProps } from '@/types'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 export default function Login() {
   const {setCompanysInfo, setConfigInfo, setLenguage, setShifts, setUserInfo} = useCalendar()
-  const params = useParams()
-  const lenguage = params.lg!
-  const type = params.type!
-  const navigate = useNavigate()
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
+  const params = navigation.getState().routes[navigation.getState().index].params as {lg: string, type: string}
+  const lenguage = params.lg
+  const type = params.type
 
   //gets variable heigth for the screen without statusbar
   const insets = useSafeAreaInsets()
@@ -93,7 +94,17 @@ export default function Login() {
       }
       setConfigInfo(config)
 
-      navigate("/calendar")
+      if (type === "2" && !userInfo.premium) {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "PremiumPurchase" }]
+        })
+      } else {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Calendar" }]
+        })
+      }
     }
   })
 
@@ -115,7 +126,7 @@ export default function Login() {
       contentContainerStyle={[styles.contentContainer, {height: noFooterNoHeaderHeight}]} 
       style={[styles.container, {maxHeight: noFooterNoHeaderHeight}]}
     >
-      <TransparentButton link={type === "2" ? "/account/prePurchaseLogin" : `/account/${lenguage}`} style={styles.arrow}>
+      <TransparentButton onPress={() => navigation.goBack()} style={styles.arrow}>
         <IconArrow
           name="doubleleft"
           color={theme.colors.negro}
@@ -175,7 +186,7 @@ export default function Login() {
               <Text style={styles.textButton}>{translateFn("login")}</Text>
             </ButtonSmall>
           </TouchableOpacity>
-          <Text style={{marginTop: 12, color: theme.colors.gris}} onPress={() => navigate(`/account/${lenguage}/recoverPassword`)}>{translateFn("forgotPass")}</Text>
+          <Text style={{marginTop: 12, color: theme.colors.gris}} onPress={() => navigation.navigate("PassRecover", { lg: lenguage })}>{translateFn("forgotPass")}</Text>
         </>
       }
     </ScrollView>
@@ -185,11 +196,12 @@ export default function Login() {
 const styles = StyleSheet.create({
   container: {
     position: "relative",
+    backgroundColor: theme.colors.blanco
   },
   contentContainer: {
     alignItems: "center",
     justifyContent: "center",
-    marginTop: -60,
+    marginTop: Platform.OS === 'ios' ? 0 : -50,
     gap: 12
   },
   arrow: {

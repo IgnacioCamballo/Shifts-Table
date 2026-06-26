@@ -1,20 +1,22 @@
 import React from 'react'
-import { StyleSheet, View, StyleProp, ViewStyle } from 'react-native'
-import { Link } from 'react-router-native'
+import { StyleSheet, View, StyleProp, ViewStyle, TouchableOpacity } from 'react-native'
+
+import { RootStackParamList } from '@/types'
 
 type TransparentButtonProps = {
   children: React.ReactNode
-  link: string,
+  onPress: () => void,
   style?: StyleProp<ViewStyle>
 }
 
-export default function TransparentButton({children, link, style}: TransparentButtonProps) {
+export default function TransparentButton({children, onPress, style}: TransparentButtonProps) {
+  
   return (
-    <Link style={style} to={link} underlayColor="none">
+    <TouchableOpacity style={style} onPress ={onPress}>
       <View style={styles.flexRow}>
         {children}
       </View>
-    </Link>
+    </TouchableOpacity>
   )
 }
 

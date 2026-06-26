@@ -1,14 +1,16 @@
 import React from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { useNavigate } from 'react-router-native'
 import Icon from 'react-native-vector-icons/AntDesign'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useNavigation } from '@react-navigation/native'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import useCalendar from '@/hooks/useCalendar'
 import { translate } from '@/utils'
 import theme from '@/theme/theme'
+import { RootStackParamList } from '@/types'
 
 import TransparentButton from '@/components/Atoms/Buttons/ButtonTransparent'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 export default function PrePurchaseLogin() {
   const { lenguage } = useCalendar()
@@ -17,7 +19,7 @@ export default function PrePurchaseLogin() {
   const insets = useSafeAreaInsets()
   const noFooterNoHeaderHeight = theme.heigth.screenHeight - insets.top - Math.max(insets.bottom, theme.heigth.bottomSystemBar) - theme.heigth.noFooterNoHeader
 
-  const navigate = useNavigate()
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text: string) {
@@ -26,7 +28,7 @@ export default function PrePurchaseLogin() {
 
   return (
     <View style={[styles.container, {height: noFooterNoHeaderHeight}]}>
-      <TransparentButton link="/calendar" style={styles.link}>
+      <TransparentButton onPress={() => navigation.reset({index: 0, routes: [{ name: "Calendar" }]})} style={styles.link}>
         <Icon 
           name="doubleleft" 
           color={theme.colors.negro} 
@@ -37,11 +39,11 @@ export default function PrePurchaseLogin() {
       
       <Text style={styles.firstTitle}>{translateFn("titleAccountPrePurchase")}</Text>
 
-      <TouchableOpacity activeOpacity={0.9} style={[styles.button]} onPress={() => navigate(`/account/${lenguage}/login/2`)}>
+      <TouchableOpacity activeOpacity={0.9} style={[styles.button]} onPress={() => navigation.navigate("Login", { lg:lenguage, type: "2" })}>
         <Text style={styles.buttonText}>{translateFn("login")}</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity activeOpacity={0.9} style={[styles.button]} onPress={() => navigate(`/account/${lenguage}/createAccount/2`)}>
+      <TouchableOpacity activeOpacity={0.9} style={[styles.button]} onPress={() => navigation.navigate("CreateAccount", { lg:lenguage, type: "2" })}>
         <Text style={styles.buttonText}>{translateFn("createAccount")}</Text>
       </TouchableOpacity>
 

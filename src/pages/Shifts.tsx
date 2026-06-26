@@ -1,24 +1,24 @@
 import React, { useState } from 'react'
 import { Text, ScrollView, StyleSheet, View} from 'react-native'
-import { useParams } from 'react-router-native'
 import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads'
-import Icon from 'react-native-vector-icons/AntDesign'
 
 import useCalendar from '@/hooks/useCalendar'
-import { ShiftProps } from '@/types'
+import { RootStackParamList, ShiftProps } from '@/types'
 import { firstLetterUpper, textDay, translate } from '@/utils'
 import theme from '@/theme/theme'
 
 import Shift from '@/components/Molecules/Shift'
 import SwiftArrows from '@/components/Molecules/SwiftArrows'
-import TransparentButton from '@/components/Atoms/Buttons/ButtonTransparent'
 import Button from '@/components/Atoms/Buttons/Button'
 import BannerPremium from '@/components/Atoms/Buttons/BannerPremium'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useNavigation } from '@react-navigation/native'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 export default function Shifts() {
-  const params = useParams()
-  const pressedDate = params.date!
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
+  const params = navigation.getState().routes[navigation.getState().index].params as { date: string }
+  const pressedDate = params.date
 
   const {shifts, lenguage, addsInitialized, configInfo, userInfo} = useCalendar()
   
@@ -45,22 +45,13 @@ export default function Shifts() {
 
   return (
     <View style={styles.container}>
-      <TransparentButton link="/calendar" style={styles.link}>
-        <Icon 
-          name="doubleleft" 
-          color={theme.colors.negro} 
-          size={17}
-        />
-        <Text style={styles.textLine}>{translateFn("back")}</Text>
-      </TransparentButton>
-
       <SwiftArrows 
         leftAction={prevDay} 
         text={`${firstLetterUpper(date.toLocaleDateString(lenguage, {month: 'short'}))} / ${date.toLocaleDateString(lenguage, {day:"numeric"})} (${textDay(date, lenguage)})`}
         rightAction={nextDay} 
       />
 
-      <Button margintop={12} to={`/calendar/shifts/${date}/newShift`} color={configInfo.buttonsColor}>
+      <Button margintop={12} onPress={() => navigation.navigate('NewShift', { date: date.toISOString() })} color={configInfo.buttonsColor}>
         <Text style={styles.textoBoton}>{translateFn("createNewShift")}</Text>
       </Button>
 
@@ -93,25 +84,17 @@ export default function Shifts() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10  
+    padding: 10,
+    backgroundColor: theme.colors.blanco,
   },
   scrollView: {
     position: "relative",
     marginTop: 16,
     overflow: "hidden",
   },
-  link: {
-    position: "absolute",
-    top: -32,
-    left: 12
-  },
   textoBoton: {
     fontSize: theme.fontSizes.F18,
     fontWeight: "500"    
-  },
-  textLine: {
-    fontSize: theme.fontSizes.F18,
-    fontWeight: '500'
   },
   banner:{
     height: 70, 

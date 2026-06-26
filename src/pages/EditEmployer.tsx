@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, Text, TextInput, TouchableOpacity, View, Modal, Platform, Alert, NativeSyntheticEvent, TextInputFocusEventData } from 'react-native'
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, Modal, Platform, Alert } from 'react-native'
 import ColorPicker, { HueSlider, Panel1, Preview, returnedResults } from 'reanimated-color-picker'
-import { Link, useParams } from 'react-router-native'
 import Constants from "expo-constants"
+import { useNavigation } from '@react-navigation/native'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import useCalendar from '@/hooks/useCalendar'
-import { EmployerProps } from '@/types'
+import { EmployerProps, RootStackParamList } from '@/types'
 import theme from '@/theme/theme'
 import { translate } from '@/utils'
 
@@ -20,9 +21,10 @@ export default function EditEmployer() {
     return translate({text, lenguage})
   }
 
-  const params = useParams()
-  const employerId = params.employer!
-  const employer = companysInfo.find(emp => emp.key === parseInt(employerId))
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
+  const params = navigation.getState().routes[navigation.getState().index].params as { employer: number }
+  const employerId = params.employer
+  const employer = companysInfo.find(emp => emp.key === employerId)
   const {name, short, color, wage, key} = employer!
 
   const [inputName, setInputName] = useState(name)
@@ -113,20 +115,20 @@ export default function EditEmployer() {
     const updatedCompanys = [...companysInfo]
     updatedCompanys.splice(employerIndex, 1, newEmployer)
     setCompanysInfo(updatedCompanys)
+    navigation.goBack()
   }
 
   return (
     <View style={styles.container}>
-      <Link 
-        to={'/config'}
+      <TouchableOpacity 
+        onPress={() => navigation.goBack()}
         activeOpacity={0.7} 
         style={styles.botonCerrar}
-        underlayColor="none"
         >
         <ButtonSmall color={theme.colors.grisClaro}>
           <Text style={styles.textBotonChico}>x</Text>
         </ButtonSmall>
-      </Link>
+      </TouchableOpacity>
 
       <View>
         <Text style={styles.textoConf}>{translateFn("editEmployer")}</Text>
@@ -228,9 +230,8 @@ export default function EditEmployer() {
       }
 
       <Button 
-        press={() => handleSaveEmployer()}
+        onPress={() => handleSaveEmployer()}
         block={inputName === "" || !salary || repeatedName ? true : false} 
-        to='/config' 
         color={configInfo.buttonsColor}
       >
         <Text style={styles.textoBoton}>{translateFn("saveChanges")}</Text>
@@ -277,7 +278,8 @@ const styles = StyleSheet.create ({
   textLine: {
     fontSize: theme.fontSizes.F20,
     fontWeight: '400',
-    textAlign: "right"
+    textAlign: "right",
+    textAlignVertical: "center"
   },
   row: {
     flexDirection: "row"

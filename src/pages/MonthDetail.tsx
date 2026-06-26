@@ -3,28 +3,29 @@ import { Text, TouchableOpacity, View, StyleSheet, ScrollView, Dimensions, Platf
 import { captureRef } from 'react-native-view-shot'
 import * as Sharing from "expo-sharing"
 import * as FileSystem from "expo-file-system";
-import { useParams } from 'react-router-native'
 import { Picker } from '@react-native-picker/picker'
 import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads'
-import Icon from 'react-native-vector-icons/AntDesign'
 import IconMenu from 'react-native-vector-icons/Feather'
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import useCalendar from '@/hooks/useCalendar'
 import theme from '@/theme/theme'
 import { firstLetterUpper, formattedMinutes, textDay, translate } from '@/utils'
 import { exportPDF } from '@/utils/shiftsExports'
+import { RootStackParamList } from '@/types';
 
 import SwiftArrows from '@/components/Molecules/SwiftArrows'
 import IosPickerModal from '@/components/Molecules/IosPickerModal'
-import TransparentButton from '@/components/Atoms/Buttons/ButtonTransparent'
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 let screenWidth = Dimensions.get("window").width
 
 export default function MonthDetail() {
-  const param = useParams()
-  const month = param.month
-  const employerParam = param.employer ? parseInt(param.employer) : 0
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
+  const params = navigation.getState().routes[navigation.getState().index].params as { month: string, employer: number }
+  const month = params.month
+  const employerParam = params.employer ? params.employer : 0
 
   const { shifts, lenguage, addsInitialized, companysInfo, userInfo } = useCalendar()
 
@@ -39,7 +40,7 @@ export default function MonthDetail() {
     return translate({ text, lenguage })
   }
 
-  const [currentDay, setCurrentDay] = useState(new Date(month!))
+  const [currentDay, setCurrentDay] = useState(new Date(month))
   const [employer, setEmployer] = useState(employerParam)
   const [shownDays, setShownDays] = useState("Todos")
   const [employersList, setEmployersList] = useState<number[]>([])
@@ -185,15 +186,7 @@ export default function MonthDetail() {
         size={28}
         onPress={() => setModal(true)}
       />
-      <TransparentButton link={`/totals/${currentDay}`} style={styles.link}>
-        <Icon
-          name="doubleleft"
-          color={theme.colors.negro}
-          size={17}
-        />
-        <Text style={[styles.textLine, { fontWeight: 500 }]}>{translateFn("back")}</Text>
-      </TransparentButton>
-
+    
       <SwiftArrows
         leftAction={prevMonth}
         text={`${firstLetterUpper(currentDay.toLocaleDateString(lenguage, { month: 'long' }))} / ${currentDay.toLocaleDateString(lenguage, { year: '2-digit' })}`}
@@ -368,7 +361,8 @@ export default function MonthDetail() {
 const styles = StyleSheet.create({
   container: {
     position: "relative",
-    padding: 10
+    padding: 10,
+    backgroundColor: theme.colors.blanco,
   },
   absolute: {
     position: "absolute",

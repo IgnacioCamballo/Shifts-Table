@@ -1,10 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { StyleSheet, Text, TextInput, TouchableOpacity, View, ScrollView, Animated, Dimensions, Platform } from 'react-native'
-import { Link, Navigate } from 'react-router-native'
+import { Navigate } from 'react-router-native'
 import { Picker } from '@react-native-picker/picker'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useNavigation } from '@react-navigation/native'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import useCalendar from '@/hooks/useCalendar'
-import { ShiftProps } from '@/types'
+import { RootStackParamList, ShiftProps } from '@/types'
 import theme from '@/theme/theme'
 import { firstLetterUpper, formattedMinutes, formattedMinutesNumber, textDay, translate } from '@/utils'
 import { GetBreakTime, getWorkedTime } from '@/utils/datesCompare'
@@ -15,7 +18,7 @@ import Button from '@/components/Atoms/Buttons/Button'
 import DropDownAutoHeight from '@/components/Molecules/DropDownAutoHeight'
 import IosPickerModal from '@/components/Molecules/IosPickerModal'
 import ModalDatePicker from '@/components/Molecules/ModalDatePicker'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { set } from 'zod'
 
 type ShiftFormProps = {
   isCreate: boolean,
@@ -28,6 +31,7 @@ let screenWidth = Dimensions.get("window").width
 
 export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmit }: ShiftFormProps) {
   const { configInfo, companysInfo, shifts, lenguage } = useCalendar()
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
 
   //gets variable heigth for the screen without statusbar
   const insets = useSafeAreaInsets()
@@ -75,6 +79,9 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
     if (employerForm > 1) {
       const company = companysInfo.find(company => company.key == employerForm)
       setWageForm(company?.wage || 0)
+    } else if (employerForm === 1) { //if employerForm is 1, it means the user wants to create a new employer, so we navigate to the NewEmployer page
+      navigation.navigate('NewEmployer')
+      setEmployerForm(0) //reset employerForm to 0 to avoid navigating again when the user comes back from NewEmployer
     }
   }, [employerForm])
 
@@ -203,16 +210,15 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
 
   return (
     <View style={styles.container}>
-      <Link
-        to={`/calendar/shifts/${pressedDate}`}
-        activeOpacity={0.7}
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        activeOpacity={0.9}
         style={styles.botonCerrar}
-        underlayColor="none"
       >
         <ButtonSmall color={theme.colors.grisClaro}>
           <Text style={styles.textButtonSmall}>x</Text>
         </ButtonSmall>
-      </Link>
+      </TouchableOpacity>
 
       <View>
         <Text style={styles.textoConf}>{isCreate ? translateFn("newShift") : translateFn("editShifts")} {firstLetterUpper(pressedDate.toLocaleDateString(lenguage, { month: 'short' }))} / {pressedDate.toLocaleDateString(lenguage, { day: "numeric" })}</Text>
@@ -235,14 +241,12 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
                       value: employer.key,
                       key: employer.key
                     })),
-                    ...(isCreate ? [{label: translateFn("createNewEmployerTab") || "Create New Employer", value: 1}] : [])
+                    {label: translateFn("createNewEmployerTab") || "Create New Employer", value: 1}
                   ]}
                   inputStyle={styles.pickerInput}
                   placeholderLabel={translateFn("selectEmployer") || "Select Employer"}
                   modalTitle={translateFn("employer") || "Employer"}
                 />
-                {employerForm === 1 && <Navigate to={`/config/newEmployer/${pressedDate}`} />}
-
               </View>
             ) : (
               <View style={styles.pickerContainer}>
@@ -259,9 +263,8 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
                   {companysInfo.map(employer =>
                     <Picker.Item style={styles.pickerItem} label={employer.name} value={employer.key} key={employer.key} />
                   )}
-                  {isCreate && <Picker.Item style={styles.pickerItem} label={translateFn("createNewEmployerTab")} value={1} />}
+                  <Picker.Item style={styles.pickerItem} label={translateFn("createNewEmployerTab")} value={1} />
                 </Picker>
-                {employerForm === 1 && <Navigate to={`/config/newEmployer/${pressedDate}`} />}
               </View>
             )}
           </View>
@@ -420,9 +423,8 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
         <TouchableOpacity style={styles.boton} onPress={() => checkInfo()}>
           <Button
             margintop={20}
-            press={() => handleSubmit()}
+            onPress={() => handleSubmit()}
             block={employerForm === 0 || !shiftEntryForm || blockSubmit ? true : false}
-            to={`/calendar/shifts/${pressedDate}`}
             color={configInfo.buttonsColor}
           >
             <Text style={styles.textoBoton}>{isCreate ? translateFn("createNewShift") : translateFn("saveChanges")}</Text>
@@ -439,7 +441,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 8,
-    justifyContent: "center"
+    justifyContent: "center",
+    backgroundColor: theme.colors.blanco
   },
   textoConf: {
     alignSelf: "center",

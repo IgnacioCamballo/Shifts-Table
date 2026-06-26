@@ -1,29 +1,42 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { Link } from "react-router-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import IonIcon from "react-native-vector-icons/Ionicons"
+import { useNavigation } from "@react-navigation/native";
 
 import theme from "@/theme/theme";
 import useCalendar from "@/hooks/useCalendar";
 import { translate } from "@/utils";
 
 type LogoTotalsProps = {
-  to: string,
-  pathName: string
+  routeName: string
 }
 
-export default function LogoTotals({to, pathName}: LogoTotalsProps) {
+export default function LogoTotals({routeName}: LogoTotalsProps) {
+  const navigation = useNavigation()
   const {lenguage} = useCalendar()
 
+  const handlePress = () => {
+    if(routeName === "Totals") return
+    navigation.reset({index: 0, routes: [{ name: 'Totals' as never, params: { month: new Date().toString() } }]})
+  }
+
   return (
-    <Link to={to} activeOpacity={0.7} underlayColor="none">
+    <TouchableOpacity activeOpacity={0.9} onPress={handlePress}>
       <View style={styles.menuItem}>
-        <View style={[styles.border, pathName.startsWith("/totals") ? styles.borderBlack : {}]}>
-          <IonIcon name='bar-chart-outline' size={30}  color={pathName.startsWith("/totals") ? theme.colors.azulClaro : theme.colors.negro}/>
+        <View 
+          style={[
+            styles.border, 
+            routeName === "Totals" || routeName === "MonthDetail" ? styles.borderBlack : {}
+          ]}
+        >
+          <IonIcon 
+            name='bar-chart-outline' 
+            size={30}  
+            color={(routeName === "Totals" || routeName === "MonthDetail") ? theme.colors.azulClaro : theme.colors.negro}/>
           <Text>{translate({text: "totals", lenguage})}</Text>
         </View>
       </View>
-    </Link>
+    </TouchableOpacity>
   )
 }
 

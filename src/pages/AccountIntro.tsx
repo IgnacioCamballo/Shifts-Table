@@ -1,18 +1,21 @@
 import React from 'react'
-import { Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native'
-import { useNavigate, useParams } from 'react-router-native'
+import { Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Platform } from 'react-native'
+import { useParams } from 'react-router-native'
 
 import useCalendar from '@/hooks/useCalendar'
 import theme from '@/theme/theme'
 import { translate } from '@/utils'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useNavigation } from '@react-navigation/native'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import { RootStackParamList } from '@/types'
 
 export default function AccountIntro() {
   const {setCompanysInfo, setLenguage, setConfigInfo, setShifts, setUserInfo} = useCalendar()
-  const params = useParams()
-  const lenguage = params.lg!
-  const navigate = useNavigate()
-
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
+  const params = navigation.getState().routes[navigation.getState().index].params as {lg: string}
+  const lenguage = params.lg
+  
   //gets variable heigth for the screen without statusbar
   const insets = useSafeAreaInsets()
   const noFooterNoHeaderHeight = theme.heigth.screenHeight - insets.top - Math.max(insets.bottom, theme.heigth.bottomSystemBar) - theme.heigth.noFooterNoHeader
@@ -52,7 +55,7 @@ export default function AccountIntro() {
                 exit: null
               })
               setCompanysInfo([])
-              navigate("/calendar")
+              navigation.replace("Calendar")
             },
             style: 'cancel'
           },
@@ -67,15 +70,14 @@ export default function AccountIntro() {
     <ScrollView 
       showsVerticalScrollIndicator={false} 
       contentContainerStyle={[styles.contentContainer, {height: noFooterNoHeaderHeight}]} 
-      style={{maxHeight: noFooterNoHeaderHeight}}
     >
       <Text style={styles.firstTitle}>{translateFn("titleAccountIntro")}</Text>
 
-      <TouchableOpacity activeOpacity={0.9} style={[styles.button]} onPress={() => navigate(`/account/${lenguage}/login/1`)}>
+      <TouchableOpacity activeOpacity={0.9} style={[styles.button]} onPress={() => navigation.navigate("Login", { lg: lenguage, type: "1" })}>
         <Text style={styles.buttonText}>{translateFn("login")}</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity activeOpacity={0.9} style={[styles.button]} onPress={() => navigate(`/account/${lenguage}/createAccount/1`)}>
+      <TouchableOpacity activeOpacity={0.9} style={[styles.button]} onPress={() => navigation.navigate("CreateAccount", { lg: lenguage, type: "1" })}>
         <Text style={styles.buttonText}>{translateFn("createAccount")}</Text>
       </TouchableOpacity>
 
@@ -94,8 +96,10 @@ const styles = StyleSheet.create({
   contentContainer: {
     alignItems: "center",
     justifyContent: "center",
-    marginTop: -60,
-    gap: 12
+    marginTop: Platform.OS === 'ios' ? -40 : -120,
+    gap: 12,
+    backgroundColor: theme.colors.blanco,
+    flex: 1
   },
   button: {
     minWidth: "60%",

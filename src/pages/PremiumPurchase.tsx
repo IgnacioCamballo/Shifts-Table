@@ -1,20 +1,21 @@
 import React from 'react'
-import { View, Text, Alert, ImageBackground, StyleSheet } from 'react-native'
+import { View, Text, Alert, ImageBackground, StyleSheet, TouchableOpacity } from 'react-native'
 import { LinkDisplay, StripeProvider, useStripe } from '@stripe/stripe-react-native'
-import { TouchableOpacity } from 'react-native-gesture-handler'
 import { useMutation } from '@tanstack/react-query'
-import { useNavigate } from 'react-router-native'
 import Icon from 'react-native-vector-icons/Ionicons'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useNavigation } from '@react-navigation/native'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
-import { createPaymentIntent } from '@/api/PaymentsAPI'
 import useCalendar from '@/hooks/useCalendar'
+import { RootStackParamList } from '@/types'
 import { translate } from '@/utils'
 import theme from '@/theme/theme'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { createPaymentIntent } from '@/api/PaymentsAPI'
 
 export default function PremiumPurchase() {
   const { userInfo, setUserInfo, lenguage } = useCalendar()
-  const navigate = useNavigate()
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
 
   //gets variable heigth for the screen without statusbar
   const insets = useSafeAreaInsets()
@@ -76,7 +77,7 @@ export default function PremiumPurchase() {
 
   const savePaymentSuccess = () => {
     setUserInfo({ ...userInfo, premium: true })
-    navigate("/premium-purchase/success")
+    navigation.replace("PremiumPurchaseSuccess")
   }
 
   return (

@@ -1,26 +1,36 @@
 import React from 'react'
 import { View, StyleSheet } from 'react-native'
-import { useLocation } from 'react-router-native';
+import { useNavigationState } from '@react-navigation/native'
 
 import useCalendar from '@/hooks/useCalendar';
 import theme from '@/theme/theme'
+import { getRouteName } from '@/utils';
 
 import LogoCalendar from '@/components/Atoms/Logos/LogoCalendar';
 import LogoTotals from '@/components/Atoms/Logos/LogoTotals';
 import LogoConfig from '@/components/Atoms/Logos/LogoConfig';
 
 export default function LayoutFooter() {
-  const { pathname } = useLocation()
-  const { configInfo } = useCalendar()
-  const backgroundColor = pathname === "/" ? theme.colors.blanco : configInfo.baseColor
+const routeName = getRouteName()
 
+  const { configInfo } = useCalendar()
+  const backgroundColor = routeName === "LoadingPage" ? theme.colors.blanco : configInfo.baseColor
+  console.log(routeName)
   return (
     <View style={styles.containerGrande}>
       <View style={[styles.container, { backgroundColor }]}>
-        {pathname.startsWith("/account") || pathname === "/" ? <></> : <>
-          <LogoCalendar to='/calendar' pathName={pathname} />
-          <LogoTotals to='/totals' pathName={pathname} />
-          <LogoConfig to='/config' pathName={pathname} />
+        { routeName === "LoadingPage" ||
+          routeName === "SelectLenguage" ||
+          routeName === "AccountIntro" ||
+          routeName === "Login" ||
+          routeName === "PassRecover" ||
+          routeName === "CreateAccount" ||
+          routeName === "PrePurchaseLogin" ||
+          routeName === "DeleteAccount"
+          ? <></> : <>
+          <LogoCalendar routeName={routeName} />
+          <LogoTotals routeName={routeName} />
+          <LogoConfig routeName={routeName} />
         </>}
       </View>
     </View>

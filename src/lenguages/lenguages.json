@@ -684,5 +684,15 @@
     {"lenguage": "es", "text": "Los descansos están considerados en los totales"},
     {"lenguage": "en", "text": "Breaks are considered in totals"},
     {"lenguage": "pt", "text": "As pausas são consideradas em totais"}
+  ],
+  "getPremium": [
+    {"lenguage": "es", "text": "Consigue Premium"},
+    {"lenguage": "en", "text": "Get Premium"},
+    {"lenguage": "pt", "text": "Obtenha Premium"}
+  ],
+  "atPrice": [
+    {"lenguage": "es", "text": "solo €2,99/año"},
+    {"lenguage": "en", "text": "only €2.99/year"},
+    {"lenguage": "pt", "text": "apenas €2,99/ano"}
   ]
 }

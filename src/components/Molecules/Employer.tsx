@@ -1,15 +1,18 @@
 import React from 'react'
 import { View, Text, StyleSheet, Alert } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import useCalendar from '@/hooks/useCalendar'
 import theme from '@/theme/theme'
-import { EmployerProps } from '@/types'
+import { EmployerProps, RootStackParamList } from '@/types'
 import { translate } from '@/utils'
 
 import EditDeletButtons from '@/components/Molecules/EditDeletButtons'
 
 export default function Employer({ employer }: { employer: EmployerProps }) {
   const { companysInfo, setCompanysInfo, lenguage } = useCalendar()
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text:string){
@@ -63,7 +66,7 @@ export default function Employer({ employer }: { employer: EmployerProps }) {
         </View>
         <EditDeletButtons 
           DeleteAlert={showAlert} 
-          link={`/config/editEmployer/${key}`}
+          onPressEdit={() => navigation.navigate('EditEmployer', { employer: key })}
         />
       </View>
     </View>

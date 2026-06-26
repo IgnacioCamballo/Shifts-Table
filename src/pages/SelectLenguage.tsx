@@ -1,13 +1,14 @@
 import React, { useState } from 'react'
-import { Text, View, StyleSheet } from 'react-native'
-import { TouchableOpacity } from 'react-native-gesture-handler'
+import { Text, View, StyleSheet, TouchableOpacity } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useNavigation } from '@react-navigation/native'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import theme from '@/theme/theme'
-import { useNavigate } from 'react-router-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { RootStackParamList } from '@/types'
 
 export default function SelectLenguage() {
-  const navigate = useNavigate()
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
 
   //gets variable heigth for the screen without statusbar
   const insets = useSafeAreaInsets()
@@ -20,7 +21,7 @@ export default function SelectLenguage() {
     if(lenguageSelected === "") {
       setError(true)
     } else {
-      navigate(`/account/${lenguageSelected}`)
+      navigation.navigate("AccountIntro", {lg: lenguageSelected})
     }
   }
   

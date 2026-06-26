@@ -1,16 +1,18 @@
 import React from 'react'
-import { useParams } from 'react-router-native'
-import { ShiftProps } from '@/types'
+import { RootStackParamList, ShiftProps } from '@/types'
 
 import useCalendar from '@/hooks/useCalendar'
 import ShiftForm from '@/components/organisms/ShiftForm'
+import { useNavigation } from '@react-navigation/native'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 export default function EditShift() {
   const { shifts, setShifts} = useCalendar()
 
-  const params = useParams()
-  const pressedDate = new Date(params.date!)
-  const editingShiftKey = params.shift!
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
+  const params = navigation.getState().routes[navigation.getState().index].params as { date: string; shift: string }
+  const pressedDate = new Date(params.date)
+  const editingShiftKey = params.shift
   const editingShift = shifts.find(shift => shift.key === editingShiftKey)
   const editingShiftIndex = shifts.findIndex(shift => shift.key === editingShiftKey)
 
@@ -19,6 +21,7 @@ export default function EditShift() {
     const updatedshifts = [...shifts]
     updatedshifts.splice(editingShiftIndex, 1, formData)
     setShifts(updatedshifts)
+    navigation.goBack()
   }
   
   return (

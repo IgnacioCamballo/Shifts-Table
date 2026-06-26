@@ -2,13 +2,14 @@ import React, { useEffect, useRef } from 'react'
 import { Animated, Image, StyleSheet, View } from 'react-native'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useNavigation } from '@react-navigation/native'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import useCalendar from '@/hooks/useCalendar'
-import { UserInfo, ConfigInfo, ShiftProps } from '@/types'
+import { UserInfo, ConfigInfo, ShiftProps, RootStackParamList } from '@/types'
 import { getUserInfo } from '@/api/UserInfoAPI'
 import theme from '@/theme/theme'
-import { useNavigate } from 'react-router-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 export default function LoadingPage() {
   const {
@@ -21,7 +22,8 @@ export default function LoadingPage() {
     setLastBackup,
     syncPremiumStatus
   } = useCalendar()
-  const navigate = useNavigate()
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
+
   const queryClient = useQueryClient()
   const logoTranslateY = useRef(new Animated.Value(-theme.heigth.screenHeight * 0.35)).current
   const logoRotate = useRef(new Animated.Value(-45)).current
@@ -140,7 +142,7 @@ export default function LoadingPage() {
           syncPremiumStatus()
         }
 
-        return "/calendar"
+        return "Calendar"
         //if there is not data in the movil storage => 
       } else {
         const token = await AsyncStorage.getItem("userToken")
@@ -152,7 +154,7 @@ export default function LoadingPage() {
 
           if(result.error) {
             console.log(result.error)
-            return "/account/lenguage"
+            return "SelectLenguage"
           }
 
           if(result.data) {
@@ -167,24 +169,24 @@ export default function LoadingPage() {
               lastBackUp: data.userInformation.updatedAt,
               premium: data.premiumEnds !== null ? true : false
             })
-            return "/calendar"
+            return "Calendar"
           }
           //if there is not data nither token in the movil storage => 
         } else {
-          return "/account/lenguage"
+          return "SelectLenguage"
         }
       }
     } catch (error) {
       console.log(error)
     }
 
-    return "/account/lenguage"
+    return "SelectLenguage"
   }
 
   useEffect(() => {
     const initializeApp = async () => {
       const [route] = await Promise.all([getStoragedInfo(), startIntroAnimation()])
-      navigate(route)
+      navigation.replace(route)
     }
 
     initializeApp()

@@ -50,6 +50,8 @@ const CalendarProvider = ({ children }: props) => {
   const [lastShiftCreated, setLastShiftCreated] = useState<Date>(new Date(new Date().getFullYear(), new Date().getMonth() - 1))
   const [lastBackup, setLastBackup] = useState<Date | null>()
 
+  //Syncs premium status with the server, in case the user has renewed or lost premium status on another device
+  //Called in loadingPage when there is storagedData in device
   const syncPremiumStatus = async () => {
     try {
       const data = await getUserInfo()

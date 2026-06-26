@@ -1,29 +1,51 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { Link } from "react-router-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import IonIcon from "react-native-vector-icons/Ionicons"
+import { useNavigation } from "@react-navigation/native";
 
 import useCalendar from "@/hooks/useCalendar";
 import theme from "@/theme/theme";
 import { translate } from "@/utils";
 
 type LogoCalendarProps = {
-  to: string,
-  pathName: string
+  routeName: string
 }
 
-export default function LogoCalendar({to, pathName}: LogoCalendarProps) {
+export default function LogoCalendar({routeName}: LogoCalendarProps) {
+  const navigation = useNavigation()
   const {lenguage} = useCalendar()
+
+  const handlePress = () => {
+    if(routeName === "Calendar") return
+    navigation.reset({index: 0, routes: [{ name: 'Calendar' as never }]})
+  }
   
   return (
-    <Link to={to} activeOpacity={0.7} underlayColor="none">
+    <TouchableOpacity activeOpacity={0.9} onPress={handlePress}>
       <View style={styles.menuItem}>
-        <View style={[styles.border, pathName === "/calendar" || pathName.startsWith("/calendar") ? styles.borderBlack : {}]}>
-          <IonIcon name='calendar-outline' size={30}  color={pathName.startsWith("/calendar") ? theme.colors.azulClaro : theme.colors.negro}/>
+        <View 
+          style={[
+            styles.border, 
+            routeName === "Calendar" || 
+            routeName === "Shifts" ||
+            routeName === "NewShift" ||
+            routeName === "EditShift" 
+            ? styles.borderBlack : {}
+          ]}
+        >
+          <IonIcon 
+            name='calendar-outline' 
+            size={30}  
+            color={routeName === "Calendar" || 
+            routeName === "Shifts" ||
+            routeName === "NewShift" ||
+            routeName === "EditShift" 
+            ? theme.colors.azulClaro : theme.colors.negro}
+          />
           <Text>{translate({text:"calendar", lenguage})}</Text>
         </View>
       </View>
-    </Link>
+    </TouchableOpacity>
   )
 }
 

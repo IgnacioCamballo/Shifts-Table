@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { StyleSheet, Text, TextInput, TouchableOpacity, View, Modal, Platform } from 'react-native'
 import ColorPicker, { HueSlider, Panel1, Preview, returnedResults } from 'reanimated-color-picker'
-import { Link, useParams } from 'react-router-native'
 import Constants from "expo-constants"
+import { useNavigation } from '@react-navigation/native'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import useCalendar from '@/hooks/useCalendar'
-import { EmployerProps } from '@/types'
+import { EmployerProps, RootStackParamList } from '@/types'
 import theme from '@/theme/theme'
 import { translate } from '@/utils'
 
@@ -13,8 +14,7 @@ import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
 import Button from '@/components/Atoms/Buttons/Button'
 
 export default function NewEmployer() {
-  const params = useParams()
-  const pressedDate = params.date
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
 
   const { companysInfo, setCompanysInfo, lenguage, configInfo } = useCalendar()
   
@@ -66,20 +66,20 @@ export default function NewEmployer() {
     }
     const updatedCompanys = [...companysInfo, newEmployer]
     setCompanysInfo(updatedCompanys)
+    navigation.goBack()
   }
 
   return (
     <View style={styles.container}>
-      <Link 
-        to={pressedDate === undefined ? '/config' : `/calendar/shifts/${pressedDate}/newShift`}
-        activeOpacity={0.7} 
+      <TouchableOpacity 
+        onPress={() => navigation.goBack()}
+        activeOpacity={0.9} 
         style={styles.botonCerrar}
-        underlayColor="none"
         >
         <ButtonSmall color={theme.colors.grisClaro}>
           <Text style={styles.textBotonChico}>x</Text>
         </ButtonSmall>
-      </Link>
+      </TouchableOpacity>
 
       <View>
         <Text style={styles.textoConf}>{translateFn("newEmployer")}</Text>
@@ -119,7 +119,7 @@ export default function NewEmployer() {
             <Text style={styles.textLine}>$ </Text>
             
             <TextInput 
-              style={styles.textLine}
+              style={[styles.textLine, {top: Platform.OS === 'ios' ? 0 : 2}]}
               inputMode='numeric'
               keyboardType='numeric'
               onChangeText={setSalary}
@@ -181,9 +181,8 @@ export default function NewEmployer() {
 
       <Button 
         margintop={0}
-        press={() => handleSaveEmployer()}
+        onPress={() => handleSaveEmployer()}
         block={inputName === "" || salary === "" || repeatedName ? true : false}
-        to={pressedDate === undefined ? '/config' : `/calendar/shifts/${pressedDate}/newShift`} 
         color={configInfo.buttonsColor}
       >
         <Text style={styles.textoBoton}>{translateFn("createEmployer")}</Text>
@@ -231,7 +230,8 @@ const styles = StyleSheet.create ({
   textLine: {
     fontSize: theme.fontSizes.F20,
     fontWeight: '400',
-    textAlign: "right"
+    textAlign: "right",
+    textAlignVertical: "center"
   },
   row: {
     flexDirection: "row",

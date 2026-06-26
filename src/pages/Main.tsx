@@ -1,6 +1,10 @@
-import React from 'react'
-import { View, StyleSheet } from 'react-native'
-import { Route, Routes } from 'react-router-native'
+import React, { useState } from 'react'
+import { View, StyleSheet, StatusBar } from 'react-native'
+import { NavigationContainer } from '@react-navigation/native'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
+
+import useCalendar from '@/hooks/useCalendar'
+import { RootStackParamList } from '@/types'
 
 import LayoutHeader from '@/layout/LayoutHeader'
 import LayoutFooter from '@/layout/LayoutFooter'
@@ -29,48 +33,76 @@ import PrePurchaseLogin from './PrePurchaseLogin'
 import PremiumPurchase from '@/pages/PremiumPurchase'
 import PremiumPurchaseSuccess from './PremiumPurchaseSuccess'
 
-export default function Main() {
+const Stack = createNativeStackNavigator<RootStackParamList>()
+
+type RouteName = keyof RootStackParamList
+
+function RouterContent({ routeName }: { routeName: RouteName }) {
+  const { configInfo } = useCalendar()
+  const statusBarColor = routeName === 'LoadingPage' ? '#ffffff' : configInfo.baseColor
+
   return (
     <View style={styles.containerGeneral}>
-        <LayoutHeader />
-        <View style={styles.routesContainer}>
-          <Routes>
-            <Route path='/' element={<LoadingPage />} index/>
+      <StatusBar backgroundColor={statusBarColor} />
+      <LayoutHeader />
+      <View style={styles.routesContainer}>
+        <Stack.Navigator
+          initialRouteName='LoadingPage'
+          screenOptions={{ headerShown: false, animationDuration: 600}}
+          
+        >
+          <Stack.Screen name='LoadingPage' component={LoadingPage} />
 
-            <Route path='/calendar' element={<Calendar />}/>
-              <Route path='/calendar/shifts/:date' element={<Shifts />}/>
-                <Route path='/calendar/shifts/:date/newShift' element={<NewShift />}/>
-                <Route path='/calendar/shifts/:date/editShift/:shift' element={<EditShift />}/>
+          <Stack.Screen name='Calendar' component={Calendar} options={{animation: "fade", animationDuration: 200}}/>
+          <Stack.Screen name='Shifts' component={Shifts}/>
+          <Stack.Screen name='NewShift' component={NewShift} />
+          <Stack.Screen name='EditShift' component={EditShift} />
 
-            <Route path='/config' element={<Config />}/>
-              <Route path='/config/newEmployer' element={<NewEmployer />}/>
-              <Route path='/config/newEmployer/:date' element={<NewEmployer />}/>
-              <Route path='/config/editEmployer/:employer' element={<EditEmployer />}/>
+          <Stack.Screen name='Config' component={Config} options={{animation: "fade", animationDuration: 200}}/>
+          <Stack.Screen name='NewEmployer' component={NewEmployer} />
+          <Stack.Screen name='EditEmployer' component={EditEmployer} />
 
-            <Route path='/totals' element={<Totals />}/>
-              <Route path='/totals/:month' element={<Totals />}/>
-              <Route path='/totalsDetail/:month/:employer' element={<MonthDetail />}/>
+          <Stack.Screen name='Totals' component={Totals} options={{animation: "fade", animationDuration: 200}}/>
+          <Stack.Screen name='MonthDetail' component={MonthDetail} />
 
-            <Route path='/account/:lg' element={<AccountIntro />}/>
-              <Route path='/account/lenguage' element={<SelectLenguage />}/>
-              <Route path='/account/:lg/login/:type' element={<Login />}/> {/* type 1 comes from first time opening the account, type 2 comes from prePurchase, used for back button */}
-              <Route path='/account/:lg/recoverPassword' element={<PassRecover />}/>
-              <Route path='/account/:lg/createAccount/:type' element={<CreateAccount />}/>
-              <Route path='/account/prePurchaseLogin' element={<PrePurchaseLogin />}/>
-              <Route path='/account/deleteAccount' element={<DeleteAccount />}/>
+          <Stack.Screen name='AccountIntro' component={AccountIntro} />
+          <Stack.Screen name='SelectLenguage' component={SelectLenguage} />
+          <Stack.Screen name='Login' component={Login} />
+          <Stack.Screen name='PassRecover' component={PassRecover} />
+          <Stack.Screen name='CreateAccount' component={CreateAccount} />
+          <Stack.Screen name='PrePurchaseLogin' component={PrePurchaseLogin} />
+          <Stack.Screen name='DeleteAccount' component={DeleteAccount} />
 
-            <Route path="/premium-purchase" element={<PremiumPurchase />}/>
-              <Route path="/premium-purchase/success" element={<PremiumPurchaseSuccess />}/>
-          </Routes>
-        </View>
-        <LayoutFooter />
+          <Stack.Screen name='PremiumPurchase' component={PremiumPurchase} />
+          <Stack.Screen name='PremiumPurchaseSuccess' component={PremiumPurchaseSuccess} />
+        </Stack.Navigator>
+      </View>
+      <LayoutFooter />
     </View>
   )
 }
 
-const styles = StyleSheet.create ({
+export default function Main() {
+  const [routeName, setRouteName] = useState<RouteName>('LoadingPage')
+
+  return (
+    <NavigationContainer
+      onStateChange={(state) => {
+        const currentRoute = state?.routes[state.index]?.name
+        if (currentRoute) {
+          setRouteName(currentRoute as RouteName)
+        }
+      }}
+    >
+      <RouterContent routeName={routeName} />
+    </NavigationContainer>
+  )
+}
+
+const styles = StyleSheet.create({
   containerGeneral: {
-    flex: 1
+    flex: 1,
+    backgroundColor: '#ffffff',
   },
   routesContainer: {
     flex: 1,

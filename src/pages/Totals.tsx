@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { Text, View, StyleSheet, Platform } from 'react-native'
-import { Link, useParams } from 'react-router-native'
+import { Text, View, StyleSheet, Platform, TouchableOpacity } from 'react-native'
 import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads'
 import { Picker } from '@react-native-picker/picker'
+import { useNavigation } from '@react-navigation/native'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import useCalendar from '@/hooks/useCalendar'
+import { RootStackParamList } from '@/types'
 import { firstLetterUpper, formattedMinutesNumber, translate } from '@/utils'
 import theme from '@/theme/theme'
 
@@ -13,8 +15,9 @@ import IosPickerModal from '@/components/Molecules/IosPickerModal'
 import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
 
 export default function Totals() { 
-  const param = useParams()
-  const currentMonth = param.month ? new Date(param.month) : new Date()
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
+  const params = navigation.getState().routes[navigation.getState().index].params as { month: string }
+  const currentMonth = params.month ? new Date(params.month) : new Date()
 
   const { shifts, lenguage, addsInitialized, companysInfo, configInfo, userInfo } = useCalendar()
 
@@ -166,11 +169,13 @@ export default function Totals() {
         <Text style={styles.textLine}>{translateFn("workedDays")}:</Text>
         <View style={styles.botonVer}>
           <Text style={styles.textLine}>{workedDays}</Text>
-          {workedDays !== 0 && <Link to={`/totalsDetail/${currentDay}/${employer}`} activeOpacity={0.8} underlayColor="none">
-            <ButtonSmall color={configInfo.buttonsColor}>
-              <Text style={styles.textButtonSmall}>{translateFn("seeDetail")}</Text>
-            </ButtonSmall>
-          </Link>}
+          {workedDays !== 0 && 
+            <TouchableOpacity onPress={() => navigation.navigate('MonthDetail', { month: currentDay.toDateString(), employer: employer })} activeOpacity={0.8}>
+              <ButtonSmall color={configInfo.buttonsColor}>
+                <Text style={styles.textButtonSmall}>{translateFn("seeDetail")}</Text>
+              </ButtonSmall>
+            </TouchableOpacity>
+          }
         </View>
       </View>
 
@@ -212,7 +217,8 @@ export default function Totals() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10
+    padding: 10,
+    backgroundColor: '#ffffff'
   },
   line: {
     paddingHorizontal: 14,

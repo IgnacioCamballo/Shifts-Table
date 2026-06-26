@@ -1,7 +1,6 @@
 import React from "react"
 import { TouchableOpacity, View, Text, StyleSheet } from "react-native"
 import { Dimensions } from "react-native"
-import { Navigate } from "react-router-native"
 import Icon from 'react-native-vector-icons/AntDesign';
 import Icon2 from 'react-native-vector-icons/FontAwesome';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -13,15 +12,13 @@ import theme from "@/theme/theme"
 type RenderDayCalendarProps = {
   item : DayProps,
   currentDay: Date,
-  pressedDate: Date,
-  nav: boolean,
   onPress: (key: string) => void
 }
 
 let screenWidth = Dimensions.get("window").width
 const containerWidth = (screenWidth - 22)/7
 
-export default function RenderDayCalendar({item, currentDay, pressedDate, nav, onPress}: RenderDayCalendarProps) {
+export default function RenderDayCalendar({item, currentDay, onPress}: RenderDayCalendarProps) {
   const {shifts, companysInfo, userInfo} = useCalendar()
 
   //gets variable heigth for the screen without statusbar
@@ -41,7 +38,6 @@ export default function RenderDayCalendar({item, currentDay, pressedDate, nav, o
       onPress={() => onPress(key)}
     >
       <View style={[shadowed ? styles.dayContainerEmpty : styles.dayContainer, {height: dayContainerHeight}]}>
-        {nav && <Navigate to={`/calendar/shifts/${pressedDate}`}/>}
         {shadowed === true ? <View></View> : colorShifts.map(shiftColor => 
           <View 
             key={shiftColor.key} 

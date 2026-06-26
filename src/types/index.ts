@@ -70,6 +70,34 @@ export type DayProps = {
     shadowed: boolean
 }
 
+//Son los types de las distintas paginas, se usan para el navigation y para el useParams, se pueden agregar mas paginas y sus parametros aca
+export type RootStackParamList = {
+  LoadingPage: undefined
+
+  Calendar: undefined
+  Shifts: { date: string }
+  NewShift: { date: string }
+  EditShift: { date: string; shift: string }
+
+  Config: undefined
+  NewEmployer: { date?: string } | undefined
+  EditEmployer: { employer: number }
+
+  Totals: { month: string }
+  MonthDetail: { month: string; employer: number }
+
+  AccountIntro: { lg: string }
+  SelectLenguage: undefined
+  Login: { lg: string; type: '1' | '2' }
+  PassRecover: { lg: string }
+  CreateAccount: { lg: string; type: '1' | '2' }
+  PrePurchaseLogin: undefined
+  DeleteAccount: undefined
+
+  PremiumPurchase: undefined
+  PremiumPurchaseSuccess: undefined
+}
+
 export type CalendarContextProps = {   
     userInfo: UserInfo,
     configInfo: ConfigInfo,

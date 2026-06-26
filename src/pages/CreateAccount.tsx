@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react'
-import { Text, View, StyleSheet, ScrollView, Platform } from 'react-native'
-import { TextInput, TouchableOpacity } from 'react-native-gesture-handler'
+import { Text, View, StyleSheet, ScrollView, Platform, TouchableOpacity } from 'react-native'
+import { TextInput } from 'react-native-gesture-handler'
 import { useMutation } from '@tanstack/react-query'
-import { useNavigate, useParams } from 'react-router-native'
 import Icon from 'react-native-vector-icons/Feather'
 import IconArrow from 'react-native-vector-icons/AntDesign'
 import isEmail from 'validator/lib/isEmail'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useNavigation } from '@react-navigation/native'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import useCalendar from '@/hooks/useCalendar'
+import { RootStackParamList } from '@/types'
 import theme from '@/theme/theme'
 import { translate } from '@/utils'
 import { createUser, createValidationToken } from '@/api/UserAPI'
@@ -15,20 +18,18 @@ import { createUser, createValidationToken } from '@/api/UserAPI'
 import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
 import TransparentButton from '@/components/Atoms/Buttons/ButtonTransparent'
 import Spinner from '@/components/Atoms/Spinner'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 export default function CreateAccount() {
   const { setUserInfo, setLenguage } = useCalendar()
-  const params = useParams()
-  const lenguage = params.lg!
-  const type = params.type!
-  
-  const navigate = useNavigate()
 
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
+  const params = navigation.getState().routes[navigation.getState().index].params as { lg: string, type: string }
+  const lenguage = params.lg
+  const type = params.type
   //gets variable heigth for the screen without statusbar
   const insets = useSafeAreaInsets()
   const noFooterNoHeaderHeight = theme.heigth.screenHeight - insets.top - Math.max(insets.bottom, theme.heigth.bottomSystemBar) - theme.heigth.noFooterNoHeader
-  
+
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text: string) {
@@ -73,7 +74,14 @@ export default function CreateAccount() {
       const userInfo = { userName, mail, lastBackUp: null, premium: false }
       setUserInfo(userInfo)
       setLenguage(lenguage)
-      navigate("/calendar")
+      if (type === "2") {
+        navigation.goBack()
+      } else {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Calendar" }]
+        })
+      }
     }
   })
 
@@ -99,23 +107,23 @@ export default function CreateAccount() {
   }, [inputToken])
 
   return (
-    <ScrollView 
-      showsVerticalScrollIndicator={false} 
-      contentContainerStyle={[styles.contentContainer, {height: noFooterNoHeaderHeight}]} 
-      style={[styles.container, {    maxHeight: noFooterNoHeaderHeight,
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={[styles.contentContainer, { height: noFooterNoHeaderHeight }]}
+      style={[styles.container, {
+        maxHeight: noFooterNoHeaderHeight,
       }]}
     >
-      {!tokenId && 
-        <TransparentButton link={type === "2" ? "/account/prePurchaseLogin" : `/account/${lenguage}`} style={styles.arrow}>
-          <IconArrow
-            name="doubleleft"
-            color={theme.colors.negro}
-            size={20}
-          />
-        </TransparentButton>
-      }
+      <TransparentButton
+        onPress={() => navigation.goBack()} style={styles.arrow}>
+        <IconArrow
+          name="doubleleft"
+          color={theme.colors.negro}
+          size={20}
+        />
+      </TransparentButton>
 
-      {!tokenId ? 
+      {!tokenId ?
         <>
           <Text style={styles.title}>{translateFn("createAccount")}</Text>
 
@@ -184,25 +192,24 @@ export default function CreateAccount() {
           }
         </> :
         <>
-          {!creatingLoader ? 
-          <>
-            <Text style={styles.title}>{translateFn("validationCode")}</Text>
-            <Text style={styles.textValidation}>{translateFn("validationText")}</Text>
-            <TextInput 
-              style={[styles.input, styles.vfyCode]}
-              keyboardType='numeric'
-              onChangeText={setInputToken}
-              value={inputToken}
-            />
-          </> 
-          : <>
-              <Spinner style={{marginTop: 60}} size={50} borderWidth={10}/>
+          {!creatingLoader ?
+            <>
+              <Text style={styles.title}>{translateFn("validationCode")}</Text>
+              <Text style={styles.textValidation}>{translateFn("validationText")}</Text>
+              <TextInput
+                style={[styles.input, styles.vfyCode]}
+                keyboardType='numeric'
+                onChangeText={setInputToken}
+                value={inputToken}
+              />
+            </>
+            : <>
+              <Spinner style={{ marginTop: 60 }} size={50} borderWidth={10} />
               <Text>{translateFn("creatingAccount")}</Text>
             </>
           }
         </>
       }
-
     </ScrollView>
   )
 }
@@ -210,11 +217,12 @@ export default function CreateAccount() {
 const styles = StyleSheet.create({
   container: {
     position: "relative",
+    backgroundColor: theme.colors.blanco
   },
   contentContainer: {
     alignItems: "center",
     justifyContent: "center",
-    marginTop: -60,
+    marginTop: Platform.OS === 'ios' ? 0 : -50,
     gap: 12
   },
   arrow: {
@@ -256,8 +264,8 @@ const styles = StyleSheet.create({
   },
   vfyCode: {
     fontSize: 24,
-    fontWeight: "600", 
-    textAlign: "center", 
+    fontWeight: "600",
+    textAlign: "center",
     letterSpacing: 4,
     minWidth: 180
   },
@@ -273,7 +281,7 @@ const styles = StyleSheet.create({
   },
   eye: {
     position: "absolute",
-    bottom: Platform.OS === "ios" ? 10 : 12,
+    bottom: Platform.OS === "ios" ? 26 : 30,
     right: 12,
     zIndex: 1
   },

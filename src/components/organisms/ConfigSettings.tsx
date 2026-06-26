@@ -2,21 +2,23 @@ import React, { useEffect, useRef, useState } from 'react'
 import { View, Text, StyleSheet, TouchableOpacity, Linking, Alert, Animated, Easing, Platform } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useMutation } from '@tanstack/react-query'
-import { useNavigate } from 'react-router-native'
 import { Picker } from '@react-native-picker/picker'
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { useNavigation } from '@react-navigation/native'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import useCalendar from '@/hooks/useCalendar'
 import { translate } from '@/utils'
 import theme from '@/theme/theme'
 import { saveUserInfo } from '@/api/UserInfoAPI'
+import { RootStackParamList } from '@/types'
+import { isSameDay } from '@/utils/datesCompare'
 
 import DropDownAutoHeight from '@/components/Molecules/DropDownAutoHeight'
 import IosPickerModal from '@/components/Molecules/IosPickerModal'
 import ModalColorPicker from '@/components/Molecules/ModalColorPicker'
 import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
 import Spinner from '@/components/Atoms/Spinner'
-import { isSameDay } from '@/utils/datesCompare'
 
 export default function ConfigSettings() {
   const {
@@ -27,7 +29,7 @@ export default function ConfigSettings() {
     companysInfo, setCompanysInfo,
     lastBackup, setLastBackup
   } = useCalendar()
-  const navigate = useNavigate()
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text: string) {
@@ -123,7 +125,7 @@ export default function ConfigSettings() {
               exit: null
             })
             setLastBackup(null)
-            navigate(`/account/${lenguage}`)
+            navigation.replace("AccountIntro", { lg: lenguage })
           },
           style: 'cancel'
         },
@@ -270,7 +272,7 @@ export default function ConfigSettings() {
           </View>
         </> :
         <>
-          <Text style={styles.centeredLogin} onPress={() => navigate(`/account/${lenguage}`)}>{translateFn("login")} / {translateFn("createAccount")}</Text>
+          <Text style={styles.centeredLogin} onPress={() => navigation.replace("AccountIntro", { lg: lenguage })}>{translateFn("login")} / {translateFn("createAccount")}</Text>
         </>
       }
 
@@ -298,7 +300,7 @@ export default function ConfigSettings() {
       <Text style={styles.centeredText} onPress={() => Linking.openURL("https://cambadev.netlify.app/Shifts-Table/privacy-policy")}>{translateFn("privacyPolicies")}</Text>
       <Text style={styles.centeredText} onPress={() => Linking.openURL("https://cambadev.netlify.app/Shifts-Table/guide")}>{translateFn("guide")}</Text>
       {userInfo.mail ?
-        <TouchableOpacity activeOpacity={0.8} onPress={() => navigate('/account/deleteAccount')}>
+        <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate("DeleteAccount")}>
           <Text style={[styles.textLine, styles.deleteAccount]}>{translateFn("deleteAccount")}</Text>
         </TouchableOpacity>
         : <></>
@@ -418,7 +420,8 @@ const styles = StyleSheet.create({
     color: theme.colors.rojo,
     fontWeight: 600,
     fontSize: theme.fontSizes.F16,
-    textAlign: "center"
+    textAlign: "center",
+    lineHeight: 20,
   },
   backup: {
     marginBottom: 2,

@@ -1,4 +1,5 @@
 import trans from "@/lenguages/lenguages.json"
+import { useNavigationState } from '@react-navigation/native'
 
 //returns list of days of the week starting on monday
 export function weekdays(lenguage: string) {
@@ -48,4 +49,12 @@ export function translate({text, lenguage}:{text: string, lenguage: string}) {
   const words: {[key: string]: {lenguage: string; text: string}[]} = trans
   const object: {lenguage: string; text: string}[] = words[text]
   return object.find((i: { lenguage: string; }) => i.lenguage === lenguage)?.text
+}
+
+export function getRouteName() {
+  const routeName = useNavigationState(state => {
+    if(state === undefined) return 'LoadingPage'
+    return state.routes[state.index]?.name
+  })
+  return routeName
 }

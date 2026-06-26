@@ -1,25 +1,26 @@
 import React, { useState } from 'react'
 import { Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import { useNavigate, useParams } from 'react-router-native'
 import { useMutation } from '@tanstack/react-query'
 import { isEmail } from 'validator'
 import IconArrow from 'react-native-vector-icons/AntDesign'
 import Icon from 'react-native-vector-icons/Feather'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useNavigation } from '@react-navigation/native'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import theme from '@/theme/theme'
+import { RootStackParamList } from '@/types'
 import { translate } from '@/utils'
 import { changePassword, createPassRecoveryToken } from '@/api/UserAPI'
 
 import TransparentButton from '@/components/Atoms/Buttons/ButtonTransparent'
 import Spinner from '@/components/Atoms/Spinner'
 import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { set } from 'zod'
 
 export default function PassRecover() {
-  const params = useParams()
-  const lenguage = params.lg!
-  const navigate = useNavigate()
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
+  const params = navigation.getState().routes[navigation.getState().index].params as { lg: string }
+  const lenguage = params.lg
 
   //gets variable heigth for the screen without statusbar
   const insets = useSafeAreaInsets()
@@ -73,7 +74,7 @@ export default function PassRecover() {
         setError(true)
       },
       onSuccess: () => {
-        navigate(`/account/${lenguage}/login/1`)
+        navigation.goBack()
       }
     })
 
@@ -119,7 +120,7 @@ export default function PassRecover() {
         </>
         :
         <>
-          <TransparentButton link={`/account/${lenguage}`} style={styles.arrow}>
+          <TransparentButton onPress={() => navigation.goBack()} style={styles.arrow}>
             <IconArrow
               name="doubleleft"
               color={theme.colors.negro}
@@ -213,7 +214,7 @@ const styles = StyleSheet.create({
   contentContainer: {
     alignItems: "center",
     justifyContent: "center",
-    marginTop: -60,
+    marginTop: Platform.OS === 'ios' ? 0 : -50,
     gap: 12
   },
   arrow: {

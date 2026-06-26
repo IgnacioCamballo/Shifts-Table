@@ -1,9 +1,13 @@
 import React, { useState } from 'react'
 import { StyleSheet, Text, View, Platform, ScrollView } from 'react-native'
 import Constants from "expo-constants"
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useNavigation } from '@react-navigation/native'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import useCalendar from '@/hooks/useCalendar'
 import { translate } from '@/utils'
+import { RootStackParamList } from '@/types'
 import theme from '@/theme/theme'
 
 import Button from '@/components/Atoms/Buttons/Button'
@@ -12,10 +16,10 @@ import Employer from '@/components/Molecules/Employer'
 import ConfigDefaultTimes from '@/components/organisms/ConfigDefaultTimes'
 import DropDownAutoHeight from '@/components/Molecules/DropDownAutoHeight'
 import BannerPremium from '@/components/Atoms/Buttons/BannerPremium'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 export default function Config() {
   const { companysInfo, lenguage, configInfo, userInfo } = useCalendar()
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
 
   //gets variable heigth for the screen without statusbar
   const insets = useSafeAreaInsets()
@@ -29,7 +33,7 @@ export default function Config() {
   const [employersOpen, setEmployersOpen] = useState(false)
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} style={{maxHeight: noFooterNoHeaderHeight}}>
+    <ScrollView showsVerticalScrollIndicator={false} style={{maxHeight: noFooterNoHeaderHeight, backgroundColor: '#ffffff'}}>
       <View style={styles.p8}>
 
         <ConfigDefaultTimes />
@@ -60,7 +64,7 @@ export default function Config() {
 
         <Button
           margintop={20}
-          to='/config/newEmployer'
+          onPress={() => navigation.navigate('NewEmployer')}
           color={theme.colors.grisMasClaro}
           buttonStyles={styles.botonStyle}
         >
