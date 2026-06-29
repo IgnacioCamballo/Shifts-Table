@@ -3,6 +3,7 @@ import { View, StyleSheet, StatusBar } from 'react-native'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 
+import { CalendarProvider } from '@/context/CalendarProvider'
 import useCalendar from '@/hooks/useCalendar'
 import { RootStackParamList } from '@/types'
 
@@ -94,7 +95,9 @@ export default function Main() {
         }
       }}
     >
-      <RouterContent routeName={routeName} />
+      <CalendarProvider>
+        <RouterContent routeName={routeName} />
+      </CalendarProvider>
     </NavigationContainer>
   )
 }

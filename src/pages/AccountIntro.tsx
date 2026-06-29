@@ -1,13 +1,12 @@
 import React from 'react'
 import { Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Platform } from 'react-native'
-import { useParams } from 'react-router-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useNavigation } from '@react-navigation/native'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import useCalendar from '@/hooks/useCalendar'
 import theme from '@/theme/theme'
 import { translate } from '@/utils'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { useNavigation } from '@react-navigation/native'
-import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { RootStackParamList } from '@/types'
 
 export default function AccountIntro() {

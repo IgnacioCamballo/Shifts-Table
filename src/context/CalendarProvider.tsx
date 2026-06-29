@@ -2,12 +2,13 @@ import React, { useState, createContext, useEffect } from "react"
 import { MobileAds } from 'react-native-google-mobile-ads';
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigation } from '@react-navigation/native'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
-import { CalendarContextProps, ConfigInfo, EmployerProps, ShiftProps, UserInfo } from "@/types"
+import { CalendarContextProps, ConfigInfo, EmployerProps, ShiftProps, UserInfo, RootStackParamList } from "@/types"
 import theme from "@/theme/theme";
 import { getUserInfo, saveUserInfo } from "@/api/UserInfoAPI";
 import { Alert } from "react-native";
-import { useNavigate } from "react-router-native";
 import { translate } from "@/utils";
 
 interface props {
@@ -18,7 +19,7 @@ const CalendarContext = createContext<CalendarContextProps>({} as CalendarContex
 
 const CalendarProvider = ({ children }: props) => {
   const queryClient = useQueryClient()
-  const navigate = useNavigate()
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text: string) {
@@ -96,7 +97,7 @@ const CalendarProvider = ({ children }: props) => {
           `${translateFn("importantMessage")}`, 
           `${translateFn("premiumEndsMessage")}`,
           [
-            { text: translateFn("renew"), onPress: () => navigate("/premium-purchase"), style: "cancel"},
+            { text: translateFn("renew"), onPress: () => navigation.navigate("PremiumPurchase"), style: "cancel"},
             { text: translateFn("close"), style: "cancel" }
           ]
         )

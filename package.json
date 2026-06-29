@@ -12,7 +12,6 @@
     "@expo/metro-runtime": "~5.0.5",
     "@expo/vector-icons": "^14.1.0",
     "@react-native-async-storage/async-storage": "2.1.2",
-    "@react-native-community/checkbox": "^0.5.17",
     "@react-native-firebase/app": "^24.0.0",
     "@react-native-firebase/crashlytics": "^24.0.0",
     "@react-native-picker/picker": "2.11.1",
@@ -23,13 +22,20 @@
     "axios": "^1.6.8",
     "dotenv": "^16.4.7",
     "expo": "^53.0.0",
+    "expo-asset": "~11.1.7",
     "expo-build-properties": "~0.14.8",
+    "expo-constants": "~17.1.8",
     "expo-dev-client": "~5.2.4",
+    "expo-file-system": "~18.1.11",
     "expo-font": "~13.3.2",
     "expo-print": "~14.1.4",
     "expo-sharing": "~13.1.5",
     "expo-status-bar": "~2.2.3",
+    "expo-system-ui": "~5.0.11",
     "intl": "^1.2.5",
+    "metro": "^0.82.0",
+    "metro-config": "^0.82.0",
+    "metro-resolver": "^0.82.0",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-native": "0.79.6",
@@ -45,7 +51,7 @@
     "react-native-view-shot": "4.0.3",
     "react-native-web": "^0.20.0",
     "react-native-webview": "13.13.5",
-    "react-router-native": "^6.23.1",
+    "react-router-native": "^6.30.4",
     "reanimated-color-picker": "^3.0.4",
     "validator": "^13.12.0",
     "zod": "^4.3.6"
@@ -73,5 +79,22 @@
       "standard-jsx",
       "standard-react"
     ]
+  },
+  "expo": {
+    "doctor": {
+      "reactNativeDirectoryCheck": {
+        "exclude": [
+          "metro",
+          "dotenv",
+          "intl",
+          "metro-config",
+          "metro-resolver",
+          "react-native-vector-icons",
+          "react-router-native",
+          "validator"
+        ],
+        "listUnknownPackages": false
+      }
+    }
   }
 }

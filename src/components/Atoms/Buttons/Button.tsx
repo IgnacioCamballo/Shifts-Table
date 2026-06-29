@@ -1,6 +1,5 @@
 import React from 'react'
 import { View, StyleSheet, ColorValue, StyleProp, ViewStyle, TouchableOpacity } from 'react-native'
-import { Link } from 'react-router-native'
 
 interface ButtonProps {
     children: React.ReactNode,
