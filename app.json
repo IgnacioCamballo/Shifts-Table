@@ -7,6 +7,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "newArchEnabled": false,
     "splash": {
       "backgroundColor": "#ffffff"
     },
@@ -37,8 +38,7 @@
         {
           "android": {
             "compileSdkVersion": 35,
-            "targetSdkVersion": 35,
-            "newArchEnabled": false
+            "targetSdkVersion": 35
           }
         }
       ],
