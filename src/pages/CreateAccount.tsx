@@ -174,6 +174,7 @@ export default function CreateAccount() {
               <Icon
                 name={showPass ? "eye" : "eye-off"}
                 size={20}
+                color={theme.colors.negro}
               />
             </TouchableOpacity>
 
@@ -286,7 +287,7 @@ const styles = StyleSheet.create({
   },
   eye: {
     position: "absolute",
-    bottom: Platform.OS === "ios" ? 26 : 30,
+    bottom: Platform.OS === "ios" ? 26 : 32,
     right: 12,
     zIndex: 1
   },

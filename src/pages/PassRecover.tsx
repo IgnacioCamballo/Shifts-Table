@@ -186,6 +186,7 @@ export default function PassRecover() {
                   <Icon
                     name={showPass ? "eye" : "eye-off"}
                     size={20}
+                    color={theme.colors.negro}
                   />
                 </TouchableOpacity>
 
@@ -279,7 +280,7 @@ const styles = StyleSheet.create({
   },
   eye: {
     position: "absolute",
-    top: Platform.OS === 'ios' ? 32 : 36,
+    top: Platform.OS === 'ios' ? 32 : 38,
     right: 12,
     zIndex: 1
   },
