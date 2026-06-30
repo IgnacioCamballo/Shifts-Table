@@ -106,6 +106,7 @@ const styles = StyleSheet.create({
   containerGeneral: {
     flex: 1,
     backgroundColor: '#ffffff',
+    color: '#000000'
   },
   routesContainer: {
     flex: 1,

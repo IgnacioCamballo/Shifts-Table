@@ -233,7 +233,8 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: theme.fontSizes.F18,
-    marginLeft: 4
+    marginLeft: 4,
+    color: theme.colors.negro
   },
   text2: {
     fontSize: theme.fontSizes.F18,
@@ -243,10 +244,12 @@ const styles = StyleSheet.create({
   },
   textValidation: {
     fontSize: theme.fontSizes.F16,
-    marginHorizontal: 16
+    marginHorizontal: 16,
+    color: theme.colors.negro
   },
   textButton: {
     fontSize: theme.fontSizes.F20,
+    color: theme.colors.negro,
   },
   input: {
     minWidth: "70%",
@@ -255,6 +258,7 @@ const styles = StyleSheet.create({
     fontSize: theme.fontSizes.F18,
     paddingHorizontal: 16,
     paddingVertical: 4,
+    color: theme.colors.negro,
   },
   passwordInput: {
     backgroundColor: theme.colors.blanco,
@@ -270,7 +274,8 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     textAlign: "center",
     letterSpacing: 4,
-    minWidth: 180
+    minWidth: 180,
+    color: theme.colors.negro
   },
   eye: {
     position: "absolute",

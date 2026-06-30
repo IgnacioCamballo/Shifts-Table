@@ -493,7 +493,8 @@ const styles = StyleSheet.create({
   textLine: {
     fontSize: theme.fontSizes.F18,
     fontWeight: '400',
-    textAlign: "right"
+    textAlign: "right",
+    color: theme.colors.negro
   },
   inputBox: {
     borderWidth: 0.5,
@@ -526,7 +527,8 @@ const styles = StyleSheet.create({
   textLineCenter: {
     fontSize: theme.fontSizes.F18,
     fontWeight: "400",
-    textAlign: "center"
+    textAlign: "center",
+    color: theme.colors.negro
   },
   textInput: {
     borderColor: theme.colors.grisClaro,
@@ -537,7 +539,8 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     fontSize: theme.fontSizes.F18,
     textAlignVertical: "top",
-    maxHeight: 60
+    maxHeight: 60,
+    color: theme.colors.negro
   },
   textAlert: {
     fontSize: theme.fontSizes.F18,
@@ -598,11 +601,13 @@ const styles = StyleSheet.create({
   },
   textoBoton: {
     fontSize: theme.fontSizes.F18,
-    fontWeight: "500"
+    fontWeight: "500",
+    color: theme.colors.negro
   },
   textButtonSmall: {
     fontSize: theme.fontSizes.F20,
     fontWeight: "500",
-    lineHeight: theme.fontSizes.F20
+    lineHeight: theme.fontSizes.F20,
+    color: theme.colors.negro
   }
 })

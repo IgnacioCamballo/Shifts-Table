@@ -12,7 +12,7 @@ import ShiftForm from '@/components/organisms/ShiftForm'
 
 export default function NewShift() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
-  const params = navigation.getState().routes[navigation.getState().index].params as { date: string }
+  const params = navigation.getState().routes[2].params as { date: string }
   const pressedDate = new Date(params.date)
 
   const {shifts, lastShiftCreated, userInfo, setShifts, setLastShiftCreated} = useCalendar()

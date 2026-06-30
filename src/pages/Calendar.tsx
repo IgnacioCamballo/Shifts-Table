@@ -199,7 +199,8 @@ const styles = StyleSheet.create({
   textDayContainerText: {
     fontSize: theme.fontSizes.F16,
     textTransform: "uppercase",
-    fontWeight: "bold"
+    fontWeight: "bold",
+    color: theme.colors.negro
   },
   weekDays: {
     flexDirection: "row",
@@ -217,7 +218,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 1,
     right: 3,
-    fontSize: theme.fontSizes.F12
+    fontSize: theme.fontSizes.F12,
+    color: theme.colors.negro
   },
   emptyDayText: {
     position: "absolute",

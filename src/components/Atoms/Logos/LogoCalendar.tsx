@@ -42,7 +42,7 @@ export default function LogoCalendar({routeName}: LogoCalendarProps) {
             routeName === "EditShift" 
             ? theme.colors.azulClaro : theme.colors.negro}
           />
-          <Text>{translate({text:"calendar", lenguage})}</Text>
+          <Text style={styles.text}>{translate({text:"calendar", lenguage})}</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -55,17 +55,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   border:{
-      alignItems: "center",
+    alignItems: "center",
   },
   borderBlack: {
-      borderBottomColor: theme.colors.negro,
-      borderBottomWidth: 1    
+    borderBottomColor: theme.colors.negro,
+    borderBottomWidth: 1    
   },
   icono: {
-      margin: 0,
-      padding: 0,
-      fontSize: 45,
-      fontWeight: 'medium',
-      color: theme.colors.negro
+    margin: 0,
+    padding: 0,
+    fontSize: 45,
+    fontWeight: 'medium',
+    color: theme.colors.negro
+  },
+  text: {
+    color: theme.colors.negro
   }
 })

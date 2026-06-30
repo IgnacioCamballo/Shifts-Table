@@ -76,6 +76,7 @@ const styles = StyleSheet.create({
     top: Platform.OS === "ios" ? 52 : 0
   },
   textLine: {
+    color: theme.colors.negro,
     fontSize: theme.fontSizes.F18,
     fontWeight: '500'
   }

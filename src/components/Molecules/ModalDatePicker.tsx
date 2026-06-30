@@ -225,7 +225,8 @@ const styles = StyleSheet.create({
     width: "70%"
   },
   modalTitle: {
-    fontSize: 24
+    fontSize: 24,
+    color: theme.colors.negro
   },
   delete: {
     position: "relative",
@@ -237,6 +238,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end"
   },
   modalButton: {
-    fontSize: theme.fontSizes.F18
+    fontSize: theme.fontSizes.F18,
+    color: theme.colors.negro
   },
 })

@@ -109,17 +109,20 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: theme.fontSizes.F18,
-    fontWeight: "500"
+    fontWeight: "500",
+    color: theme.colors.negro
   },
   firstTitle: {
     width: "60%", 
     marginBottom: 20, 
-    fontSize: 18
+    fontSize: 18,
+    color: theme.colors.negro
   },
   o: {
     width: "60%", 
     marginVertical: -8, 
     textAlign: "center", 
-    textDecorationLine: 'underline'
+    textDecorationLine: 'underline',
+    color: theme.colors.negro
   }
 })

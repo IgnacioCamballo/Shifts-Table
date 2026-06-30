@@ -10,7 +10,7 @@ export default function EditShift() {
   const { shifts, setShifts} = useCalendar()
 
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
-  const params = navigation.getState().routes[navigation.getState().index].params as { date: string; shift: string }
+  const params = navigation.getState().routes[2].params as { date: string; shift: string }
   const pressedDate = new Date(params.date)
   const editingShiftKey = params.shift
   const editingShift = shifts.find(shift => shift.key === editingShiftKey)

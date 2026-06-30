@@ -40,15 +40,18 @@ const styles = StyleSheet.create({
     fontSize: theme.fontSizes.F24, 
     fontWeight: "700",
     marginTop: -60,
-    marginBottom: 20
+    marginBottom: 20,
+    color: theme.colors.negro
   },
   text2: {
     fontSize: theme.fontSizes.F20, 
     fontWeight: "500",
-    marginBottom: 20
+    marginBottom: 20,
+    color: theme.colors.negro
   },
   text3: {
     fontSize: theme.fontSizes.F20, 
-    textAlign: "center"
+    textAlign: "center",
+    color: theme.colors.negro
   }
 })

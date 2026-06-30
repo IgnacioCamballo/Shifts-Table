@@ -127,7 +127,8 @@ const styles = StyleSheet.create({
     },
     textLine: {
       fontSize: theme.fontSizes.F20,
-      fontWeight: '400'
+      fontWeight: '400',
+      color: theme.colors.negro
     },
     contPago: {
       flexDirection: "row",

@@ -59,7 +59,8 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     justifyContent: "center",
-    gap: 12
+    gap: 12,
+    backgroundColor: theme.colors.blanco
   },
   title: {
     fontSize: theme.fontSizes.F20,
@@ -76,6 +77,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: theme.fontSizes.F18,
+    color: theme.colors.negro,
   },
   selected: {
     backgroundColor: theme.colors.azulClaro
@@ -92,7 +94,8 @@ const styles = StyleSheet.create({
     paddingVertical: 2
   },
   continueText: {
-    fontSize: theme.fontSizes.F18
+    fontSize: theme.fontSizes.F18,
+    color: theme.colors.negro
   },
   textAlert: {
     fontSize: theme.fontSizes.F18,

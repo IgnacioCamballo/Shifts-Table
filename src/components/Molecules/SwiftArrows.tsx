@@ -48,6 +48,7 @@ const styles = StyleSheet.create({
   },
   monthText: {
     fontSize: theme.fontSizes.F20,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    color: theme.colors.negro
   }
 })

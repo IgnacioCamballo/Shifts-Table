@@ -67,12 +67,14 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: theme.fontSizes.F18,
-    fontWeight: "500"
+    fontWeight: "500",
+    color: theme.colors.negro
   },
   firstTitle: {
     width: "60%",
     marginBottom: 20,
-    fontSize: 18
+    fontSize: 18,
+    color: theme.colors.negro
   },
   link: {
     position: "absolute",
@@ -81,6 +83,7 @@ const styles = StyleSheet.create({
   },
   textLine: {
     fontSize: theme.fontSizes.F18,
-    fontWeight: '500'
+    fontWeight: '500',
+    color: theme.colors.negro
   },
 })

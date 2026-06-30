@@ -17,7 +17,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 export default function Shifts() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
-  const params = navigation.getState().routes[navigation.getState().index].params as { date: string }
+  const params = navigation.getState().routes[1].params as { date: string }
   const pressedDate = params.date
 
   const {shifts, lenguage, addsInitialized, configInfo, userInfo} = useCalendar()
@@ -94,7 +94,8 @@ const styles = StyleSheet.create({
   },
   textoBoton: {
     fontSize: theme.fontSizes.F18,
-    fontWeight: "500"    
+    fontWeight: "500",
+    color: theme.colors.negro,    
   },
   banner:{
     height: 70, 

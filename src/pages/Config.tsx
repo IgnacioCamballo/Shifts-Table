@@ -138,6 +138,7 @@ const styles = StyleSheet.create({
     fontSize: theme.fontSizes.F16,
     borderTopWidth: 2,
     width: "100%",
+    color: theme.colors.negro,
   },
   modalContainer: {
     flex: 1,
@@ -160,7 +161,8 @@ const styles = StyleSheet.create({
     width: "70%"
   },
   modalTitle: {
-    fontSize: 24
+    fontSize: 24,
+    color: theme.colors.negro
   },
   delete: {
     position: "relative",
@@ -175,11 +177,13 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end"
   },
   modalButton: {
-    fontSize: theme.fontSizes.F18
+    fontSize: theme.fontSizes.F18,
+    color: theme.colors.negro
   },
   textoBoton: {
     fontSize: theme.fontSizes.F18,
-    fontWeight: "500"
+    fontWeight: "500",
+    color: theme.colors.negro
   },
   botonStyle: {
     borderWidth: 1,

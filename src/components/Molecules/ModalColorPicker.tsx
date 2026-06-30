@@ -119,6 +119,7 @@ const styles = StyleSheet.create({
     marginTop: 20
   },
   botonText: {
-    fontSize: theme.fontSizes.F20
+    fontSize: theme.fontSizes.F20,
+    color: theme.colors.negro
   }
 })

@@ -6,6 +6,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import useCalendar from '@/hooks/useCalendar'
 import { RootStackParamList } from '@/types'
 import { translate } from '@/utils'
+import theme from '@/theme/theme'
 
 type Props = {
   style?: StyleProp<ViewStyle>
@@ -40,13 +41,13 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   text1: {
-    color: "white",
+    color: theme.colors.blanco,
     fontSize: 26,
     fontWeight: "900",
     textAlign: "center"
   },
   text2: {
-    color: "white",
+    color: theme.colors.blanco,
     fontSize: 20,
     fontWeight: "700",
     textAlign: "center"

@@ -84,7 +84,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 1,
     right: 3,
-    fontSize: theme.fontSizes.F12
+    fontSize: theme.fontSizes.F12,
+    color: theme.colors.negro
   },
   emptyDayText: {
     position: "absolute",

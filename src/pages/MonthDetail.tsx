@@ -380,7 +380,8 @@ const styles = StyleSheet.create({
   },
   textLine: {
     fontSize: theme.fontSizes.F18,
-    fontWeight: '400'
+    fontWeight: '400',
+    color: theme.colors.negro
   },
   employersContainer: {
     borderTopWidth: 2,
@@ -431,14 +432,14 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     borderBottomWidth: 1,
     borderColor: theme.colors.grisClaro,
-    color: theme.colors.gris,
+    color: theme.colors.negro,
     paddingBottom: 2
   },
   breakMessage: {
     width: "100%",
     textAlign: "center",
     alignSelf: "center",
-    color: theme.colors.gris,
+    color: theme.colors.negro,
     marginTop: 4,
     marginBottom: -2
   },
@@ -452,7 +453,8 @@ const styles = StyleSheet.create({
   },
   textSelector: {
     fontSize: theme.fontSizes.F16,
-    fontWeight: '400'
+    fontWeight: '400',
+    color: theme.colors.negro
   },
   flexRow: {
     flexDirection: "row",
@@ -520,10 +522,12 @@ const styles = StyleSheet.create({
   },
   modalText: {
     textAlign: "right",
-    fontSize: theme.fontSizes.F18
+    fontSize: theme.fontSizes.F18,
+    color: theme.colors.negro
   },
   modalText_s: {
     fontSize: theme.fontSizes.F14,
+    color: theme.colors.negro,
   },
   tableTopContainer: {
     flexDirection: "row",

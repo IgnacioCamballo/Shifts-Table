@@ -131,12 +131,14 @@ const styles = StyleSheet.create({
   preTitle: {
     fontSize: 20,
     fontWeight: "600",
-    marginTop: -60
+    marginTop: -60,
+    color: theme.colors.negro
   },
   title: {
     fontSize: 32,
     fontWeight: "700",
-    borderBottomWidth: 1
+    borderBottomWidth: 1,
+    color: theme.colors.negro
   },
   titleCont: {
     flexDirection: "row",
@@ -153,7 +155,8 @@ const styles = StyleSheet.create({
   },
   benefitText: {
     fontSize: 18,
-    lineHeight: 30
+    lineHeight: 30,
+    color: theme.colors.negro
   },
   button: {
     backgroundColor: theme.colors.verdeBase,

@@ -334,7 +334,8 @@ const styles = StyleSheet.create({
   },
   textLine: {
     fontSize: theme.fontSizes.F20,
-    fontWeight: '400'
+    fontWeight: '400',
+    color: theme.colors.negro
   },
   line: {
     paddingHorizontal: 15,
@@ -431,11 +432,13 @@ const styles = StyleSheet.create({
   centeredLogin: {
     textAlign: "center",
     marginVertical: 12,
-    fontSize: theme.fontSizes.F16
+    fontSize: theme.fontSizes.F16,
+    color: theme.colors.negro
   },
   centeredText: {
     textAlign: "center",
-    marginVertical: 2
+    marginVertical: 2,
+    color: theme.colors.negro
   },
   colorsContainer: {
     marginTop: -8,

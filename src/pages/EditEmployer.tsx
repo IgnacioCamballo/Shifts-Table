@@ -279,7 +279,8 @@ const styles = StyleSheet.create ({
     fontSize: theme.fontSizes.F20,
     fontWeight: '400',
     textAlign: "right",
-    textAlignVertical: "center"
+    textAlignVertical: "center",
+    color: theme.colors.negro
   },
   row: {
     flexDirection: "row"
@@ -336,7 +337,8 @@ const styles = StyleSheet.create ({
     borderWidth: Platform.OS === "android" ? 1 : 0,
   },
   botonText: {
-    fontSize: theme.fontSizes.F20
+    fontSize: theme.fontSizes.F20,
+    color: theme.colors.negro
   },
   textAlert: {
     fontSize: theme.fontSizes.F18,
@@ -351,10 +353,13 @@ const styles = StyleSheet.create ({
   },
   textoBoton: {
     fontSize: theme.fontSizes.F18,
-    fontWeight: "500"    
-  }, textBotonChico: {
+    fontWeight: "500",
+    color: theme.colors.negro
+  }, 
+  textBotonChico: {
     fontSize: theme.fontSizes.F20,
     fontWeight: "500",
-    lineHeight: theme.fontSizes.F20
+    lineHeight: theme.fontSizes.F20,
+    color: theme.colors.negro
   }
 })

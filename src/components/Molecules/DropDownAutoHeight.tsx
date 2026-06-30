@@ -94,13 +94,15 @@ const styles = StyleSheet.create({
     fontSize: theme.fontSizes.F18,
     fontWeight: '400',
     textAlign: "right",
-    marginHorizontal: 4
+    marginHorizontal: 4,
+    color: theme.colors.negro
   },
   textRight: {
     position: "absolute",
     right: 14,
     fontSize: theme.fontSizes.F18,
-    fontWeight: '400'
+    fontWeight: '400',
+    color: theme.colors.negro
   },
   heightAuto: {
     height: "auto",
