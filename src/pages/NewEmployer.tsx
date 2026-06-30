@@ -313,6 +313,7 @@ const styles = StyleSheet.create ({
   textBotonChico: {
     fontSize: theme.fontSizes.F20,
     fontWeight: "500",
-    lineHeight: theme.fontSizes.F20
+    lineHeight: theme.fontSizes.F20,
+    color: theme.colors.negro
   }
 })
