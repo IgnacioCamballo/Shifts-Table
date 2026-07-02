@@ -95,7 +95,7 @@ export default function Main() {
         }
       }}
     >
-      <CalendarProvider>
+      <CalendarProvider routeName={routeName}>
         <RouterContent routeName={routeName} />
       </CalendarProvider>
     </NavigationContainer>

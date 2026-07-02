@@ -490,6 +490,21 @@
     {"lenguage": "en", "text": "Note: If you continue without an account and then log in with an existing account, the account data will overwrite the data entered when using without an account"},
     {"lenguage": "pt", "text": "Observação: Se você continuar sem uma conta e fizer login com uma conta existente, os dados da conta substituirão os dados inseridos ao usar sem uma conta"}
   ],
+  "update": [
+    {"lenguage": "es", "text": "Actualizar"},
+    {"lenguage": "en", "text": "Update"},
+    {"lenguage": "pt", "text": "Atualizar"}
+  ],
+  "skip": [
+    {"lenguage": "es", "text": "Saltar"},
+    {"lenguage": "en", "text": "Skip"},
+    {"lenguage": "pt", "text": "Pular"}
+  ],
+  "maintenance": [
+    {"lenguage": "es", "text": "Mantenimiento"},
+    {"lenguage": "en", "text": "Maintenance"},
+    {"lenguage": "pt", "text": "Manutenção"}
+  ],
   "continueWithoutAccountTitle": [
     {"lenguage": "es", "text": "continua sin una cuenta, luego puedes crear una manteniendo la información"},
     {"lenguage": "en", "text": "continue without an account, you can create one after while keeping the information"},

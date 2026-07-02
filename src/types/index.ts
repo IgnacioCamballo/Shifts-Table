@@ -103,7 +103,7 @@ export type CalendarContextProps = {
     configInfo: ConfigInfo,
     companysInfo: EmployerProps[],
     shifts: ShiftProps[],
-    lenguage: string,
+    lenguage: "es" | "en" | "pt",
     lastShiftCreated: Date,
     lastBackup: Date | null | undefined,
     addsInitialized: boolean,
@@ -111,7 +111,7 @@ export type CalendarContextProps = {
     setConfigInfo: React.Dispatch<React.SetStateAction<ConfigInfo>>,
     setCompanysInfo: React.Dispatch<React.SetStateAction<EmployerProps[]>>,
     setShifts: React.Dispatch<React.SetStateAction<ShiftProps[]>>,
-    setLenguage: React.Dispatch<React.SetStateAction<string>>,
+    setLenguage: React.Dispatch<React.SetStateAction<"es" | "en" | "pt">>,
     setLastShiftCreated: React.Dispatch<React.SetStateAction<Date>>,
     setLastBackup: React.Dispatch<React.SetStateAction<Date | null | undefined>>,
     syncPremiumStatus: () => Promise<void>

@@ -1,23 +1,25 @@
 import React, { useState, createContext, useEffect } from "react"
+import { Alert, Linking, Modal, Platform, StyleSheet, Text, View } from "react-native";
 import { MobileAds } from 'react-native-google-mobile-ads';
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import * as Application from 'expo-application';
 
 import { CalendarContextProps, ConfigInfo, EmployerProps, ShiftProps, UserInfo, RootStackParamList } from "@/types"
 import theme from "@/theme/theme";
 import { getUserInfo, saveUserInfo } from "@/api/UserInfoAPI";
-import { Alert } from "react-native";
 import { translate } from "@/utils";
 
 interface props {
   children: React.ReactNode
+  routeName: keyof RootStackParamList
 }
 
 const CalendarContext = createContext<CalendarContextProps>({} as CalendarContextProps)
 
-const CalendarProvider = ({ children }: props) => {
+const CalendarProvider = ({ children, routeName }: props) => {
   const queryClient = useQueryClient()
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
 
@@ -46,19 +48,42 @@ const CalendarProvider = ({ children }: props) => {
   const [configInfo, setConfigInfo] = useState<ConfigInfo>(initialConfigInfo)
   const [companysInfo, setCompanysInfo] = useState<EmployerProps[]>([])
   const [shifts, setShifts] = useState<ShiftProps[]>([])
-  const [lenguage, setLenguage] = useState<string>("en")
+  const [lenguage, setLenguage] = useState<"es" | "en" | "pt">("en")
   const [addsInitialized, setAddsInitialized] = useState(false)
   const [lastShiftCreated, setLastShiftCreated] = useState<Date>(new Date(new Date().getFullYear(), new Date().getMonth() - 1))
   const [lastBackup, setLastBackup] = useState<Date | null>()
+  const [showMaintenanceAlert, setShowMaintenanceAlert] = useState(false)
+  const [maintenanceMessage, setMaintenanceMessage] = useState("")
 
   //Syncs premium status with the server, in case the user has renewed or lost premium status on another device
   //Called in loadingPage when there is storagedData in device
   const syncPremiumStatus = async () => {
     try {
       const data = await getUserInfo()
+      if(!data) return
 
-      if(!data || typeof data.premiumEnds === 'undefined') return
+      //If maintenance is active, shows alert with maintenance message and stops the function
+      if(data.version && data.version.maintenance.isActive) {
+        setMaintenanceMessage(data.version.maintenance.message[lenguage])
+        setShowMaintenanceAlert(true)
+        return
+      }
+      
+      //If the installed version is not the lastone, shows alert to update the app
+      if(data.version[Platform.OS] && data.version[Platform.OS].latestVersion > Application.nativeBuildVersion!) {
+        Alert.alert(
+          "",
+          `${data.version[Platform.OS].message[lenguage]}`,
+          [
+            { text: translateFn("update"), onPress: () => Linking.openURL(data.version[Platform.OS].url)},
+            { text: translateFn("skip"), style: "cancel" }
+          ]
+        )
+      }
 
+      if(typeof data.premiumEnds === 'undefined') return
+
+      //If premiumEnds exist or a date in the future, user is premium and updates local storage
       const isPremium = data.premiumEnds !== null && data.premiumEnds > Date.now()
       setUserInfo(previous => ({
         ...previous,
@@ -144,6 +169,18 @@ const CalendarProvider = ({ children }: props) => {
         syncPremiumStatus
       }}
     >
+      <Modal
+        visible={showMaintenanceAlert && routeName !== "LoadingPage"}
+        transparent
+        animationType="fade"
+      >
+        <View style={styles.maintenanceOverlay}>
+          <View style={styles.maintenanceCard}>
+            <Text style={styles.maintenanceTitle}>{translateFn("maintenance")}</Text>
+            <Text style={styles.maintenanceMessage}>{maintenanceMessage}</Text>
+          </View>
+        </View>
+      </Modal>
       {children}
     </CalendarContext.Provider>
   )
@@ -152,3 +189,31 @@ const CalendarProvider = ({ children }: props) => {
 export { CalendarProvider }
 
 export default CalendarContext
+
+const styles = StyleSheet.create({
+  maintenanceOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.55)",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 24,
+  },
+  maintenanceCard: {
+    width: "100%",
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    paddingHorizontal: 20,
+    paddingVertical: 24
+  },
+  maintenanceTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    marginBottom: 12,
+    color: theme.colors.negro
+  },
+  maintenanceMessage: {
+    fontSize: 16,
+    lineHeight: 22,
+    color: theme.colors.negro
+  },
+})
