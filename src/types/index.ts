@@ -114,6 +114,6 @@ export type CalendarContextProps = {
     setLenguage: React.Dispatch<React.SetStateAction<"es" | "en" | "pt">>,
     setLastShiftCreated: React.Dispatch<React.SetStateAction<Date>>,
     setLastBackup: React.Dispatch<React.SetStateAction<Date | null | undefined>>,
-    syncPremiumStatus: () => Promise<void>
+    syncPremiumStatus: (lg: "es" | "en" | "pt") => Promise<void>
 }
 

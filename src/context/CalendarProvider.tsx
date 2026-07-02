@@ -29,11 +29,11 @@ const CalendarProvider = ({ children, routeName }: props) => {
   }
 
   const initialConfigInfo = {
-    baseColor: theme.colors.verdeBase, 
-    buttonsColor: theme.colors.verdeBoton, 
-    configBreakEntry: null, 
-    configBreakExit: null, 
-    entry: null, 
+    baseColor: theme.colors.verdeBase,
+    buttonsColor: theme.colors.verdeBoton,
+    configBreakEntry: null,
+    configBreakExit: null,
+    entry: null,
     exit: null
   }
 
@@ -43,7 +43,7 @@ const CalendarProvider = ({ children, routeName }: props) => {
     lastBackUp: null,
     premium: false
   }
-  
+
   const [userInfo, setUserInfo] = useState<UserInfo>(initialUserInfo)
   const [configInfo, setConfigInfo] = useState<ConfigInfo>(initialConfigInfo)
   const [companysInfo, setCompanysInfo] = useState<EmployerProps[]>([])
@@ -53,35 +53,31 @@ const CalendarProvider = ({ children, routeName }: props) => {
   const [lastShiftCreated, setLastShiftCreated] = useState<Date>(new Date(new Date().getFullYear(), new Date().getMonth() - 1))
   const [lastBackup, setLastBackup] = useState<Date | null>()
   const [showMaintenanceAlert, setShowMaintenanceAlert] = useState(false)
-  const [maintenanceMessage, setMaintenanceMessage] = useState("")
+  const [showUpdateAlert, setShowUpdateAlert] = useState(false)
+  const [modalMessage, setModalMessage] = useState("")
 
   //Syncs premium status with the server, in case the user has renewed or lost premium status on another device
   //Called in loadingPage when there is storagedData in device
-  const syncPremiumStatus = async () => {
+  const syncPremiumStatus = async (lg: typeof lenguage) => {
     try {
       const data = await getUserInfo()
-      if(!data) return
+      if (!data) return
 
       //If maintenance is active, shows alert with maintenance message and stops the function
-      if(data.version && data.version.maintenance.isActive) {
-        setMaintenanceMessage(data.version.maintenance.message[lenguage])
+      if (data.version && data.version.maintenance.isActive) {
+        setModalMessage(data.version.maintenance.message[lg])
         setShowMaintenanceAlert(true)
         return
       }
-      
+
       //If the installed version is not the lastone, shows alert to update the app
-      if(data.version[Platform.OS] && data.version[Platform.OS].latestVersion > Application.nativeBuildVersion!) {
-        Alert.alert(
-          "",
-          `${data.version[Platform.OS].message[lenguage]}`,
-          [
-            { text: translateFn("update"), onPress: () => Linking.openURL(data.version[Platform.OS].url)},
-            { text: translateFn("skip"), style: "cancel" }
-          ]
-        )
+      if (data.version[Platform.OS] && data.version[Platform.OS].latestVersion > Application.nativeBuildVersion!) {
+        setModalMessage(data.version[Platform.OS].message[lg])
+        setShowUpdateAlert(true)
+        return
       }
 
-      if(typeof data.premiumEnds === 'undefined') return
+      if (typeof data.premiumEnds === 'undefined') return
 
       //If premiumEnds exist or a date in the future, user is premium and updates local storage
       const isPremium = data.premiumEnds !== null && data.premiumEnds > Date.now()
@@ -104,8 +100,8 @@ const CalendarProvider = ({ children, routeName }: props) => {
     } catch (error) {
       console.log(error)
     }
-  }   
-  
+  }
+
   //Saves user Information in db
   const { mutate } = useMutation({
     mutationFn: saveUserInfo,
@@ -114,15 +110,15 @@ const CalendarProvider = ({ children, routeName }: props) => {
     },
     onSuccess: (data) => {
       //if premium finishes sets userinfo as not premium and shows an alert and ask if the user wants to renew the premium
-      if(data.endPremium || (data.premiumEnds < Date.now() && userInfo.premium)) {
-        setUserInfo({...userInfo, premium: false})
+      if (data.endPremium || (data.premiumEnds < Date.now() && userInfo.premium)) {
+        setUserInfo({ ...userInfo, premium: false })
         queryClient.invalidateQueries({ queryKey: ["UserInfoDB"] })
 
         Alert.alert(
-          `${translateFn("importantMessage")}`, 
+          `${translateFn("importantMessage")}`,
           `${translateFn("premiumEndsMessage")}`,
           [
-            { text: translateFn("renew"), onPress: () => navigation.navigate("PremiumPurchase"), style: "cancel"},
+            { text: translateFn("renew"), onPress: () => navigation.navigate("PremiumPurchase"), style: "cancel" },
             { text: translateFn("close"), style: "cancel" }
           ]
         )
@@ -136,18 +132,18 @@ const CalendarProvider = ({ children, routeName }: props) => {
 
   useEffect(() => {
     //saves any change in the phone storage
-    const userData = {userInfo, configInfo, companysInfo, shifts, lenguage, lastUpdate: Date.now(), lastShiftCreated, lastBackup}
+    const userData = { userInfo, configInfo, companysInfo, shifts, lenguage, lastUpdate: Date.now(), lastShiftCreated, lastBackup }
     AsyncStorage.setItem("userData", JSON.stringify(userData))
 
     //If User is premium saves in db
     //if a change is made without connection will be saved in asyncstorage, next time app is open it will take data from storage and update
     //the states, this useEffect will be activated and save the data in the db, so no need of extra functions
-    if(userInfo.premium) {
+    if (userInfo.premium) {
       const saveData = { configInfo, employers: companysInfo, lenguage, shifts }
       mutate(saveData)
     }
   }, [userInfo, configInfo, companysInfo, shifts, lenguage])
-  
+
   return (
     <CalendarContext.Provider
       value={{
@@ -158,8 +154,8 @@ const CalendarProvider = ({ children, routeName }: props) => {
         lenguage,
         lastShiftCreated,
         lastBackup,
-        setLastBackup,
         addsInitialized,
+        setLastBackup,
         setUserInfo,
         setConfigInfo,
         setCompanysInfo,
@@ -177,7 +173,23 @@ const CalendarProvider = ({ children, routeName }: props) => {
         <View style={styles.maintenanceOverlay}>
           <View style={styles.maintenanceCard}>
             <Text style={styles.maintenanceTitle}>{translateFn("maintenance")}</Text>
-            <Text style={styles.maintenanceMessage}>{maintenanceMessage}</Text>
+            <Text style={styles.maintenanceMessage}>{modalMessage}</Text>
+          </View>
+        </View>
+      </Modal>
+      <Modal
+        visible={showUpdateAlert && routeName !== "LoadingPage"}
+        transparent
+        animationType="fade"
+      >
+        <View style={styles.maintenanceOverlay}>
+          <View style={styles.maintenanceCard}>
+            <Text style={styles.maintenanceTitle}>{translateFn("update")}</Text>
+            <Text style={styles.maintenanceMessage}>{modalMessage}</Text>
+            <View style={styles.buttons}>
+              <Text style={styles.buttonText} onPress={() => Linking.openURL("https://play.google.com/store/apps/details?id=com.ignaciocamballo.shifts")}>{translateFn("update")}</Text>
+              <Text style={[styles.buttonText, { color: theme.colors.gris }]} onPress={() => setShowUpdateAlert(false)}>{translateFn("skip")}</Text>
+            </View>
           </View>
         </View>
       </Modal>
@@ -216,4 +228,14 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     color: theme.colors.negro
   },
+  buttons: {
+    flexDirection: "row", 
+    justifyContent: "flex-end", 
+    gap: 20,
+    marginTop: 20
+  },
+  buttonText: {
+    color: theme.colors.verdeBoton,
+    fontWeight: "700",
+  }
 })

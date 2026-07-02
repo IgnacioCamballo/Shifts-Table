@@ -139,7 +139,7 @@ export default function LoadingPage() {
         setShifts(maped)
 
         if(token) {
-          syncPremiumStatus()
+          syncPremiumStatus(parsed.lenguage)
         }
 
         return "Calendar"
