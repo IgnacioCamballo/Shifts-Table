@@ -187,7 +187,13 @@ const CalendarProvider = ({ children, routeName }: props) => {
             <Text style={styles.maintenanceTitle}>{translateFn("update")}</Text>
             <Text style={styles.maintenanceMessage}>{modalMessage}</Text>
             <View style={styles.buttons}>
-              <Text style={styles.buttonText} onPress={() => Linking.openURL("https://play.google.com/store/apps/details?id=com.ignaciocamballo.shifts")}>{translateFn("update")}</Text>
+              <Text 
+                style={styles.buttonText} 
+                onPress={() => {
+                  if (Platform.OS === "ios") Linking.openURL("")
+                  else Linking.openURL("https://play.google.com/store/apps/details?id=com.shiftstable")
+                }}
+              >{translateFn("update")}</Text>
               <Text style={[styles.buttonText, { color: theme.colors.gris }]} onPress={() => setShowUpdateAlert(false)}>{translateFn("skip")}</Text>
             </View>
           </View>
