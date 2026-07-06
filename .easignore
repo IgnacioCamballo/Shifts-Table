@@ -10,6 +10,7 @@ dist/
 web-build/
 .idea/
 .env
+android/build/
 
 # Native secrets/artifacts
 *.orig.*
