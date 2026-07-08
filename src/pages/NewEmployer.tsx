@@ -51,6 +51,25 @@ export default function NewEmployer() {
     setTempColor(defColor)
   }, [defColor])
 
+  useEffect(() => {
+    const normalized = salary
+      .replace(/,/g, '.') //cambia comas por puntos
+      .replace(/[^\d.]/g, '') //elimina cualquier caracter que no sea un dígito o un punto
+
+    const [integerPart, ...decimalParts] = normalized.split('.') //separa la parte entera de la decimal para cortar el decimal a 2
+
+    let correctedSalary = integerPart //define el salario corregido como la parte entera
+
+    if (decimalParts.length > 0) { //si hay parte decimal, la corta a 2 dígitos y la agrega al salario corregido
+      const decimalPart = decimalParts.join('').slice(0, 2)
+      correctedSalary = `${integerPart}.${decimalPart}`
+    }
+
+    if (correctedSalary !== salary) { //si el salario corregido es diferente al ingresado, actualiza el estado del salario
+      setSalary(correctedSalary) //evita buckes innecesarios cuando el valor es igual al ingresado
+    }
+  }, [salary])
+
   const handleColorChange = (color: returnedResults) => {
     const hexColor = color.hex
     setTempColor(hexColor)
@@ -62,7 +81,7 @@ export default function NewEmployer() {
       key: new Date().getTime(),
       name: inputName,
       short: shortName,
-      wage: parseInt(salary),
+      wage: parseFloat(salary),
       color: defColor
     }
     const updatedCompanys = [...companysInfo, newEmployer]

@@ -47,6 +47,28 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
     return new Date(pressedDate.getFullYear(), pressedDate.getMonth(), pressedDate.getDate(), time!.getHours(), time!.getMinutes())
   }
 
+  function normalizeDecimalText(text: string) {
+    const normalized = text.replace(/,/g, '.').replace(/[^\d.]/g, '')
+
+    if (normalized === '') {
+      return ''
+    }
+
+    const [integerPart, ...decimalParts] = normalized.split('.')
+    const fixedIntegerPart = integerPart === '' ? '0' : integerPart
+
+    if (decimalParts.length === 0) {
+      return normalized.endsWith('.') ? `${fixedIntegerPart}.` : fixedIntegerPart
+    }
+
+    const decimalPart = decimalParts.join('').slice(0, 2)
+    return `${fixedIntegerPart}.${decimalPart}`
+  }
+
+  function formatDecimalText(value: number) {
+    return value.toFixed(2).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1')
+  }
+
   //states to manage the form data
   const [employerForm, setEmployerForm] = useState<number>(isCreate ? 0 : editingShift!.employer)
   const [shiftEntryForm, setShiftEntryForm] = useState<Date | null>(isCreate ? (configInfo.entry ? PutTimeOnCurrentDay(configInfo.entry) : null) : editingShift?.shiftEntry || (configInfo.entry ? PutTimeOnCurrentDay(configInfo.entry) : null))
@@ -59,6 +81,8 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
   const [isHourlyRateForm, setIsHourlyRateForm] = useState<boolean>(isCreate ? true : editingShift!.isHourlyRate!)
   const [wageForm, setWageForm] = useState(editingShift?.wage || 0)
   const [salaryForm, setSalaryForm] = useState(editingShift?.salary || 0)
+  const [wageInput, setWageInput] = useState(formatDecimalText(editingShift?.wage || 0))
+  const [salaryInput, setSalaryInput] = useState(formatDecimalText(editingShift?.salary || 0))
   const [paidForm, setPaidForm] = useState(editingShift?.paid || false)
   const [noteForm, setNoteForm] = useState(editingShift?.note || "")
 
@@ -78,6 +102,7 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
     if (employerForm > 1) {
       const company = companysInfo.find(company => company.key == employerForm)
       setWageForm(company?.wage || 0)
+      setWageInput(formatDecimalText(company?.wage || 0))
     } else if (employerForm === 1) { //if employerForm is 1, it means the user wants to create a new employer, so we navigate to the NewEmployer page
       navigation.navigate('NewEmployer')
       setEmployerForm(0) //reset employerForm to 0 to avoid navigating again when the user comes back from NewEmployer
@@ -89,8 +114,31 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
     if (isHourlyRateForm) {
       const salary = workedHoursForm !== null || undefined ? (workedHoursForm! + workedMinutesForm! / 60) * wageForm : 0
       setSalaryForm(salary)
+      setSalaryInput(formatDecimalText(salary))
     }
   }, [isHourlyRateForm, wageForm, workedHoursForm, workedMinutesForm])
+
+  useEffect(() => {
+    const correctedWage = normalizeDecimalText(wageInput)
+
+    if (correctedWage !== wageInput) {
+      setWageInput(correctedWage)
+    }
+
+    const parsedWage = correctedWage === '' || correctedWage === '.' ? 0 : Number.parseFloat(correctedWage)
+    setWageForm(Number.isNaN(parsedWage) ? 0 : parsedWage)
+  }, [wageInput])
+
+  useEffect(() => {
+    const correctedSalary = normalizeDecimalText(salaryInput)
+
+    if (correctedSalary !== salaryInput) {
+      setSalaryInput(correctedSalary)
+    }
+
+    const parsedSalary = correctedSalary === '' || correctedSalary === '.' ? 0 : Number.parseFloat(correctedSalary)
+    setSalaryForm(Number.isNaN(parsedSalary) ? 0 : parsedSalary)
+  }, [salaryInput])
 
   //calculates break
   useEffect(() => {
@@ -339,7 +387,7 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
 
           <DropDownAutoHeight
             title={translateFn("salary")!}
-            textRight={salaryForm && !salaryOpen ? `$ ${Math.floor(salaryForm * 100) / 100}` : ""}
+            textRight={salaryForm && !salaryOpen ? `$ ${formatDecimalText(salaryForm)}` : ""}
             duration={300}
             maxHeight={200}
             arrowColor={configInfo.baseColor}
@@ -359,14 +407,14 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
                     style={[styles.textLine, styles.inputBox]}
                     inputMode='numeric'
                     keyboardType='numeric'
-                    onChangeText={(e) => setWageForm(parseInt(e || "0"))}
-                    value={wageForm.toString()}
+                    onChangeText={setWageInput}
+                    value={wageInput}
                     placeholder="0"
                     placeholderTextColor={theme.colors.grisMedio}
                   />
                 </View>
 
-                <Text style={styles.textLine}>{translateFn("total")}: $ {Math.floor(salaryForm * 100) / 100}</Text>
+                <Text style={styles.textLine}>{translateFn("total")}: $ {formatDecimalText(salaryForm)}</Text>
               </View>
 
               <View style={styles.line}>
@@ -378,8 +426,8 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
                     style={[styles.textLine, styles.inputBox]}
                     inputMode='numeric'
                     keyboardType='numeric'
-                    onChangeText={(e) => setSalaryForm(parseInt(e || "0"))}
-                    value={(Math.floor(salaryForm * 100) / 100).toString()}
+                    onChangeText={setSalaryInput}
+                    value={salaryInput}
                     placeholder="0"
                     placeholderTextColor={theme.colors.grisMedio}
                   />
