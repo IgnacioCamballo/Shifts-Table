@@ -130,6 +130,11 @@
     {"lenguage": "en", "text": "Are you sure you want to delete "},
     {"lenguage": "pt", "text": "Tem certeza de que deseja remover a "}
   ],
+  "employerDeleteAlert2": [
+    {"lenguage": "es", "text": "Todos los turnos de este empleador también se borrarán"},
+    {"lenguage": "en", "text": "All shifts for this employer will also be deleted"},
+    {"lenguage": "pt", "text": "Todos os turnos deste empregador também serão excluídos"}
+  ],
   "shiftDeleteAlert": [
     {"lenguage": "es", "text": "¿seguro que deseas eliminar este turno?"},
     {"lenguage": "en", "text": "Are you sure you want to delete this shift?"},

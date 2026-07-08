@@ -11,7 +11,7 @@ import { translate } from '@/utils'
 import EditDeletButtons from '@/components/Molecules/EditDeletButtons'
 
 export default function Employer({ employer }: { employer: EmployerProps }) {
-  const { companysInfo, setCompanysInfo, lenguage } = useCalendar()
+  const { companysInfo, shifts, setCompanysInfo, setShifts, lenguage } = useCalendar()
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
@@ -24,7 +24,7 @@ export default function Employer({ employer }: { employer: EmployerProps }) {
   const showAlert = () => {
     Alert.alert(
       '',
-      `${translateFn("employerDeleteAlert")} ${name}?`,
+      `${translateFn("employerDeleteAlert")} ${name}? ${translateFn("employerDeleteAlert2")}`,
       [
         {
           text: translateFn("cancel"),
@@ -43,8 +43,10 @@ export default function Employer({ employer }: { employer: EmployerProps }) {
   }
 
   const handleDeleteEmployer = () => {
-    const filtered = companysInfo.filter(employer => employer.key !== key)
-    setCompanysInfo(filtered)
+    const employersFiltered = companysInfo.filter(employer => employer.key !== key)
+    const shiftsFiltered = shifts.filter(shift => shift.employer !== key)
+    setCompanysInfo(employersFiltered)
+    setShifts(shiftsFiltered)
   }
 
   return (
