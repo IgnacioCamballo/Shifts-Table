@@ -1,6 +1,9 @@
-import React, { useState } from 'react'
-import { Text, ScrollView, StyleSheet, View} from 'react-native'
+import React, { useEffect, useRef, useState } from 'react'
+import { Text, ScrollView, StyleSheet, View, Animated} from 'react-native'
 import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useNavigation } from '@react-navigation/native'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import useCalendar from '@/hooks/useCalendar'
 import { RootStackParamList, ShiftProps } from '@/types'
@@ -11,16 +14,13 @@ import Shift from '@/components/Molecules/Shift'
 import SwiftArrows from '@/components/Molecules/SwiftArrows'
 import Button from '@/components/Atoms/Buttons/Button'
 import BannerPremium from '@/components/Atoms/Buttons/BannerPremium'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { useNavigation } from '@react-navigation/native'
-import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 export default function Shifts() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
   const params = navigation.getState().routes[1].params as { date: string }
   const pressedDate = params.date
 
-  const {shifts, lenguage, addsInitialized, configInfo, userInfo} = useCalendar()
+  const {shifts, lenguage, addsInitialized, configInfo, userInfo, setAnimateReturnToCalendar} = useCalendar()
   
   //gets variable heigth for the screen without statusbar
   const insets = useSafeAreaInsets()
@@ -32,6 +32,8 @@ export default function Shifts() {
   }
 
   const [date, setDate] = useState(new Date(pressedDate))
+  const allowNativeGoBackRef = useRef(false)
+
 
   const prevDay = () => {
     const newDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
@@ -42,6 +44,23 @@ export default function Shifts() {
     const newDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
     setDate(newDate)
   };
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', (event) => {
+      if (allowNativeGoBackRef.current) {
+        allowNativeGoBackRef.current = false
+        return
+      }
+
+      event.preventDefault()
+
+        setAnimateReturnToCalendar(true)
+        allowNativeGoBackRef.current = true
+        navigation.dispatch(event.data.action)
+    })
+
+    return unsubscribe
+  }, [navigation, setAnimateReturnToCalendar])
 
   return (
     <View style={styles.container}>

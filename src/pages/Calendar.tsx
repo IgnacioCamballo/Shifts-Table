@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Dimensions} from 'react-native';
+import React, { useState, useEffect, useRef, use } from 'react';
+import {Animated as ReactAnimated, View, Text, StyleSheet, Dimensions, Platform} from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
 import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
@@ -16,11 +16,15 @@ import RenderDayCalendar from '@/components/Atoms/RenderDayCalendar';
 let screenWidth = Dimensions.get("window").width
 
 export default function Calendar() {
-  const {lenguage, addsInitialized, userInfo} = useCalendar()
+  const {lenguage, addsInitialized, userInfo, animateReturnToCalendar, setAnimateReturnToCalendar} = useCalendar()
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
 
   const [currentDay, setCurrentDay] = useState(new Date());
   const [monthdays, setMonthDays] = useState<DayProps[]>([])
+
+  const [daySelectedInfo, setDaySelectedInfo] = useState<{ index: number, color: string }| null>(null)
+  const animationParams = useRef({ x: 0, y: 0, width: 0, height: 0 }).current
+  const changeToShiftsAnimationValue = useRef(new ReactAnimated.Value(0)).current
 
   const translationX = useSharedValue(0)
   const prevTranslationX = useSharedValue(0)
@@ -66,10 +70,40 @@ export default function Calendar() {
     setMonthDays(days);
   }, [currentDay])
 
-  //navigate to the day pressed on the screen
-  const handleDayPress = (key: string) => {
-    const selected = monthdays.find(arrayDay => arrayDay.key === key)
+  const animateTransitionStyle = {
+    backgroundColor: changeToShiftsAnimationValue.interpolate({
+      inputRange: [0, 1],
+      outputRange: [daySelectedInfo?.color || theme.colors.blanco, theme.colors.blanco]
+    }),
+    width: changeToShiftsAnimationValue.interpolate({
+      inputRange: [0, 1],
+      outputRange: [animationParams.width, Dimensions.get("screen").width]
+    }),
+    height: changeToShiftsAnimationValue.interpolate({
+      inputRange: [0, 1],
+      outputRange: [animationParams.height, Dimensions.get("screen").height]
+    }),
+    top: changeToShiftsAnimationValue.interpolate({
+      inputRange: [0, 1],
+      outputRange: [animationParams.y, 0]
+    }),
+    left: changeToShiftsAnimationValue.interpolate({
+      inputRange: [0, 1],
+      outputRange: [animationParams.x, 0]
+    }),
+    opacity: changeToShiftsAnimationValue.interpolate({
+      inputRange: [0, 1],
+      outputRange: [1, 0.1]
+    })
+  }
 
+  //navigate to the day pressed on the screen
+  const handleDayPress = (layout: { x: number, y: number, width: number, height: number }, key: string) => {
+    const selected = monthdays.find(arrayDay => arrayDay.key === key)
+    if (!selected) return
+
+    const selectedIndex = monthdays.findIndex(arrayDay => arrayDay.key === key)
+    
     function getDate() {
       if (selected!.shadowed === false) {
         const pressed = new Date(currentDay.getFullYear(), currentDay.getMonth(), selected?.day)
@@ -82,9 +116,46 @@ export default function Calendar() {
         return pressed
       }
     }
-    const date = getDate()
-    navigation.navigate("Shifts", { date: date.toISOString() })
+    const date = getDate() //gets the date pressed to navigate to the shifts of that day
+    
+    //sets the layout of the day pressed to animate the transition to the shifts screen
+    animationParams.x = layout.x
+    //need to subtract the height of the header to get the correct position of the day pressed, as the layout 
+    // mesured is from screen but the element is absolute to calendar
+    animationParams.y = layout.y - (Platform.OS === "ios" ? 88 : 36)
+    animationParams.width = layout.width
+    animationParams.height = layout.height
+    //sets the index and color of selected day wich trigers the load of the shell to animate
+    setDaySelectedInfo({ index: selectedIndex, color: selected.shadowed ? theme.colors.grisMasClaro : theme.colors.blanco })
+    
+    //animates the transition to the shifts screen
+    ReactAnimated.timing(changeToShiftsAnimationValue, {
+      toValue: 1,
+      duration: 350,
+      useNativeDriver: false
+    }).start(() => {
+      navigation.navigate("Shifts", { date: date.toISOString() })
+    })
   };
+
+  const handleReturnToCalendarAnimation = () => {
+    //animates the transition back to the calendar screen
+    if(animateReturnToCalendar) {
+      ReactAnimated.timing(changeToShiftsAnimationValue, {
+        toValue: 0,
+        duration: 450,
+        useNativeDriver: false
+      }).start(() => {
+        setDaySelectedInfo(null)
+        setAnimateReturnToCalendar(false)
+      })
+    }
+  }
+
+  useEffect(() => { 
+    handleReturnToCalendarAnimation()
+  }, [animateReturnToCalendar])
+
 
   //change to previous month with animation
   const prevMonth = () => {
@@ -160,6 +231,7 @@ export default function Calendar() {
           <View style={styles.daysContainer}>
             {monthdays.map(monthDay => 
               <RenderDayCalendar 
+                isAnimationShell={false}
                 currentDay={currentDay} 
                 item={monthDay} 
                 onPress={handleDayPress} 
@@ -180,6 +252,30 @@ export default function Calendar() {
           }}
           />
         </View>
+      )}
+
+      {daySelectedInfo && (
+        <ReactAnimated.View 
+          style={[styles.shell, 
+            {
+              backgroundColor: animateTransitionStyle.backgroundColor,
+              width: animateTransitionStyle.width,
+              height: animateTransitionStyle.height,
+              top: animateTransitionStyle.top,
+              left: animateTransitionStyle.left
+            }
+          ]}
+        >
+          <ReactAnimated.View style={{flex: 1, opacity: animateTransitionStyle.opacity}}>
+            <RenderDayCalendar 
+              isAnimationShell={true}
+              currentDay={currentDay} 
+              item={monthdays[daySelectedInfo.index]} 
+              onPress={handleDayPress} 
+              key={daySelectedInfo.index}
+            />
+          </ReactAnimated.View>
+        </ReactAnimated.View>
       )}
     </View>
   );
@@ -247,5 +343,10 @@ const styles = StyleSheet.create({
     justifyContent: "center", 
     alignContent: "center", 
     bottom: 80
+  },
+  shell: {
+    position: "absolute",
+    flex: 1,
+    zIndex: 30
   }
 });

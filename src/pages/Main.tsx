@@ -55,7 +55,7 @@ function RouterContent({ routeName }: { routeName: RouteName }) {
           <Stack.Screen name='LoadingPage' component={LoadingPage} />
 
           <Stack.Screen name='Calendar' component={Calendar} options={{animation: "fade", animationDuration: 200}}/>
-          <Stack.Screen name='Shifts' component={Shifts}/>
+          <Stack.Screen name='Shifts' component={Shifts} options={{animation: "none"}}/>
           <Stack.Screen name='NewShift' component={NewShift} />
           <Stack.Screen name='EditShift' component={EditShift} />
 

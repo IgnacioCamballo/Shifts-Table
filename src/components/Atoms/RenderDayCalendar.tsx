@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useRef } from "react"
 import { TouchableOpacity, View, Text, StyleSheet } from "react-native"
 import { Dimensions } from "react-native"
 import Icon from 'react-native-vector-icons/AntDesign';
@@ -10,16 +10,18 @@ import { DayProps } from "@/types"
 import theme from "@/theme/theme"
 
 type RenderDayCalendarProps = {
+  isAnimationShell: boolean,
   item : DayProps,
   currentDay: Date,
-  onPress: (key: string) => void
+  onPress: (layout: { x: number, y: number, width: number, height: number }, key: string) => void
 }
 
 let screenWidth = Dimensions.get("window").width
 const containerWidth = (screenWidth - 22)/7
 
-export default function RenderDayCalendar({item, currentDay, onPress}: RenderDayCalendarProps) {
+export default function RenderDayCalendar({item, currentDay, onPress, isAnimationShell}: RenderDayCalendarProps) {
   const {shifts, companysInfo, userInfo} = useCalendar()
+  const dayRef = useRef<View>(null)
 
   //gets variable heigth for the screen without statusbar
   const insets = useSafeAreaInsets()
@@ -35,9 +37,20 @@ export default function RenderDayCalendar({item, currentDay, onPress}: RenderDay
     <TouchableOpacity
       activeOpacity={0.95}
       key={key}
-      onPress={() => onPress(key)}
+      onPress={() => {
+        dayRef.current?.measureInWindow((x, y, width, height) => {
+          onPress?.({ x, y, width, height }, key)
+        })
+      }}
+      ref={dayRef}
+      disabled={isAnimationShell}
     >
-      <View style={[shadowed ? styles.dayContainerEmpty : styles.dayContainer, {height: dayContainerHeight}]}>
+      <View 
+        style={[
+          shadowed ? styles.dayContainerEmpty : styles.dayContainer, 
+          {height: isAnimationShell ? "100%" : dayContainerHeight, width: isAnimationShell ? "100%" : containerWidth}
+        ]}
+      >
         {shadowed === true ? <View></View> : colorShifts.map(shiftColor => 
           <View 
             key={shiftColor.key} 
@@ -70,12 +83,10 @@ export default function RenderDayCalendar({item, currentDay, onPress}: RenderDay
 
 const styles = StyleSheet.create({
   dayContainer: {
-    width: containerWidth,
     borderColor: theme.colors.negro,
     borderWidth: 0.5
   },
   dayContainerEmpty: {
-    width: containerWidth,
     backgroundColor: theme.colors.grisMasClaro,
     borderColor: theme.colors.gris,
     borderWidth: 0.5    
