@@ -32,14 +32,14 @@ const theme = {
         publicidad: 80,
         screenHeight: Dimensions.get("screen").height,
         bottomSystemBar: Platform.OS === 'android' ? Math.max(Dimensions.get("screen").height - Dimensions.get("window").height - (StatusBar.currentHeight || 0), 0) : 0,
-        daysContainer: Platform.OS === 'ios' ? 234 : 315,
-        daysContainerPremium: Platform.OS === 'ios' ? 170 : 245,
+        daysContainer: Platform.OS === 'ios' ? 234 : 255,
+        daysContainerPremium: Platform.OS === 'ios' ? 170 : 185,
         shiftScrollView: 300,
-        shiftScrollViewPremium: Platform.OS === 'ios' ? 200 : 270,
-        monthDetailScrollView: Platform.OS === 'ios' ? 340 : 440,
-        monthDetailScrollViewPremium: Platform.OS === 'ios' ? 280 : 370,
+        shiftScrollViewPremium: Platform.OS === 'ios' ? 200 : 210,
+        monthDetailScrollView: Platform.OS === 'ios' ? 340 : 380,
+        monthDetailScrollViewPremium: Platform.OS === 'ios' ? 280 : 310,
         shiftNewEditScrollView: 230,
-        noFooterNoHeader: Platform.OS === 'ios' ? 80 : 150
+        noFooterNoHeader: Platform.OS === 'ios' ? 80 : 90
     },
     banners: {
       calendar: "ca-app-pub-4926030013898312/2502969552",
