@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "white"
+    backgroundColor: "white"  //aca deberia ver si flex 1 y sacar la altura hace desaparecer la linea gris, ademas agregar fondo blanco
   },
   logoWrapper: {
     alignItems: 'center',
