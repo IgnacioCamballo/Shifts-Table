@@ -39,7 +39,7 @@ const theme = {
         monthDetailScrollView: Platform.OS === 'ios' ? 340 : 380,
         monthDetailScrollViewPremium: Platform.OS === 'ios' ? 280 : 310,
         shiftNewEditScrollView: 230,
-        noFooterNoHeader: Platform.OS === 'ios' ? 80 : 90
+        noFooterNoHeader: Platform.OS === 'ios' ? 80 : 80
     },
     banners: {
       calendar: "ca-app-pub-4926030013898312/2502969552",
