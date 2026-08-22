@@ -15,7 +15,10 @@
       "supportsTablet": false,
       "bundleIdentifier": "com.kanatzu.shiftstable",
       "googleServicesFile": "./GoogleService-Info.plist",
-      "icon": "./assets/icon.png"
+      "icon": "./assets/icon.png",
+      "infoPlist": {
+        "NSCameraUsageDescription": "La cámara se utiliza a través de la dependencia de Stripe para funciones de escaneo de tarjetas; no es una función propia de la aplicación."
+      }
     },
     "android": {
       "adaptiveIcon": {
