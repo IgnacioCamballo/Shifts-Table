@@ -4,7 +4,6 @@ import { captureRef } from 'react-native-view-shot'
 import * as Sharing from "expo-sharing"
 import * as FileSystem from "expo-file-system";
 import { Picker } from '@react-native-picker/picker'
-import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads'
 import IconMenu from 'react-native-vector-icons/Feather'
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -18,6 +17,7 @@ import { RootStackParamList } from '@/types';
 
 import SwiftArrows from '@/components/Molecules/SwiftArrows'
 import IosPickerModal from '@/components/Molecules/IosPickerModal'
+import { BannerAdds } from '@/components/Atoms/BannerAdds';
 
 let screenWidth = Dimensions.get("window").width
 
@@ -310,13 +310,7 @@ export default function MonthDetail() {
 
       {!userInfo.premium && addsInitialized && (
         <View style={styles.banner}>
-          <BannerAd
-            size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-            unitId={theme.banners.detail}
-            requestOptions={{
-              requestNonPersonalizedAdsOnly: true
-            }}
-          />
+          <BannerAdds />
         </View>
       )}
 

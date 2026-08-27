@@ -1,4 +1,5 @@
 import { Dimensions, Platform, StatusBar } from "react-native"
+import { es } from "zod/v4/locales"
 
 const theme = {
     colors: {
@@ -42,18 +43,23 @@ const theme = {
         noFooterNoHeader: Platform.OS === 'ios' ? 80 : 80
     },
     banners: {
-      calendar: "ca-app-pub-4926030013898312/2502969552",
-      detail: "ca-app-pub-4926030013898312/4565563096",
-      shifts: "ca-app-pub-4926030013898312/8504808104",
-      totals: "ca-app-pub-4926030013898312/7191726433",
-      intersticial: "ca-app-pub-4926030013898312/8353147676"
-
-        // the bottom ones are test ads
-      // calendar: "ca-app-pub-3940256099942544/9214589741",
-      // detail: "ca-app-pub-3940256099942544/9214589741",
-      // shifts: "ca-app-pub-3940256099942544/9214589741",
-      // totals: "ca-app-pub-3940256099942544/9214589741",
-      // intersticial: "ca-app-pub-3940256099942544/1033173712"
+      ios: {
+        banner: "ca-app-pub-4926030013898312/4887787132",
+        intersticial: "ca-app-pub-4926030013898312/6257920571"
+      },
+      android: {
+        banner: "ca-app-pub-4926030013898312/2502969552",
+        intersticial: "ca-app-pub-4926030013898312/8353147676"
+      }
+      // the bottom ones are test ads
+      // ios: {
+      //   calendar: "ca-app-pub-3940256099942544/9214589741",
+      //   intersticial: "ca-app-pub-3940256099942544/1033173712"
+      // },
+      // android: {
+      //   calendar: "ca-app-pub-3940256099942544/9214589741",
+      //   intersticial: "ca-app-pub-3940256099942544/1033173712"
+      // }
     }
 }
 

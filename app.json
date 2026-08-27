@@ -5,7 +5,7 @@
     "owner": "ignaciocamballo",
     "version": "3.1.1",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icono.webp",
     "userInterfaceStyle": "light",
     "newArchEnabled": false,
     "splash": {
@@ -15,7 +15,7 @@
       "supportsTablet": false,
       "bundleIdentifier": "com.kanatzu.shiftstable",
       "googleServicesFile": "./GoogleService-Info.plist",
-      "icon": "./assets/icon.png",
+      "icon": "./assets/icono.webp",
       "infoPlist": {
         "NSCameraUsageDescription": "La cámara se utiliza a través de la dependencia de Stripe para funciones de escaneo de tarjetas; no es una función propia de la aplicación."
       }
@@ -56,8 +56,8 @@
       [
         "react-native-google-mobile-ads",
         {
-          "androidAppId": "ca-app-pub-4926030013898312~7320718360",
-          "iosAppId": "ca-app-pub-4926030013898312~8140812186"
+          "androidAppId": "ca-app-pub-4926030013898312~9221423165",
+          "iosAppId": "ca-app-pub-4926030013898312~8828441423"
         }
       ],
       [

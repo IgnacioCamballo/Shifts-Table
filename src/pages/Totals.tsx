@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { Text, View, StyleSheet, Platform, TouchableOpacity } from 'react-native'
-import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads'
 import { Picker } from '@react-native-picker/picker'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
@@ -13,6 +12,7 @@ import theme from '@/theme/theme'
 import SwiftArrows from '@/components/Molecules/SwiftArrows'
 import IosPickerModal from '@/components/Molecules/IosPickerModal'
 import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
+import { BannerAdds } from '@/components/Atoms/BannerAdds'
 
 export default function Totals() { 
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
@@ -201,13 +201,7 @@ export default function Totals() {
 
       {!userInfo.premium && addsInitialized && (
         <View style={styles.banner}>
-          <BannerAd
-            size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-            unitId={theme.banners.totals}
-            requestOptions={{
-              requestNonPersonalizedAdsOnly: true
-            }}
-          />
+          <BannerAdds />
         </View>
       )}
     </View>

@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Text, ScrollView, StyleSheet, View, Animated} from 'react-native'
-import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads'
+import { Text, ScrollView, StyleSheet, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
@@ -14,6 +13,7 @@ import Shift from '@/components/Molecules/Shift'
 import SwiftArrows from '@/components/Molecules/SwiftArrows'
 import Button from '@/components/Atoms/Buttons/Button'
 import BannerPremium from '@/components/Atoms/Buttons/BannerPremium'
+import { BannerAdds } from '@/components/Atoms/BannerAdds'
 
 export default function Shifts() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
@@ -87,13 +87,7 @@ export default function Shifts() {
 
       {!userInfo.premium && addsInitialized && (
         <View style={styles.banner}>
-        <BannerAd 
-          size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-          unitId={theme.banners.shifts}
-          requestOptions={{
-            requestNonPersonalizedAdsOnly: true
-          }}
-          />
+        <BannerAdds />
         </View>
       )}
     </View>

@@ -9,6 +9,7 @@ import { isSameDay } from '@/utils/datesCompare'
 import theme from '@/theme/theme'
 
 import ShiftForm from '@/components/organisms/ShiftForm'
+import { Platform } from 'react-native'
 
 export default function NewShift() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
@@ -20,7 +21,7 @@ export default function NewShift() {
 
   const sameDay = isSameDay({day1: lastShiftCreated, day2: new Date()})
   //Interstitial ad, only shows if the user is not premium and if the last shift created was today
-  const interstitial = InterstitialAd.createForAdRequest(theme.banners.intersticial)
+  const interstitial = InterstitialAd.createForAdRequest(theme.banners[Platform.OS === 'ios' ? 'ios' : 'android'].intersticial)
   if(!userInfo.premium && sameDay) {
     interstitial.addAdEventListener(AdEventType.LOADED, () => setLoaded(true))
     interstitial.load()

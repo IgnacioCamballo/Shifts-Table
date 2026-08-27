@@ -211,7 +211,7 @@ export default function LoadingPage() {
           }
         ]}
       >
-        <Image source={require('../../assets/icon.png')} style={styles.logo} resizeMode='contain' />
+        <Image source={require('../../assets/iconLoader.png')} style={styles.logo} resizeMode='contain' />
       </Animated.View>
     </View>
   )

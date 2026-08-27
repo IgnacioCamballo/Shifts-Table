@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef, use } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {Animated as ReactAnimated, View, Text, StyleSheet, Dimensions, Platform} from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
-import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -12,6 +11,7 @@ import { firstLetterUpper, weekdays } from '@/utils';
 import SwiftArrows from '@/components/Molecules/SwiftArrows';
 import { DayProps, RootStackParamList } from '@/types';
 import RenderDayCalendar from '@/components/Atoms/RenderDayCalendar';
+import { BannerAdds } from '@/components/Atoms/BannerAdds';
 
 let screenWidth = Dimensions.get("window").width
 
@@ -244,13 +244,7 @@ export default function Calendar() {
 
       {addsInitialized && !userInfo.premium && (
         <View style={styles.banner}>
-        <BannerAd 
-          size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-          unitId={theme.banners.calendar}
-          requestOptions={{
-            requestNonPersonalizedAdsOnly: true
-          }}
-          />
+        <BannerAdds />
         </View>
       )}
 
