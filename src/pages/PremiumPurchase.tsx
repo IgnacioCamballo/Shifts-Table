@@ -81,7 +81,10 @@ export default function PremiumPurchase() {
   }
 
   return (
-    <StripeProvider publishableKey={STRIPE_KEY}>
+    <StripeProvider 
+      publishableKey={STRIPE_KEY}
+      merchantIdentifier="merchant.com.shiftstable"
+    >
       <ImageBackground
         source={require("@/../assets/purchaseBg.jpg")}
         style={[styles.background, { height: noFooterNoHeaderHeight }]}

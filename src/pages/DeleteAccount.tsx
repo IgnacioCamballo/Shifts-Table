@@ -20,7 +20,7 @@ import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
 
 export default function DeleteAccount() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
-  const { lenguage } = useCalendar()
+  const { lenguage, setShifts, setCompanysInfo, setUserInfo, setConfigInfo, setLastBackup } = useCalendar()
 
   //gets variable heigth for the screen without statusbar
   const insets = useSafeAreaInsets()
@@ -61,7 +61,7 @@ export default function DeleteAccount() {
     }
   })
 
-  //query to change password
+  //query delete account
     const deleteAccountQuery = useMutation({
       mutationFn: deletePassword,
       retry: 0,
@@ -81,7 +81,24 @@ export default function DeleteAccount() {
               text: 'OK',
               onPress: async () => {             
                 await AsyncStorage.multiRemove(["userData", "userToken"])
-                navigation.goBack()
+                setShifts([])
+                setCompanysInfo([])
+                setUserInfo({
+                  userName: "",
+                  mail: "",
+                  lastBackUp: null,
+                  premium: false
+                })
+                setConfigInfo({
+                  baseColor: theme.colors.verdeBase,
+                  buttonsColor: theme.colors.verdeBoton,
+                  configBreakEntry: null,
+                  configBreakExit: null,
+                  entry: null,
+                  exit: null
+                })
+                setLastBackup(null)
+                navigation.replace("AccountIntro", { lg: lenguage })
               },
               style: 'cancel'
             },
@@ -149,7 +166,7 @@ export default function DeleteAccount() {
                 <TextInput
                   textContentType='emailAddress'
                   style={styles.input}
-                  onChangeText={setMail}
+                  onChangeText={value => setMail(value.toLowerCase())}
                   value={mail}
                   maxLength={50}
                   placeholder={translateFn("placeholderMail")}

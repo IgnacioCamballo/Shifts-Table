@@ -73,7 +73,7 @@ export default function CreateAccount() {
     onSuccess: () => {
       const userInfo = { userName, mail, lastBackUp: null, premium: false }
       setUserInfo(userInfo)
-      setLenguage(lenguage)
+      setLenguage(lenguage as "es" | "en" | "pt")
       if (type === "2") {
         navigation.goBack()
       } else {
@@ -167,7 +167,6 @@ export default function CreateAccount() {
               maxLength={30}
               placeholder={translateFn("password")}
               placeholderTextColor={theme.colors.grisMedio}
-              pointerEvents='none'
             />
 
             <TouchableOpacity activeOpacity={0.9} onPressIn={() => setShowPass(!showPass)} style={styles.eye}>
@@ -287,7 +286,7 @@ const styles = StyleSheet.create({
   },
   eye: {
     position: "absolute",
-    bottom: Platform.OS === "ios" ? 26 : 32,
+    top: Platform.OS === "ios" ? 31 : 36,
     right: 12,
     zIndex: 1
   },

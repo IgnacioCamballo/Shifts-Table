@@ -138,7 +138,7 @@ export default function PassRecover() {
                 <TextInput
                   textContentType='emailAddress'
                   style={styles.input}
-                  onChangeText={setMail}
+                  onChangeText={value => setMail(value.toLowerCase())}
                   value={mail}
                   maxLength={50}
                   placeholder={translateFn("placeholderMail")}
