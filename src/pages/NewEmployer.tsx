@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, Text, TextInput, TouchableOpacity, View, Modal, Platform } from 'react-native'
+import { StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View, Modal, Platform, Keyboard } from 'react-native'
 import ColorPicker, { HueSlider, Panel1, Preview, returnedResults } from 'reanimated-color-picker'
 import Constants from "expo-constants"
 import { useNavigation } from '@react-navigation/native'
@@ -18,10 +18,10 @@ export default function NewEmployer() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
 
   const { companysInfo, setCompanysInfo, lenguage, configInfo } = useCalendar()
-  
+
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
-  function translateFn(text:string){
-    return translate({text, lenguage})
+  function translateFn(text: string) {
+    return translate({ text, lenguage })
   }
 
   const [inputName, setInputName] = useState("")
@@ -32,6 +32,10 @@ export default function NewEmployer() {
   const [repeatedName, setRepeatedName] = useState(false)
   const [modal, setModal] = useState(false)
   const [tempColor, setTempColor] = useState("#B4EF55")
+
+  const dismissKeyboard = () => {
+    Keyboard.dismiss()
+  }
 
   const dynamicStyles = {
     color: {
@@ -90,132 +94,135 @@ export default function NewEmployer() {
   }
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity 
-        onPress={() => navigation.goBack()}
-        activeOpacity={0.9} 
-        style={styles.botonCerrar}
+    // TouchableWithoutFeedback is used to dismiss the keyboard when tapping outside of the input fields
+    <TouchableWithoutFeedback onPress={dismissKeyboard} accessible={false}>
+      <View style={styles.container}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          activeOpacity={0.9}
+          style={styles.botonCerrar}
         >
-        <ButtonSmall color={theme.colors.grisClaro}>
-          <Text style={styles.textBotonChico}>x</Text>
-        </ButtonSmall>
-      </TouchableOpacity>
+          <ButtonSmall color={theme.colors.grisClaro}>
+            <Text style={styles.textBotonChico}>x</Text>
+          </ButtonSmall>
+        </TouchableOpacity>
 
-      <View>
-        <Text style={styles.textoConf}>{translateFn("newEmployer")}</Text>
-      </View>
-
-      <View style={styles.empleador}>
-        <View style={styles.line}>
-          <Text style={styles.textLine}>{translateFn("name")}:</Text>
-          
-          <TextInput
-            style={styles.textLine}
-            onChangeText={setInputName}
-            value={inputName}
-            maxLength={25}
-            placeholder={translateFn("placeholderName")}
-            placeholderTextColor={theme.colors.grisMedio}
-          />
+        <View>
+          <Text style={styles.textoConf}>{translateFn("newEmployer")}</Text>
         </View>
 
-        <View style={styles.line}>
-          <Text style={styles.textLine}>{translateFn("shortName")}:</Text>
-          
-          <TextInput
-            style={styles.textLine}
-            onChangeText={setShortName}
-            value={shortName}
-            maxLength={3}
-            placeholder={translateFn("placeholderShortName")}
-            placeholderTextColor={theme.colors.grisMedio}
-          />
-        </View>
+        <View style={styles.empleador}>
+          <View style={styles.line}>
+            <Text style={styles.textLine}>{translateFn("name")}:</Text>
 
-        <View style={styles.line}>
-          <Text style={styles.textLine}>{translateFn("hourlyWage")}:</Text>
-          
-          <View style={styles.row}>
-            <Text style={styles.textLine}>$ </Text>
-            
-            <TextInput 
-              style={[styles.textLine, {top: Platform.OS === 'ios' ? 0 : 2}]}
-              inputMode='numeric'
-              keyboardType='numeric'
-              onChangeText={setSalary}
-              value={salary}
-              placeholder="0"
+            <TextInput
+              style={styles.textLine}
+              onChangeText={setInputName}
+              value={inputName}
+              maxLength={25}
+              placeholder={translateFn("placeholderName")}
               placeholderTextColor={theme.colors.grisMedio}
             />
           </View>
-        </View>
 
-        <View style={styles.line}>
-          <View style={styles.contColor}>
-            <Text style={styles.textLine}>{translateFn("color")}:</Text>
-            
-            <TouchableOpacity onPress={() => setModal(true)} style={dynamicStyles.color}/>
+          <View style={styles.line}>
+            <Text style={styles.textLine}>{translateFn("shortName")}:</Text>
+
+            <TextInput
+              style={styles.textLine}
+              onChangeText={setShortName}
+              value={shortName}
+              maxLength={3}
+              placeholder={translateFn("placeholderShortName")}
+              placeholderTextColor={theme.colors.grisMedio}
+            />
           </View>
-        </View>
-      </View>
 
-      {modal && 
-        <Modal
-          visible={modal}
-          transparent={true}
-          animationType='fade'
-        >
-          <View style={styles.modalContainer}>
-            <View style={styles.modal}>
-              <ColorPicker 
-                style={styles.colorPicker} 
-                value={tempColor} 
-                onComplete={color => handleColorChange(color)}
-              >
-                <Preview hideText={true} hideInitialColor={true}/>
-                <Panel1 />
-                <HueSlider />
-              </ColorPicker>
+          <View style={styles.line}>
+            <Text style={styles.textLine}>{translateFn("hourlyWage")}:</Text>
 
-              <View style={styles.botones}>
-                <TouchableOpacity 
-                  style={styles.boton} 
-                  activeOpacity={0.7}
-                  onPress={() => {setModal(false), setTempColor(defColor)}}
-                >
-                  <Text style={styles.botonText}>{translateFn("cancel")}</Text>
-                </TouchableOpacity>
+            <View style={styles.row}>
+              <Text style={styles.textLine}>$ </Text>
 
-                <TouchableOpacity 
-                  style={styles.boton} 
-                  activeOpacity={0.7}
-                  onPress={() => {setModal(false), setDefColor(tempColor)}}
-                >
-                  <Text style={styles.botonText}>{translateFn("save")}</Text>
-                </TouchableOpacity>
-              </View>
+              <TextInput
+                style={[styles.textLine, { top: Platform.OS === 'ios' ? 0 : 2 }]}
+                inputMode='numeric'
+                keyboardType='numeric'
+                onChangeText={setSalary}
+                value={salary}
+                placeholder="0"
+                placeholderTextColor={theme.colors.grisMedio}
+              />
             </View>
           </View>
-        </Modal>
-      }
 
-      <Button 
-        margintop={0}
-        onPress={() => handleSaveEmployer()}
-        block={inputName === "" || salary === "" || repeatedName ? true : false}
-        color={configInfo.buttonsColor}
-      >
-        <Text style={styles.textoBoton}>{translateFn("createEmployer")}</Text>
-      </Button>
+          <View style={styles.line}>
+            <View style={styles.contColor}>
+              <Text style={styles.textLine}>{translateFn("color")}:</Text>
 
-      {repeatedName &&
-        <Text style={styles.textAlert}>{translateFn("repeatedNameAlert")}</Text>
-      }
-    </View>
+              <TouchableOpacity onPress={() => setModal(true)} style={dynamicStyles.color} />
+            </View>
+          </View>
+        </View>
+
+        {modal &&
+          <Modal
+            visible={modal}
+            transparent={true}
+            animationType='fade'
+          >
+            <View style={styles.modalContainer}>
+              <View style={styles.modal}>
+                <ColorPicker
+                  style={styles.colorPicker}
+                  value={tempColor}
+                  onComplete={color => handleColorChange(color)}
+                >
+                  <Preview hideText={true} hideInitialColor={true} />
+                  <Panel1 />
+                  <HueSlider />
+                </ColorPicker>
+
+                <View style={styles.botones}>
+                  <TouchableOpacity
+                    style={styles.boton}
+                    activeOpacity={0.7}
+                    onPress={() => { setModal(false), setTempColor(defColor) }}
+                  >
+                    <Text style={styles.botonText}>{translateFn("cancel")}</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={styles.boton}
+                    activeOpacity={0.7}
+                    onPress={() => { setModal(false), setDefColor(tempColor) }}
+                  >
+                    <Text style={styles.botonText}>{translateFn("save")}</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>
+        }
+
+        <Button
+          margintop={0}
+          onPress={() => handleSaveEmployer()}
+          block={inputName === "" || salary === "" || repeatedName ? true : false}
+          color={configInfo.buttonsColor}
+        >
+          <Text style={styles.textoBoton}>{translateFn("createEmployer")}</Text>
+        </Button>
+
+        {repeatedName &&
+          <Text style={styles.textAlert}>{translateFn("repeatedNameAlert")}</Text>
+        }
+      </View>
+    </TouchableWithoutFeedback>
   )
 }
 
-const styles = StyleSheet.create ({
+const styles = StyleSheet.create({
   container: {
     padding: 8,
     marginTop: 100
@@ -272,7 +279,7 @@ const styles = StyleSheet.create ({
   },
   modalContainer: {
     flex: 1,
-    marginTop: Platform.OS === "ios" ? Constants.statusBarHeight +10 : Constants.statusBarHeight +12,
+    marginTop: Platform.OS === "ios" ? Constants.statusBarHeight + 10 : Constants.statusBarHeight + 12,
     marginBottom: 76,
     alignItems: "center",
     justifyContent: "center",
@@ -301,12 +308,12 @@ const styles = StyleSheet.create ({
     width: 100,
     paddingVertical: 4,
     borderRadius: 8,
-    shadowOffset: {width: 2, height: 2},
+    shadowOffset: { width: 2, height: 2 },
     shadowColor: theme.colors.negro,
     shadowOpacity: 0.6,
     shadowRadius: 2,
     elevation: 10,
-    borderColor:theme.colors.grisMedio, 
+    borderColor: theme.colors.grisMedio,
     borderWidth: Platform.OS === "android" ? 1 : 0,
   },
   botonText: {
@@ -328,7 +335,7 @@ const styles = StyleSheet.create ({
     fontSize: theme.fontSizes.F18,
     fontWeight: "500",
     color: theme.colors.negro
-  }, 
+  },
   textBotonChico: {
     fontSize: theme.fontSizes.F20,
     fontWeight: "500",

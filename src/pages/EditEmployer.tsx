@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, Text, TextInput, TouchableOpacity, View, Modal, Platform, Alert } from 'react-native'
+import { StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View, Modal, Platform, Alert, Keyboard } from 'react-native'
 import ColorPicker, { HueSlider, Panel1, Preview, returnedResults } from 'reanimated-color-picker'
 import Constants from "expo-constants"
 import { useNavigation } from '@react-navigation/native'
@@ -14,18 +14,18 @@ import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
 import Button from '@/components/Atoms/Buttons/Button'
 
 export default function EditEmployer() {
-  const { companysInfo, setCompanysInfo, lenguage, shifts, setShifts, configInfo} = useCalendar()
+  const { companysInfo, setCompanysInfo, lenguage, shifts, setShifts, configInfo } = useCalendar()
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
-  function translateFn(text:string){
-    return translate({text, lenguage})
+  function translateFn(text: string) {
+    return translate({ text, lenguage })
   }
 
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
   const params = navigation.getState().routes[navigation.getState().index].params as { employer: number }
   const employerId = params.employer
   const employer = companysInfo.find(emp => emp.key === employerId)
-  const {name, short, color, wage, key} = employer!
+  const { name, short, color, wage, key } = employer!
 
   const [inputName, setInputName] = useState(name)
   const [shortName, setShortName] = useState(short)
@@ -37,6 +37,10 @@ export default function EditEmployer() {
   const [changeWageInShifts, setChangeWageInShifts] = useState(false)
   const [modal, setModal] = useState(false)
   const [tempColor, setTempColor] = useState(color)
+
+  const dismissKeyboard = () => {
+    Keyboard.dismiss()
+  }
 
   // Function to format salary
   function formatSalary(wage: number) {
@@ -58,23 +62,23 @@ export default function EditEmployer() {
   }, [defColor])
 
   useEffect(() => {
-      const normalized = salary
-        .replace(/,/g, '.') //cambia comas por puntos
-        .replace(/[^\d.]/g, '') //elimina cualquier caracter que no sea un dígito o un punto
-  
-      const [integerPart, ...decimalParts] = normalized.split('.') //separa la parte entera de la decimal para cortar el decimal a 2
-  
-      let correctedSalary = integerPart //define el salario corregido como la parte entera
-  
-      if (decimalParts.length > 0) { //si hay parte decimal, la corta a 2 dígitos y la agrega al salario corregido
-        const decimalPart = decimalParts.join('').slice(0, 2)
-        correctedSalary = `${integerPart}.${decimalPart}`
-      }
-  
-      if (correctedSalary !== salary) { //si el salario corregido es diferente al ingresado, actualiza el estado del salario
-        setSalary(correctedSalary) //evita buckes innecesarios cuando el valor es igual al ingresado
-      }
-    }, [salary])
+    const normalized = salary
+      .replace(/,/g, '.') //cambia comas por puntos
+      .replace(/[^\d.]/g, '') //elimina cualquier caracter que no sea un dígito o un punto
+
+    const [integerPart, ...decimalParts] = normalized.split('.') //separa la parte entera de la decimal para cortar el decimal a 2
+
+    let correctedSalary = integerPart //define el salario corregido como la parte entera
+
+    if (decimalParts.length > 0) { //si hay parte decimal, la corta a 2 dígitos y la agrega al salario corregido
+      const decimalPart = decimalParts.join('').slice(0, 2)
+      correctedSalary = `${integerPart}.${decimalPart}`
+    }
+
+    if (correctedSalary !== salary) { //si el salario corregido es diferente al ingresado, actualiza el estado del salario
+      setSalary(correctedSalary) //evita buckes innecesarios cuando el valor es igual al ingresado
+    }
+  }, [salary])
 
   const handleColorChange = (color: returnedResults) => {
     const hexColor = color.hex
@@ -83,7 +87,7 @@ export default function EditEmployer() {
 
   //alert called when wage is changed
   const wageChangedAlert = () => {
-    if(salary !== previousSalary) {
+    if (salary !== previousSalary) {
       Alert.alert(
         '',
         translateFn("wageChangeAlert"),
@@ -94,7 +98,7 @@ export default function EditEmployer() {
               setChangeWageInShifts(false)
             },
             style: 'cancel'
-          }, 
+          },
           {
             text: translateFn("yes"),
             onPress: () => {
@@ -112,15 +116,15 @@ export default function EditEmployer() {
   const handleSaveEmployer = () => {
     const employerIndex = companysInfo.findIndex(emp => emp.key === key)
 
-    if(changeWageInShifts) {
+    if (changeWageInShifts) {
       const copyShifts = [...shifts]
       copyShifts.forEach(shift => {
-        if(shift.employer === key && shift.workedHours && shift.isHourlyRate) {
-          shift.salary = (shift.workedHours + shift.workedMinutes!/60) * parseFloat(salary)
+        if (shift.employer === key && shift.workedHours && shift.isHourlyRate) {
+          shift.salary = (shift.workedHours + shift.workedMinutes! / 60) * parseFloat(salary)
           shift.wage = parseFloat(salary)
-        }  
+        }
         return shift
-      })      
+      })
       setShifts(copyShifts)
     }
 
@@ -138,132 +142,135 @@ export default function EditEmployer() {
   }
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity 
-        onPress={() => navigation.goBack()}
-        activeOpacity={0.7} 
-        style={styles.botonCerrar}
+    // TouchableWithoutFeedback is used to dismiss the keyboard when tapping outside of the input fields
+    <TouchableWithoutFeedback onPress={dismissKeyboard} accessible={false}>
+      <View style={styles.container}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          activeOpacity={0.7}
+          style={styles.botonCerrar}
         >
-        <ButtonSmall color={theme.colors.grisClaro}>
-          <Text style={styles.textBotonChico}>x</Text>
-        </ButtonSmall>
-      </TouchableOpacity>
+          <ButtonSmall color={theme.colors.grisClaro}>
+            <Text style={styles.textBotonChico}>x</Text>
+          </ButtonSmall>
+        </TouchableOpacity>
 
-      <View>
-        <Text style={styles.textoConf}>{translateFn("editEmployer")}</Text>
-      </View>
-
-      <View style={styles.empleador}>
-        <View style={styles.line}>
-          <Text style={styles.textLine}>{translateFn("name")}:</Text>
-          
-          <TextInput
-            style={styles.textLine}
-            onChangeText={setInputName}
-            value={inputName}
-            maxLength={25}
-            placeholder={translateFn("placeholderName")}
-            placeholderTextColor={theme.colors.grisMedio}
-          />
-        </View>
-        
-        <View style={styles.line}>
-          <Text style={styles.textLine}>{translateFn("shortName")}:</Text>
-          
-          <TextInput
-            style={styles.textLine}
-            onChangeText={setShortName}
-            value={shortName}
-            maxLength={3}
-            placeholder={translateFn("placeholderShortName")}
-            placeholderTextColor={theme.colors.grisMedio}
-          />
+        <View>
+          <Text style={styles.textoConf}>{translateFn("editEmployer")}</Text>
         </View>
 
-        <View style={styles.line}>
-          <Text style={styles.textLine}>{translateFn("hourlyWage")}:</Text>
-          
-          <View style={styles.row}>
-            <Text style={styles.textLine}>$ </Text>
-            
-            <TextInput 
+        <View style={styles.empleador}>
+          <View style={styles.line}>
+            <Text style={styles.textLine}>{translateFn("name")}:</Text>
+
+            <TextInput
               style={styles.textLine}
-              inputMode='numeric'
-              keyboardType='numeric'
-              onBlur={wageChangedAlert}
-              onChangeText={setSalary}
-              value={salary}
-              placeholder="0"
+              onChangeText={setInputName}
+              value={inputName}
+              maxLength={25}
+              placeholder={translateFn("placeholderName")}
               placeholderTextColor={theme.colors.grisMedio}
             />
           </View>
-        </View>
 
-        <View style={styles.line}>
-          <View style={styles.contColor}>
-            <Text style={styles.textLine}>{translateFn("color")}:</Text>
+          <View style={styles.line}>
+            <Text style={styles.textLine}>{translateFn("shortName")}:</Text>
 
-            <TouchableOpacity onPress={() => setModal(true)} style={[styles.color, {backgroundColor: defColor}]}/>
+            <TextInput
+              style={styles.textLine}
+              onChangeText={setShortName}
+              value={shortName}
+              maxLength={3}
+              placeholder={translateFn("placeholderShortName")}
+              placeholderTextColor={theme.colors.grisMedio}
+            />
           </View>
-        </View>
-      </View>
 
-      {modal && 
-        <Modal
-          visible={modal}
-          transparent={true}
-          animationType='fade'
-        >
-          <View style={styles.modalContainer}>
-            <View style={styles.modal}>
-              <ColorPicker 
-                style={styles.colorPicker} 
-                value={tempColor} 
-                onComplete={color => handleColorChange(color)}
-              >
-                <Preview hideText={true} hideInitialColor={true}/>
-                <Panel1 />
-                <HueSlider />
-              </ColorPicker>
+          <View style={styles.line}>
+            <Text style={styles.textLine}>{translateFn("hourlyWage")}:</Text>
 
-              <View style={styles.botones}>
-                <TouchableOpacity 
-                  style={styles.boton} 
-                  activeOpacity={0.7}
-                  onPress={() => {setModal(false), setTempColor(defColor)}}
-                >
-                  <Text style={styles.botonText}>{translateFn("cancel")}</Text>
-                </TouchableOpacity>
+            <View style={styles.row}>
+              <Text style={styles.textLine}>$ </Text>
 
-                <TouchableOpacity 
-                  style={styles.boton} 
-                  activeOpacity={0.7}
-                  onPress={() => {setModal(false), setDefColor(tempColor)}}
-                >
-                  <Text style={styles.botonText}>{translateFn("save")}</Text>
-                </TouchableOpacity>
-              </View>
+              <TextInput
+                style={styles.textLine}
+                inputMode='numeric'
+                keyboardType='numeric'
+                onBlur={wageChangedAlert}
+                onChangeText={setSalary}
+                value={salary}
+                placeholder="0"
+                placeholderTextColor={theme.colors.grisMedio}
+              />
             </View>
           </View>
-        </Modal>
-      }
 
-      <Button 
-        onPress={() => handleSaveEmployer()}
-        block={inputName === "" || !salary || repeatedName ? true : false} 
-        color={configInfo.buttonsColor}
-      >
-        <Text style={styles.textoBoton}>{translateFn("saveChanges")}</Text>
-      </Button>
+          <View style={styles.line}>
+            <View style={styles.contColor}>
+              <Text style={styles.textLine}>{translateFn("color")}:</Text>
 
-      {repeatedName &&
-        <Text style={styles.textAlert}>{translateFn("repeatedNameAlert")}</Text>
-      }
-    </View>
+              <TouchableOpacity onPress={() => setModal(true)} style={[styles.color, { backgroundColor: defColor }]} />
+            </View>
+          </View>
+        </View>
+
+        {modal &&
+          <Modal
+            visible={modal}
+            transparent={true}
+            animationType='fade'
+          >
+            <View style={styles.modalContainer}>
+              <View style={styles.modal}>
+                <ColorPicker
+                  style={styles.colorPicker}
+                  value={tempColor}
+                  onComplete={color => handleColorChange(color)}
+                >
+                  <Preview hideText={true} hideInitialColor={true} />
+                  <Panel1 />
+                  <HueSlider />
+                </ColorPicker>
+
+                <View style={styles.botones}>
+                  <TouchableOpacity
+                    style={styles.boton}
+                    activeOpacity={0.7}
+                    onPress={() => { setModal(false), setTempColor(defColor) }}
+                  >
+                    <Text style={styles.botonText}>{translateFn("cancel")}</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={styles.boton}
+                    activeOpacity={0.7}
+                    onPress={() => { setModal(false), setDefColor(tempColor) }}
+                  >
+                    <Text style={styles.botonText}>{translateFn("save")}</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>
+        }
+
+        <Button
+          onPress={() => handleSaveEmployer()}
+          block={inputName === "" || !salary || repeatedName ? true : false}
+          color={configInfo.buttonsColor}
+        >
+          <Text style={styles.textoBoton}>{translateFn("saveChanges")}</Text>
+        </Button>
+
+        {repeatedName &&
+          <Text style={styles.textAlert}>{translateFn("repeatedNameAlert")}</Text>
+        }
+      </View>
+    </TouchableWithoutFeedback>
   )
 }
 
-const styles = StyleSheet.create ({
+const styles = StyleSheet.create({
   container: {
     padding: 8,
     marginTop: 100
@@ -318,7 +325,7 @@ const styles = StyleSheet.create ({
   },
   modalContainer: {
     flex: 1,
-    marginTop: Platform.OS === "ios" ? Constants.statusBarHeight +10 : Constants.statusBarHeight +12,
+    marginTop: Platform.OS === "ios" ? Constants.statusBarHeight + 10 : Constants.statusBarHeight + 12,
     marginBottom: 76,
     alignItems: "center",
     justifyContent: "center",
@@ -347,12 +354,12 @@ const styles = StyleSheet.create ({
     width: 100,
     paddingVertical: 4,
     borderRadius: 8,
-    shadowOffset: {width: 2, height: 2},
+    shadowOffset: { width: 2, height: 2 },
     shadowColor: theme.colors.negro,
     shadowOpacity: 0.6,
     shadowRadius: 2,
     elevation: 10,
-    borderColor:theme.colors.grisMedio, 
+    borderColor: theme.colors.grisMedio,
     borderWidth: Platform.OS === "android" ? 1 : 0,
   },
   botonText: {
@@ -374,7 +381,7 @@ const styles = StyleSheet.create ({
     fontSize: theme.fontSizes.F18,
     fontWeight: "500",
     color: theme.colors.negro
-  }, 
+  },
   textBotonChico: {
     fontSize: theme.fontSizes.F20,
     fontWeight: "500",
