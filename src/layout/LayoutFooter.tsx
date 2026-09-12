@@ -15,7 +15,6 @@ const routeName = getRouteName()
 
   const { configInfo } = useCalendar()
   const backgroundColor = routeName === "LoadingPage" ? theme.colors.blanco : configInfo.baseColor
-  console.log(routeName)
   return (
     <View style={styles.containerGrande}>
       <View style={[styles.container, { backgroundColor }]}>

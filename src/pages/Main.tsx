@@ -28,11 +28,12 @@ import SelectLenguage from '@/pages/SelectLenguage'
 import Login from '@/pages/Login'
 import CreateAccount from '@/pages/CreateAccount'
 import PassRecover from '@/pages/PassRecover'
-import DeleteAccount from './DeleteAccount'
-import PrePurchaseLogin from './PrePurchaseLogin'
+import DeleteAccount from '@/pages/DeleteAccount'
+import PrePurchaseLogin from '@/pages/PrePurchaseLogin'
 //Premium pages
 import PremiumPurchase from '@/pages/PremiumPurchase'
-import PremiumPurchaseSuccess from './PremiumPurchaseSuccess'
+import PremiumPurchaseSuccess from '@/pages/PremiumPurchaseSuccess'
+import PremiumPurchaseIos from '@/pages/PremiumPurchaseIos'
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
 
@@ -75,6 +76,7 @@ function RouterContent({ routeName }: { routeName: RouteName }) {
           <Stack.Screen name='DeleteAccount' component={DeleteAccount} />
 
           <Stack.Screen name='PremiumPurchase' component={PremiumPurchase} />
+          <Stack.Screen name='PremiumPurchaseIos' component={PremiumPurchaseIos} />
           <Stack.Screen name='PremiumPurchaseSuccess' component={PremiumPurchaseSuccess} />
         </Stack.Navigator>
       </View>

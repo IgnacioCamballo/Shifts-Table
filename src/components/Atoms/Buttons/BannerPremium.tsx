@@ -1,5 +1,5 @@
 import React from 'react'
-import { TouchableOpacity, ImageBackground, StyleSheet, Dimensions, Text, StyleProp, ViewStyle } from 'react-native'
+import { TouchableOpacity, ImageBackground, StyleSheet, Dimensions, Text, StyleProp, ViewStyle, Platform } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
@@ -21,7 +21,7 @@ export default function BannerPremium({ style }: Props) {
   }
 
   return (
-    <TouchableOpacity activeOpacity={1} onPress={() => navigation.navigate(userInfo.mail ? "PremiumPurchase" : 'PrePurchaseLogin')} style={style}>
+    <TouchableOpacity activeOpacity={1} onPress={() => navigation.navigate(userInfo.mail ? Platform.OS === 'ios' ? "PremiumPurchaseIos" : "PremiumPurchase" : 'PrePurchaseLogin')} style={style}>
       <ImageBackground
         source={require("@/../assets/premiumBanner.jpg")}
         style={styles.premiumBanner}

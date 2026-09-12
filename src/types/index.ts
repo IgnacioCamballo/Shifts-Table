@@ -95,6 +95,7 @@ export type RootStackParamList = {
   DeleteAccount: undefined
 
   PremiumPurchase: undefined
+  PremiumPurchaseIos: undefined
   PremiumPurchaseSuccess: undefined
 }
 

@@ -5,7 +5,7 @@
     "owner": "ignaciocamballo",
     "version": "3.1.1",
     "orientation": "portrait",
-    "icon": "./assets/icono.webp",
+    "icon": "./assets/icono.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": false,
     "splash": {
@@ -15,7 +15,7 @@
       "supportsTablet": false,
       "bundleIdentifier": "com.kanatzu.shiftstable",
       "googleServicesFile": "./GoogleService-Info.plist",
-      "icon": "./assets/icono.webp",
+      "icon": "./assets/icono.png",
       "infoPlist": {
         "NSCameraUsageDescription": "La cámara se utiliza a través de la dependencia de Stripe para funciones de escaneo de tarjetas; no es una función propia de la aplicación."
       }
@@ -36,6 +36,7 @@
     },
     "plugins": [
       "expo-asset",
+      "expo-iap",
       [
         "expo-build-properties",
         {
