@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { View, Text, Alert, ImageBackground, StyleSheet, TouchableOpacity } from 'react-native'
-import { useIAP, ErrorCode, finishTransaction } from 'expo-iap'
+import { LinkDisplay, StripeProvider, useStripe } from '@stripe/stripe-react-native'
+import { useMutation } from '@tanstack/react-query'
 import Icon from 'react-native-vector-icons/Ionicons'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
@@ -10,23 +11,65 @@ import useCalendar from '@/hooks/useCalendar'
 import { RootStackParamList } from '@/types'
 import { translate } from '@/utils'
 import theme from '@/theme/theme'
-import { IosPaymentConfirmation } from '@/api/PaymentsAPI'
+import { createPaymentIntent } from '@/api/PaymentsAPI'
 
-// TODO: reemplazar por el Product ID (SKU) de la suscripcion creada en App Store Connect
-const IOS_PREMIUM_SKU = 'com.kanatzu.shiftstable.premium.yearly'
-
-export default function PremiumPurchaseIos() {
+export default function PremiumPurchase() {
   const { userInfo, setUserInfo, lenguage } = useCalendar()
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
-  const [isPurchasing, setIsPurchasing] = useState(false)
 
   //gets variable heigth for the screen without statusbar
   const insets = useSafeAreaInsets()
   const noFooterNoHeaderHeight = theme.heigth.screenHeight - insets.top - Math.max(insets.bottom, theme.heigth.bottomSystemBar) - theme.heigth.noFooterNoHeader
 
+  const { initPaymentSheet, presentPaymentSheet } = useStripe()
+  //test STRIPE_KEY
+  //const STRIPE_KEY = 'pk_test_51TjiDIL1y7meArd43FvHqgL6wm4ArQRmXrMfZamOezFxOMDt6LgMwjyDjhI1peijPBJwRxwrPLCiKx2kGRR3nhpU00xLcicXIc'
+  //real STRIPE_KEY
+  const STRIPE_KEY = 'pk_live_51TjiD8Q4E2xS70qvYUYbiQ7b5gu1VF6LNSNGxlvAB2ztG57RyBQWCPDT9wpVRlnwjVnFP3QMWSMPNYByYGXeuZES00s5Z7o9qi'
+
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text: string) {
     return translate({ text, lenguage })
+  }
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: createPaymentIntent,
+    onError: (error) => {
+      console.log(error)
+      Alert.alert("Error", `${translateFn("errorStartingPayment")}`)
+    },
+    onSuccess: (data) => {
+      initializePayment(data)
+    }
+  })
+
+  const initializePayment = async (data: any) => {
+    const initPayment = await initPaymentSheet({
+      merchantDisplayName: "Shifts-Table",
+      paymentIntentClientSecret: data.paymentIntent,
+      googlePay: {
+        merchantCountryCode: "ES",
+        currencyCode: "EUR",
+        testEnv: true,
+      },
+      link: {
+        display: LinkDisplay.NEVER
+      },
+    })
+
+    if (initPayment.error) {
+      console.log(initPayment.error)
+      Alert.alert("Error", `${translateFn("errorStartingPayment")}`)
+      return
+    }
+
+    const paymentResponse = await presentPaymentSheet()
+
+    if (paymentResponse.error) {
+      Alert.alert(`Error code: ${paymentResponse.error.code}`, paymentResponse.error.message)
+      return
+    }
+    savePaymentSuccess()
   }
 
   const savePaymentSuccess = () => {
@@ -34,55 +77,15 @@ export default function PremiumPurchaseIos() {
     navigation.replace("PremiumPurchaseSuccess")
   }
 
-  //useIAP manages the StoreKit connection lifecycle for this screen and forwards purchase results here
-  const { requestPurchase } = useIAP({
-    onPurchaseSuccess: async (purchase) => {
-      try {
-        //Apple has no payment webhook like Stripe, so the client must confirm the purchase with our backend
-        await IosPaymentConfirmation({
-         productId: purchase.productId,
-          transactionId: purchase.transactionId ?? '',
-          purchaseToken: purchase.purchaseToken ?? ''
-        })
-
-        await finishTransaction({ purchase, isConsumable: false })
-        savePaymentSuccess()
-      } catch (error) {
-        console.log(error)
-        Alert.alert("Error", `${translateFn("errorStartingPayment")}`)
-      } finally {
-        setIsPurchasing(false)
-      }
-    },
-    onPurchaseError: (error) => {
-      if (error.code === ErrorCode.UserCancelled) {
-        setIsPurchasing(false)
-        return
-      }
-      console.log(error)
-      setIsPurchasing(false)
-      Alert.alert("Error", `${translateFn("errorStartingPayment")}`)
-    }
-  })
-
-  const handlePurchase = async () => {
-    setIsPurchasing(true)
-    try {
-      await requestPurchase({
-        request: { apple: { sku: IOS_PREMIUM_SKU } },
-        type: 'subs'
-      })
-    } catch (error) {
-      console.log(error)
-      setIsPurchasing(false)
-    }
-  }
-
   return (
-    <ImageBackground
-      source={require("@/../assets/purchaseBg.jpg")}
-      style={[styles.background, { height: noFooterNoHeaderHeight }]}
+    <StripeProvider 
+      publishableKey={STRIPE_KEY}
+      merchantIdentifier="merchant.com.shiftstable"
     >
+      <ImageBackground
+        source={require("@/../assets/purchaseBg.jpg")}
+        style={[styles.background, { height: noFooterNoHeaderHeight }]}
+      >
         <Text style={styles.preTitle}>Mejora tu cuenta a</Text>
 
         <View style={styles.titleCont}>
@@ -112,10 +115,11 @@ export default function PremiumPurchaseIos() {
             <Text style={styles.benefitText}>como PDF o imagen</Text>
           </View>
         </View>
-        <TouchableOpacity activeOpacity={0.9} onPress={handlePurchase} disabled={isPurchasing} style={styles.button}>
+        <TouchableOpacity activeOpacity={0.9} onPress={() => mutate(299)} style={styles.button}>
           <Text style={styles.buttonText}>€ 2,99/año</Text>
         </TouchableOpacity>
       </ImageBackground>
+    </StripeProvider>
   )
 }
 

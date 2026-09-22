@@ -11,7 +11,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.shiftstable</string>
+	<string>com.kanatzu.shiftstable</string>
 	<key>PROJECT_ID</key>
 	<string>shifts-table</string>
 	<key>STORAGE_BUCKET</key>
@@ -27,6 +27,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:430204474425:ios:a300fe449f91d4450e69e8</string>
+	<string>1:430204474425:ios:0cde6651b3d39c970e69e8</string>
 </dict>
 </plist>

@@ -2,12 +2,32 @@
   "project_info": {
     "project_number": "430204474425",
     "project_id": "shifts-table",
-    "storage_bucket": "shifts-table.appspot.com"
+    "storage_bucket": "shifts-table.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
         "mobilesdk_app_id": "1:430204474425:android:d1a4e8e6ddf1c1ce0e69e8",
+        "android_client_info": {
+          "package_name": "com.android"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHx1B5plgIIDs8eJ9fu4-k0GiHR7MxYy0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      },
+      "admob_app_id": "ca-app-pub-4926030013898312~9221423165"
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:430204474425:android:6c91fa4b80bc1ac70e69e8",
         "android_client_info": {
           "package_name": "com.shiftstable"
         }

@@ -33,7 +33,6 @@ import PrePurchaseLogin from '@/pages/PrePurchaseLogin'
 //Premium pages
 import PremiumPurchase from '@/pages/PremiumPurchase'
 import PremiumPurchaseSuccess from '@/pages/PremiumPurchaseSuccess'
-import PremiumPurchaseIos from '@/pages/PremiumPurchaseIos'
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
 
@@ -76,7 +75,6 @@ function RouterContent({ routeName }: { routeName: RouteName }) {
           <Stack.Screen name='DeleteAccount' component={DeleteAccount} />
 
           <Stack.Screen name='PremiumPurchase' component={PremiumPurchase} />
-          <Stack.Screen name='PremiumPurchaseIos' component={PremiumPurchaseIos} />
           <Stack.Screen name='PremiumPurchaseSuccess' component={PremiumPurchaseSuccess} />
         </Stack.Navigator>
       </View>

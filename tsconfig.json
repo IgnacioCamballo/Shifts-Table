@@ -5,6 +5,7 @@
     "target": "ESNext",
     "jsx": "react",
     "strict": true,
+    "moduleSuffixes": [".ios", ".android", ""],
     "baseUrl": ".",
     "paths": {
       "@/*": [

@@ -21,7 +21,7 @@ export default function BannerPremium({ style }: Props) {
   }
 
   return (
-    <TouchableOpacity activeOpacity={1} onPress={() => navigation.navigate(userInfo.mail ? Platform.OS === 'ios' ? "PremiumPurchaseIos" : "PremiumPurchase" : 'PrePurchaseLogin')} style={style}>
+    <TouchableOpacity activeOpacity={1} onPress={() => navigation.navigate(userInfo.mail ? "PremiumPurchase" : 'PrePurchaseLogin')} style={style}>
       <ImageBackground
         source={require("@/../assets/premiumBanner.jpg")}
         style={styles.premiumBanner}
