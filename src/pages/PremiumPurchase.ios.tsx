@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, Text, Alert, ImageBackground, StyleSheet, TouchableOpacity } from 'react-native'
+import { View, Text, Alert, ImageBackground, StyleSheet, TouchableOpacity, Linking } from 'react-native'
 import { useIAP, ErrorCode, finishTransaction } from 'expo-iap'
 import Icon from 'react-native-vector-icons/Ionicons'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -13,6 +13,8 @@ import theme from '@/theme/theme'
 import { IosPaymentConfirmation } from '@/api/PaymentsAPI'
 
 const IOS_PREMIUM_SKU = 'com.kanatzu.shiftstable.premium.yearly'
+const PRIVACY_POLICY_URL = 'https://kanatzu.dev/shifts-table/politicas-de-privacidad'
+const EULA_URL = 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/'
 
 export default function PremiumPurchase() {
   const { userInfo, setUserInfo, lenguage } = useCalendar()
@@ -114,6 +116,10 @@ export default function PremiumPurchase() {
         <TouchableOpacity activeOpacity={0.9} onPress={handlePurchase} disabled={isPurchasing} style={styles.button}>
           <Text style={styles.buttonText}>€ 2,99/año</Text>
         </TouchableOpacity>
+        <View style={styles.linksCont}>
+          <Text style={styles.linkText} onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}>{translateFn("privacyPolicies")}</Text>
+          <Text style={styles.linkText} onPress={() => Linking.openURL(EULA_URL)}>{translateFn("termsOfUse")}</Text>
+        </View>
       </ImageBackground>
   )
 }
@@ -164,6 +170,17 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 20,
     fontWeight: "700"
+  },
+  linksCont: {
+    marginTop: 16,
+    alignItems: "center",
+    gap: 4
+  },
+  linkText: {
+    fontSize: 12,
+    color: theme.colors.negro,
+    opacity: 0.6,
+    textDecorationLine: "underline"
   }
 })
 

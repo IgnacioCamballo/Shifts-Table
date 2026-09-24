@@ -585,6 +585,11 @@
     {"lenguage": "en", "text": "Privacy policies"},
     {"lenguage": "pt", "text": "Políticas de privacidad"}
   ],
+  "termsOfUse": [
+    {"lenguage": "es", "text": "Términos de uso (EULA)"},
+    {"lenguage": "en", "text": "Terms of use (EULA)"},
+    {"lenguage": "pt", "text": "Termos de uso (EULA)"}
+  ],
   "guide": [
     {"lenguage": "es", "text": "Guía de uso"},
     {"lenguage": "en", "text": "Guide of use"},
