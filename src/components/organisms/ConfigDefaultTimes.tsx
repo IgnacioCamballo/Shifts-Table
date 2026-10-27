@@ -42,7 +42,7 @@ export default function ConfigDefaultTimes() {
         setShowDelete(config.configBreakEntry ? true : false)
         break
       case "descansoSalida":
-        setDate(config.configBreakExit ? config.configBreakEntry! : new Date())
+        setDate(config.configBreakExit ? config.configBreakExit : new Date())
         setShowDelete(config.configBreakExit ? true : false)
     }
   }
