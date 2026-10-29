@@ -44,6 +44,9 @@
           "android": {
             "compileSdkVersion": 36,
             "targetSdkVersion": 36
+          },
+          "ios": {
+            "enableSceneSupport": true
           }
         }
       ],

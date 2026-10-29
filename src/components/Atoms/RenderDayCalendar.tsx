@@ -68,7 +68,7 @@ export default function RenderDayCalendar({item, currentDay, onPress, isAnimatio
 
             {shiftColor.note && 
               <Icon
-                name="tagso"
+                name="tag"
                 size={12}
                 style={[styles.tag, !shiftColor.paid && {left: 3}]}
               />

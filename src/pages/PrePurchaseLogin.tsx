@@ -30,7 +30,7 @@ export default function PrePurchaseLogin() {
     <View style={[styles.container, {height: noFooterNoHeaderHeight}]}>
       <TransparentButton onPress={() => navigation.reset({index: 0, routes: [{ name: "Calendar" }]})} style={styles.link}>
         <Icon 
-          name="doubleleft" 
+          name="double-left" 
           color={theme.colors.negro} 
           size={17}
         />

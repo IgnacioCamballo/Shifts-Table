@@ -16,6 +16,7 @@ import { changePassword, createPassRecoveryToken } from '@/api/UserAPI'
 import TransparentButton from '@/components/Atoms/Buttons/ButtonTransparent'
 import Spinner from '@/components/Atoms/Spinner'
 import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
+import CodeInput from '@/components/Atoms/CodeInput'
 
 export default function PassRecover() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
@@ -122,7 +123,7 @@ export default function PassRecover() {
         <>
           <TransparentButton onPress={() => navigation.goBack()} style={styles.arrow}>
             <IconArrow
-              name="doubleleft"
+              name="double-left"
               color={theme.colors.negro}
               size={20}
             />
@@ -159,12 +160,11 @@ export default function PassRecover() {
 
               <Text style={styles.textValidation}>{translateFn("validationText")}</Text>
               <View style={{minWidth: 180, gap: 4}}>
-                <TextInput
-                  style={[styles.input, styles.vfyCode]}
-                  keyboardType='numeric'
-                  onChangeText={setCode}
+                <CodeInput
                   value={code}
-                  />
+                  onChange={setCode}
+                  error={error && (code === "" || code.length !== 6 || invalidCode || expiredCode)}
+                />
                 {error && (code === "" || code.length !== 6 || invalidCode || expiredCode) && <Text style={styles.error}>{translateFn(expiredCode ? "expiredCode" : "invalidCode")}</Text>}
               </View>
 
@@ -211,6 +211,7 @@ export default function PassRecover() {
 const styles = StyleSheet.create({
   container: {
     position: "relative",
+    backgroundColor: "white"
   },
   contentContainer: {
     alignItems: "center",
@@ -269,14 +270,6 @@ const styles = StyleSheet.create({
     color: theme.colors.rojo,
     marginVertical: -2,
     marginLeft: 4
-  },
-  vfyCode: {
-    fontSize: 24,
-    fontWeight: "600",
-    textAlign: "center",
-    letterSpacing: 4,
-    minWidth: 180,
-    color: theme.colors.negro
   },
   eye: {
     position: "absolute",

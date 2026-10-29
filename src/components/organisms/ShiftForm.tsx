@@ -17,7 +17,6 @@ import Button from '@/components/Atoms/Buttons/Button'
 import DropDownAutoHeight from '@/components/Molecules/DropDownAutoHeight'
 import IosPickerModal from '@/components/Molecules/IosPickerModal'
 import ModalDatePicker from '@/components/Molecules/ModalDatePicker'
-import { set } from 'zod'
 
 type ShiftFormProps = {
   isCreate: boolean,
@@ -97,6 +96,13 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
   //states to manage modal datepicker
   const [timeType, setTimeType] = useState("")
   const [modalOpen, setModalOpen] = useState(false)
+
+  //on load, if the exit (from predefined schedules) is before the entry, the shift ends the next day
+  useEffect(() => {
+    if (shiftEntryForm && shiftExitForm && shiftExitForm < shiftEntryForm) {
+      setShiftExitForm(new Date(shiftExitForm.getFullYear(), shiftExitForm.getMonth(), shiftExitForm.getDate() + 1, shiftExitForm.getHours(), shiftExitForm.getMinutes()))
+    }
+  }, [])
 
   useEffect(() => {
     if (employerForm > 1) {
@@ -293,6 +299,7 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
                   inputStyle={styles.pickerInput}
                   placeholderLabel={translateFn("selectEmployer") || "Select Employer"}
                   modalTitle={translateFn("employer") || "Employer"}
+                  closeOnValues={[1]}
                 />
               </View>
             ) : (

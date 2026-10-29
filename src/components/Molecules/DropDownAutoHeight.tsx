@@ -61,7 +61,7 @@ export default function DropDownAutoHeight({ isOpen, setIsOpen, children, textRi
       >
         <Animated.View style={[styles.arrowCont, rotateArrow]}>
           <Icon
-            name="caretdown"
+            name="caret-down"
             color={arrowColor || configInfo.baseColor}
             size={20}
             style={styles.arrow}

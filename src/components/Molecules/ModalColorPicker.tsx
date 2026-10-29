@@ -35,7 +35,7 @@ export default function ModalColorPicker({ isOpen, initialColor, onCancel, onCon
           <ColorPicker
             style={styles.colorPicker}
             value={initialColor}
-            onComplete={color => setTempColor(color.hex)} 
+            onCompleteJS={color => setTempColor(color.hex)}
           >
             <Preview hideText={true} hideInitialColor={false} />
             <Panel1 />

@@ -26,6 +26,7 @@ type IosPickerModalProps = {
   placeholderLabel?: string
   inputStyle?: StyleProp<TextStyle>
   modalTitle?: string
+  closeOnValues?: (string | number)[] //values that close the modal as soon as they are selected
 }
 
 export default function IosPickerModal({
@@ -34,9 +35,17 @@ export default function IosPickerModal({
   items,
   placeholderLabel,
   inputStyle,
-  modalTitle
+  modalTitle,
+  closeOnValues
 }: IosPickerModalProps) {
   const [open, setOpen] = useState(false)
+
+  const handleValueChange = (newValue: string | number) => {
+    if (closeOnValues?.includes(newValue)) {
+      setOpen(false)
+    }
+    onValueChange(newValue)
+  }
 
   const selectedLabel = useMemo(() => {
     const selected = items.find(item => item.value === value)
@@ -77,7 +86,7 @@ export default function IosPickerModal({
 
           <Picker
             selectedValue={value}
-            onValueChange={onValueChange}
+            onValueChange={handleValueChange}
             style={styles.picker}
           >
             {items.map(item => (

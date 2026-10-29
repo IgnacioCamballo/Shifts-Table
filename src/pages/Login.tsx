@@ -128,7 +128,7 @@ export default function Login() {
     >
       <TransparentButton onPress={() => navigation.goBack()} style={styles.arrow}>
         <IconArrow
-          name="doubleleft"
+          name="double-left"
           color={theme.colors.negro}
           size={20}
         />

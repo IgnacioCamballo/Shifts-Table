@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View, Modal, Platform, Keyboard } from 'react-native'
-import ColorPicker, { HueSlider, Panel1, Preview, returnedResults } from 'reanimated-color-picker'
+import ColorPicker, { HueSlider, Panel1, Preview, ColorFormatsObject } from 'reanimated-color-picker'
 import Constants from "expo-constants"
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
@@ -14,7 +14,6 @@ import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
 import Button from '@/components/Atoms/Buttons/Button'
 
 export default function NewEmployer() {
-  console.log("llego a employer")
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
 
   const { companysInfo, setCompanysInfo, lenguage, configInfo } = useCalendar()
@@ -74,7 +73,7 @@ export default function NewEmployer() {
     }
   }, [salary])
 
-  const handleColorChange = (color: returnedResults) => {
+  const handleColorChange = (color: ColorFormatsObject) => {
     const hexColor = color.hex
     setTempColor(hexColor)
   }
@@ -176,7 +175,7 @@ export default function NewEmployer() {
                 <ColorPicker
                   style={styles.colorPicker}
                   value={tempColor}
-                  onComplete={color => handleColorChange(color)}
+                  onCompleteJS={color => handleColorChange(color)}
                 >
                   <Preview hideText={true} hideInitialColor={true} />
                   <Panel1 />

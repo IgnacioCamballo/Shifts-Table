@@ -46,7 +46,7 @@ export default function LayoutHeader() {
       {(routeName === "Shifts" || routeName === "MonthDetail") && (
         <TransparentButton onPress={() => navigation.goBack()} style={styles.link}>
           <Icon 
-            name="doubleleft" 
+            name="double-left" 
             color={theme.colors.negro} 
             size={17}
           />

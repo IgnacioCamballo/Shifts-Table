@@ -10,11 +10,11 @@ const api = axios.create({
   // baseURL: "http://localhost:4004/api"
   
   // URL para request desde emulador en mismo pc
-  //baseURL: LOCAL_API_BASE_URL
+  baseURL: LOCAL_API_BASE_URL
 
   // URL para request directo al servidor de render
   // baseURL: "https://shifts-table-backend.onrender.com/api"
-  baseURL: "https://shifts-table-server.kanatzu.dev/api"
+  //baseURL: "https://shifts-table-server.kanatzu.dev/api"
 })
 
 export default api
