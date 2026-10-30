@@ -45,6 +45,19 @@ export async function createPassRecoveryToken(formData: {mail: string, lenguage:
     if(isAxiosError(error) && error.response) {
       throw new Error(error.response.status.toString())
     }
+    throw new Error("network")
+  }
+}
+
+export async function validateCode(formData: {mail: string, code: string}) {
+  try {
+    const {data} = await api.post("/users/validate-pass-recovery-code", formData)
+    return data
+  } catch (error) {
+    if(isAxiosError(error) && error.response) {
+      throw new Error(error.response.status.toString())
+    }
+    throw new Error("network")
   }
 }
 
@@ -56,6 +69,7 @@ export async function changePassword(formData: {mail: string, code: string, toke
     if(isAxiosError(error) && error.response) {
       throw new Error(error.response.status.toString())
     }
+    throw new Error("network")
   }
 }
 

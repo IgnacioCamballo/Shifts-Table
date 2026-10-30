@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { Alert, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { useMutation } from '@tanstack/react-query'
 import { isEmail } from 'validator'
 import IconArrow from 'react-native-vector-icons/AntDesign'
@@ -11,7 +11,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import theme from '@/theme/theme'
 import { RootStackParamList } from '@/types'
 import { translate } from '@/utils'
-import { changePassword, createPassRecoveryToken } from '@/api/UserAPI'
+import { changePassword, createPassRecoveryToken, validateCode } from '@/api/UserAPI'
 
 import TransparentButton from '@/components/Atoms/Buttons/ButtonTransparent'
 import Spinner from '@/components/Atoms/Spinner'
@@ -35,49 +35,110 @@ export default function PassRecover() {
   const [mail, setMail] = useState("")
   const [code, setCode] = useState("")
   const [newPass, setNewPass] = useState("")
+  const [repeatPass, setRepeatPass] = useState("")
   const [showPass, setShowPass] = useState(false)
+  const [showRepeatPass, setShowRepeatPass] = useState(false)
+  const [isTokenSended, setIsTokenSended] = useState(false)
   const [tokenId, setTokenId] = useState("")
   const [loader, setLoader] = useState(false)
+  const [validatingCodeLoader, setValidatingCodeLoader] = useState(false)
   const [error, setError] = useState(false)
   const [invalidUser, setInvalidUser] = useState(false)
   const [invalidCode, setInvalidCode] = useState(false)
   const [expiredCode, setExpiredCode] = useState(false)
+  //translation key of the generic error (network, too many requests, unexpected)
+  const [serverError, setServerError] = useState("")
 
+  //sets the generic error message according to the error received from the api
+  function handleServerError(message: string) {
+    if (message === "network") setServerError("connectionError")
+    else if (message === "429") setServerError("tooManyRequests")
+    else setServerError("unexpectedError")
+  }
+
+  //query to send code
   const { mutate } = useMutation({
     mutationFn: createPassRecoveryToken,
     retry: 0,
     onError: (error) => {
-      console.log(error.message)
       if (error.message.toString() === "404") {
         setInvalidUser(true)
-        setLoader(false)
+      } else {
+        handleServerError(error.message.toString())
       }
+      setLoader(false)
     },
     onSuccess: (data) => {
       setInvalidUser(false)
       setLoader(false)
-      setTokenId(data.tokenid)
+      setIsTokenSended(data.tokenSend)
+    }
+  })
+  //query to validate code
+  const validateCodeQuery = useMutation({
+    mutationFn: validateCode,
+    retry: 0,
+    onError: (error) => {
+      if (error.message.toString() === "410") {
+        setExpiredCode(true)
+        setError(true)
+      } else if (error.message.toString() === "401") {
+        setInvalidCode(true)
+        setError(true)
+      } else {
+        handleServerError(error.message.toString())
+      }
+      setValidatingCodeLoader(false)
+    },
+    onSuccess: (data) => {
+      setValidatingCodeLoader(false)
+      setError(false)
+      setInvalidCode(false)
+      setExpiredCode(false)
+      setServerError("")
+      setTokenId(data)
+    }
+  })
+  //query to change password
+  const changePassQuery = useMutation({
+    mutationFn: changePassword,
+    retry: 0,
+    onError: (error) => {
+      if (error.message.toString() === "410" || error.message.toString() === "401") {
+        //the code is no longer valid, goes back to the code step to enter a new one
+        error.message.toString() === "410" ? setExpiredCode(true) : setInvalidCode(true)
+        setError(true)
+        setTokenId("")
+        setCode("")
+        setNewPass("")
+        setRepeatPass("")
+      } else {
+        handleServerError(error.message.toString())
+      }
+      setLoader(false)
+    },
+    onSuccess: () => {
+      Alert.alert(
+        '',
+        translateFn("passChangedSuccess"),
+        [{ text: 'OK', onPress: () => navigation.goBack() }],
+        { cancelable: false }
+      )
     }
   })
 
-  //query to change password
-    const changePassQuery = useMutation({
-      mutationFn: changePassword,
-      retry: 0,
-      onError: (error) => {
-        if (error.message.toString() === "410") {
-          setExpiredCode(true)
-        }
-        if (error.message.toString() === "401") {
-          setInvalidCode(true)
-        }
-        setLoader(false)
-        setError(true)
-      },
-      onSuccess: () => {
-        navigation.goBack()
-      }
-    })
+  useEffect(() => {
+    if (code.length === 6) {
+      handleValidateCode()
+    } else if (code.length > 0) {
+      //clears the previous code errors while the user is typing a new code
+      setError(false)
+      setInvalidCode(false)
+      setExpiredCode(false)
+      setServerError("")
+    }
+  }, [code])
+
 
   const handleSendPassRestoreCode = () => {
     if (!mail || !isEmail(mail)) {
@@ -85,6 +146,7 @@ export default function PassRecover() {
     } else {
       setError(false)
       setInvalidUser(false)
+      setServerError("")
       setLoader(true)
       const lowerCaseMail = mail.toLowerCase()
       const formData = { mail: lowerCaseMail, lenguage }
@@ -92,13 +154,29 @@ export default function PassRecover() {
     }
   }
 
+  const handleValidateCode = () => {
+    if (code.length !== 6) return
+    
+    const {mutate} = validateCodeQuery
+
+    setError(false)
+    setInvalidCode(false)
+    setExpiredCode(false)
+    setServerError("")
+    const lowerCaseMail = mail.toLowerCase()
+    const formData = {mail: lowerCaseMail, code}
+    mutate(formData)
+    setValidatingCodeLoader(true)
+  }
+
   const handleChangePassword = () => {
-    if (!code || code.length !== 6 || !newPass || newPass.length < 8) {
+    if (!code || code.length !== 6 || !newPass || newPass.length < 8 || newPass !== repeatPass) {
       setError(true)
     } else {
       setError(false)
       setInvalidCode(false)
       setExpiredCode(false)
+      setServerError("")
       const {mutate} = changePassQuery
       const lowerCaseMail = mail.toLowerCase()
       const formData = { mail: lowerCaseMail, code, tokenId, newPass }
@@ -129,8 +207,7 @@ export default function PassRecover() {
             />
           </TransparentButton>
 
-
-          {!tokenId ?
+          {!isTokenSended ?
             <>
               <Text style={styles.title}>{translateFn("recoverPass")}</Text>
               
@@ -139,7 +216,7 @@ export default function PassRecover() {
                 <TextInput
                   textContentType='emailAddress'
                   style={styles.input}
-                  onChangeText={value => setMail(value.toLowerCase())}
+                  onChangeText={value => setMail(value.trim().toLowerCase())}
                   value={mail}
                   maxLength={50}
                   placeholder={translateFn("placeholderMail")}
@@ -148,6 +225,7 @@ export default function PassRecover() {
                 {error && mail === "" && <Text style={styles.error}>{translateFn("errorMail")}</Text>}
                 {error && mail && !isEmail(mail) && <Text style={styles.error}>{translateFn("invalidMail")}</Text>}
                 {invalidUser && <Text style={styles.error}>{translateFn("userNotExist")}</Text>}
+                {serverError !== "" && <Text style={styles.error}>{translateFn(serverError)}</Text>}
               </View>
 
               <Text style={styles.text2} onPress={() => handleSendPassRestoreCode()}>{translateFn("sendRestoreCode")}</Text>
@@ -157,48 +235,80 @@ export default function PassRecover() {
               <Text style={styles.title}>{translateFn("changePass")}</Text>
 
               <Text style={styles.text}>{mail}</Text>
+              {!tokenId ? 
+                <>
+                  <Text style={styles.textValidation}>{translateFn("validationText")}</Text>
+                  <View style={{minWidth: 180, gap: 4}}>
+                    <CodeInput
+                      value={code}
+                      onChange={setCode}
+                      error={error && (code === "" || code.length !== 6 || invalidCode || expiredCode)}
+                    />
+                    {error && (code === "" || code.length !== 6 || invalidCode || expiredCode) && <Text style={styles.error}>{translateFn(expiredCode ? "expiredCode" : "invalidCode")}</Text>}
+                    {serverError !== "" && <Text style={styles.error}>{translateFn(serverError)}</Text>}
+                  </View>
+                </> :
+                <>
+                  <View style={styles.inputContainer}>
+                    <Text style={styles.text}>{translateFn("newPassword")}</Text>
 
-              <Text style={styles.textValidation}>{translateFn("validationText")}</Text>
-              <View style={{minWidth: 180, gap: 4}}>
-                <CodeInput
-                  value={code}
-                  onChange={setCode}
-                  error={error && (code === "" || code.length !== 6 || invalidCode || expiredCode)}
-                />
-                {error && (code === "" || code.length !== 6 || invalidCode || expiredCode) && <Text style={styles.error}>{translateFn(expiredCode ? "expiredCode" : "invalidCode")}</Text>}
-              </View>
+                    <TextInput
+                      style={[styles.input, styles.passwordInput, { zIndex: 0 }]}
+                      secureTextEntry={!showPass}
+                      onChangeText={setNewPass}
+                      value={newPass}
+                      maxLength={30}
+                      placeholder={translateFn("password")}
+                      placeholderTextColor={theme.colors.grisMedio}
+                      pointerEvents='none'
+                    />
 
-              <View style={styles.inputContainer}>
-                <Text style={styles.text}>{translateFn("newPassword")}</Text>
+                    <TouchableOpacity activeOpacity={0.9} onPressIn={() => setShowPass(!showPass)} style={styles.eye}>
+                      <Icon
+                        name={showPass ? "eye" : "eye-off"}
+                        size={20}
+                        color={theme.colors.negro}
+                      />
+                    </TouchableOpacity>
 
-                <TextInput
-                  style={[styles.input, styles.passwordInput, { zIndex: 0 }]}
-                  secureTextEntry={!showPass}
-                  onChangeText={setNewPass}
-                  value={newPass}
-                  maxLength={30}
-                  placeholder={translateFn("password")}
-                  placeholderTextColor={theme.colors.grisMedio}
-                  pointerEvents='none'
-                />
+                    {error && newPass === "" && <Text style={styles.error}>{translateFn("errorPassword")}</Text>}
+                    {newPass.length < 8 && <Text style={[styles.lowerText, error && 0 < newPass.length && { color: theme.colors.rojo }]}>{translateFn("min8")}</Text>}
+                  </View>
 
-                <TouchableOpacity activeOpacity={0.9} onPressIn={() => setShowPass(!showPass)} style={styles.eye}>
-                  <Icon
-                    name={showPass ? "eye" : "eye-off"}
-                    size={20}
-                    color={theme.colors.negro}
-                  />
-                </TouchableOpacity>
+                  <View style={styles.inputContainer}>
+                    <Text style={styles.text}>{translateFn("repeatPassword")}</Text>
 
-                {error && newPass === "" && <Text style={styles.error}>{translateFn("errorPassword")}</Text>}
-                {newPass.length < 8 && <Text style={[styles.lowerText, error && 0 < newPass.length && { color: theme.colors.rojo }]}>{translateFn("min8")}</Text>}
-              </View>
+                    <TextInput
+                      style={[styles.input, styles.passwordInput, { zIndex: 0 }]}
+                      secureTextEntry={!showRepeatPass}
+                      onChangeText={setRepeatPass}
+                      value={repeatPass}
+                      maxLength={30}
+                      placeholder={translateFn("repeatPassword")}
+                      placeholderTextColor={theme.colors.grisMedio}
+                      pointerEvents='none'
+                    />
 
-              <TouchableOpacity activeOpacity={0.9} onPress={() => handleChangePassword()}>
-              <ButtonSmall color={theme.colors.grisMasClaro} buttonStyles={styles.button}>
-                <Text style={styles.textButton}>{translateFn("changePass")}</Text>
-              </ButtonSmall>
-            </TouchableOpacity>
+                    <TouchableOpacity activeOpacity={0.9} onPressIn={() => setShowRepeatPass(!showRepeatPass)} style={styles.eye}>
+                      <Icon
+                        name={showRepeatPass ? "eye" : "eye-off"}
+                        size={20}
+                        color={theme.colors.negro}
+                      />
+                    </TouchableOpacity>
+
+                    {error && repeatPass !== newPass && <Text style={styles.error}>{translateFn("passwordsDontMatch")}</Text>}
+                  </View>
+
+                  {serverError !== "" && <Text style={styles.error}>{translateFn(serverError)}</Text>}
+
+                  <TouchableOpacity activeOpacity={0.9} onPress={() => handleChangePassword()}>
+                    <ButtonSmall color={theme.colors.grisMasClaro} buttonStyles={styles.button}>
+                      <Text style={styles.textButton}>{translateFn("changePass")}</Text>
+                    </ButtonSmall>
+                  </TouchableOpacity> 
+                </>
+              }
             </>
           }
         </>

@@ -535,6 +535,16 @@
     {"lenguage": "en", "text": "New password"},
     {"lenguage": "pt", "text": "Nova senha"}
   ],
+  "repeatPassword": [
+    {"lenguage": "es", "text": "Repetir contraseña"},
+    {"lenguage": "en", "text": "Repeat password"},
+    {"lenguage": "pt", "text": "Repetir senha"}
+  ],
+  "passwordsDontMatch": [
+    {"lenguage": "es", "text": "Las contraseñas no coinciden"},
+    {"lenguage": "en", "text": "Passwords do not match"},
+    {"lenguage": "pt", "text": "As senhas não coincidem"}
+  ],
   "min8": [
     {"lenguage": "es", "text": "* Mínimo 8 caracteres"},
     {"lenguage": "en", "text": "* Minimum 8 characteres"},
@@ -669,6 +679,26 @@
     {"lenguage": "es", "text": "Código expirado"},
     {"lenguage": "en", "text": "Expired code"},
     {"lenguage": "pt", "text": "Código expirado"}
+  ],
+  "connectionError": [
+    {"lenguage": "es", "text": "Error de conexión, revisa tu internet e inténtalo de nuevo"},
+    {"lenguage": "en", "text": "Connection error, check your internet and try again"},
+    {"lenguage": "pt", "text": "Erro de conexão, verifique sua internet e tente novamente"}
+  ],
+  "tooManyRequests": [
+    {"lenguage": "es", "text": "Demasiados intentos, espera unos minutos e inténtalo de nuevo"},
+    {"lenguage": "en", "text": "Too many attempts, wait a few minutes and try again"},
+    {"lenguage": "pt", "text": "Muitas tentativas, aguarde alguns minutos e tente novamente"}
+  ],
+  "unexpectedError": [
+    {"lenguage": "es", "text": "Ocurrió un error inesperado, inténtalo más tarde"},
+    {"lenguage": "en", "text": "An unexpected error occurred, try again later"},
+    {"lenguage": "pt", "text": "Ocorreu um erro inesperado, tente novamente mais tarde"}
+  ],
+  "passChangedSuccess": [
+    {"lenguage": "es", "text": "Tu contraseña se cambió correctamente"},
+    {"lenguage": "en", "text": "Your password was changed successfully"},
+    {"lenguage": "pt", "text": "Sua senha foi alterada com sucesso"}
   ],
   "premiumEndsMessage": [
     {"lenguage": "es", "text": "Tu año de membresía premium a llegado a su fin y estamos muy agradecidos de que hayas confiado en nosotros, deseas renovar tu suscripción y seguir disfrutando de los beneficios de la membresía premium?"},
