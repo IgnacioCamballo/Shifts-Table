@@ -675,10 +675,20 @@
     {"lenguage": "en", "text": "Invalid code"},
     {"lenguage": "pt", "text": "Código inválido"}
   ],
+  "deleteAccountConfirm": [
+    {"lenguage": "es", "text": "¿Estás seguro de que deseas eliminar la cuenta? Este proceso no tiene vuelta atrás y no se podrá recuperar la información"},
+    {"lenguage": "en", "text": "Are you sure you want to delete your account? This process cannot be undone and the information cannot be recovered"},
+    {"lenguage": "pt", "text": "Tem certeza de que deseja excluir a conta? Este processo não pode ser desfeito e as informações não poderão ser recuperadas"}
+  ],
+  "correctCode": [
+    {"lenguage": "es", "text": "El código es correcto"},
+    {"lenguage": "en", "text": "The code is correct"},
+    {"lenguage": "pt", "text": "O código está correto"}
+  ],
   "expiredCode": [
-    {"lenguage": "es", "text": "Código expirado"},
-    {"lenguage": "en", "text": "Expired code"},
-    {"lenguage": "pt", "text": "Código expirado"}
+    {"lenguage": "es", "text": "Código incorrecto o expirado"},
+    {"lenguage": "en", "text": "Incorrect or expired code"},
+    {"lenguage": "pt", "text": "Código expirado o errado"}
   ],
   "connectionError": [
     {"lenguage": "es", "text": "Error de conexión, revisa tu internet e inténtalo de nuevo"},

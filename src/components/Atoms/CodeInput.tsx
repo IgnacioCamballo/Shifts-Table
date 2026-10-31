@@ -1,5 +1,6 @@
-import React, { useRef, useState } from 'react'
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
+import React, { useEffect, useRef, useState } from 'react'
+import { Animated, Easing, Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
+import Svg, { Rect } from 'react-native-svg'
 
 import theme from '@/theme/theme'
 
@@ -7,12 +8,59 @@ type CodeInputProps = {
   value: string,
   onChange: (value: string) => void,
   length?: number,
-  error?: boolean
+  error?: boolean,
+  loading?: boolean,
+  success?: boolean
 }
 
-export default function CodeInput({ value, onChange, length = 6, error = false }: CodeInputProps) {
+const AnimatedRect = Animated.createAnimatedComponent(Rect)
+
+const BOX_WIDTH = 44
+const BOX_HEIGHT = 52
+const BOX_RADIUS = 10
+const LOADER_WIDTH = 1.5
+const LOADER_COLOR = "#085f85"
+
+// the stroke is centered, so the rect is inset by half of its width to stay inside the box
+const RECT_WIDTH = BOX_WIDTH - LOADER_WIDTH
+const RECT_HEIGHT = BOX_HEIGHT - LOADER_WIDTH
+const RECT_RADIUS = BOX_RADIUS - LOADER_WIDTH / 2
+const PERIMETER = 2 * (RECT_WIDTH + RECT_HEIGHT) - (8 - 2 * Math.PI) * RECT_RADIUS
+const SEGMENT = PERIMETER * 0.3
+
+export default function CodeInput({ value, onChange, length = 6, error = false, loading = false, success = false }: CodeInputProps) {
   const inputRef = useRef<TextInput>(null)
   const [focused, setFocused] = useState(false)
+  const visibility = useRef(new Animated.Value(0)).current
+  const progress = useRef(new Animated.Value(0)).current
+
+  useEffect(() => {
+    Animated.timing(visibility, {
+      toValue: loading ? 1 : 0,
+      duration: 150,
+      useNativeDriver: false
+    }).start()
+
+    if (!loading) return
+
+    progress.setValue(0)
+    const loop = Animated.loop(
+      Animated.timing(progress, {
+        toValue: 1,
+        duration: 1200,
+        easing: Easing.linear,
+        useNativeDriver: false
+      })
+    )
+    loop.start()
+
+    return () => loop.stop()
+  }, [loading, visibility, progress])
+
+  const dashOffset = progress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, -PERIMETER]
+  })
 
   function handleChange(text: string) {
     onChange(text.replace(/\D/g, "").slice(0, length))
@@ -29,10 +77,30 @@ export default function CodeInput({ value, onChange, length = 6, error = false }
             style={[
               styles.box,
               isActive && styles.boxActive,
-              error && styles.boxError
+              error && styles.boxError,
+              success && styles.boxSuccess
             ]}
           >
             <Text style={styles.digit}>{value[i] ?? ""}</Text>
+
+            <Animated.View pointerEvents='none' style={[styles.loader, { opacity: visibility }]}>
+              <Svg width={BOX_WIDTH} height={BOX_HEIGHT}>
+                <AnimatedRect
+                  x={LOADER_WIDTH / 2}
+                  y={LOADER_WIDTH / 2}
+                  width={RECT_WIDTH}
+                  height={RECT_HEIGHT}
+                  rx={RECT_RADIUS}
+                  ry={RECT_RADIUS}
+                  fill='none'
+                  stroke={LOADER_COLOR}
+                  strokeWidth={LOADER_WIDTH}
+                  strokeLinecap='round'
+                  strokeDasharray={[SEGMENT, PERIMETER - SEGMENT]}
+                  strokeDashoffset={dashOffset}
+                />
+              </Svg>
+            </Animated.View>
           </View>
         )
       })}
@@ -49,6 +117,7 @@ export default function CodeInput({ value, onChange, length = 6, error = false }
         textContentType='oneTimeCode'
         autoComplete='sms-otp'
         maxLength={length}
+        editable={!loading && !success}
         caretHidden
       />
     </Pressable>
@@ -62,9 +131,9 @@ const styles = StyleSheet.create({
     gap: 8
   },
   box: {
-    width: 44,
-    height: 52,
-    borderRadius: 10,
+    width: BOX_WIDTH,
+    height: BOX_HEIGHT,
+    borderRadius: BOX_RADIUS,
     borderWidth: 1,
     borderColor: theme.colors.gris,
     backgroundColor: theme.colors.blanco,
@@ -75,8 +144,17 @@ const styles = StyleSheet.create({
     borderColor: theme.colors.verdeBase,
     borderWidth: 2
   },
+  boxSuccess: {
+    borderColor: theme.colors.verdeBoton,
+    borderWidth: 1.5
+  },
   boxError: {
     borderColor: theme.colors.rojo
+  },
+  loader: {
+    position: "absolute",
+    top: -1,
+    left: -1
   },
   digit: {
     fontSize: theme.fontSizes.F24,

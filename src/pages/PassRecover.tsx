@@ -242,6 +242,7 @@ export default function PassRecover() {
                     <CodeInput
                       value={code}
                       onChange={setCode}
+                      loading={validatingCodeLoader}
                       error={error && (code === "" || code.length !== 6 || invalidCode || expiredCode)}
                     />
                     {error && (code === "" || code.length !== 6 || invalidCode || expiredCode) && <Text style={styles.error}>{translateFn(expiredCode ? "expiredCode" : "invalidCode")}</Text>}

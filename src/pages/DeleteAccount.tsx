@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Alert, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { useMutation } from '@tanstack/react-query'
 import { isEmail } from 'validator'
@@ -11,12 +11,13 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import useCalendar from '@/hooks/useCalendar'
 import theme from '@/theme/theme'
 import { translate } from '@/utils'
-import { createDeleteToken, deletePassword } from '@/api/UserAPI'
+import { createDeleteToken, deletePassword, validateCode } from '@/api/UserAPI'
 import { RootStackParamList } from '@/types'
 
 import TransparentButton from '@/components/Atoms/Buttons/ButtonTransparent'
 import Spinner from '@/components/Atoms/Spinner'
 import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
+import CodeInput from '@/components/Atoms/CodeInput'
 
 export default function DeleteAccount() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
@@ -39,6 +40,22 @@ export default function DeleteAccount() {
   const [invalidUser, setInvalidUser] = useState(false)
   const [diferentUser, setDiferentUser] = useState(false)
   const [invalidCode, setInvalidCode] = useState(false)
+  const [expiredCode, setExpiredCode] = useState(false)
+  const [codeError, setCodeError] = useState(false)
+  const [validatingCode, setValidatingCode] = useState(false)
+  const [codeSuccess, setCodeSuccess] = useState(false)
+  const successTimeout = useRef<ReturnType<typeof setTimeout>>(undefined)
+  //token returned when the code is verified, needed to delete the account
+  const [validatedTokenId, setValidatedTokenId] = useState("")
+  //translation key of the generic error (network, too many requests, unexpected)
+  const [serverError, setServerError] = useState("")
+
+  //sets the generic error message according to the error received from the api
+  function handleServerError(message: string) {
+    if (message === "network") setServerError("connectionError")
+    else if (message === "429") setServerError("tooManyRequests")
+    else setServerError("unexpectedError")
+  }
 
   const { mutate } = useMutation({
     mutationFn: createDeleteToken,
@@ -61,16 +78,50 @@ export default function DeleteAccount() {
     }
   })
 
+  //query to validate code
+  const validateCodeQuery = useMutation({
+    mutationFn: validateCode,
+    retry: 0,
+    onError: (error) => {
+      if (error.message.toString() === "410") {
+        setExpiredCode(true)
+        setCodeError(true)
+      } else if (error.message.toString() === "401") {
+        setInvalidCode(true)
+        setCodeError(true)
+      } else {
+        handleServerError(error.message.toString())
+      }
+      setValidatingCode(false)
+    },
+    onSuccess: (data) => {
+      setValidatingCode(false)
+      setCodeError(false)
+      setInvalidCode(false)
+      setExpiredCode(false)
+      setServerError("")
+      //shows the code as correct for 2s before replacing the input and the message with the delete button
+      setCodeSuccess(true)
+      successTimeout.current = setTimeout(() => setValidatedTokenId(data), 2000)
+    }
+  })
+
   //query delete account
     const deleteAccountQuery = useMutation({
       mutationFn: deletePassword,
       retry: 0,
       onError: (error) => {
-        if (error.message.toString() === "401") {
-          setInvalidCode(true)
+        if (error.message.toString() === "410" || error.message.toString() === "401") {
+          //the code is no longer valid, goes back to the code step to enter a new one
+          error.message.toString() === "410" ? setExpiredCode(true) : setInvalidCode(true)
+          setCodeError(true)
+          setValidatedTokenId("")
+          setCodeSuccess(false)
+          setCode("")
+        } else {
+          handleServerError(error.message.toString())
         }
         setLoader(false)
-        setError(true)
       },
       onSuccess: () => {
         Alert.alert(
@@ -121,17 +172,57 @@ export default function DeleteAccount() {
     }
   }
 
-  const handleDeleteAccount = () => {
-    if (!code || code.length !== 6) {
-      setError(true)
-    } else {
-      setError(false)
+  useEffect(() => () => clearTimeout(successTimeout.current), [])
+
+  useEffect(() => {
+    if (code.length === 6) {
+      handleValidateCode()
+    } else if (code.length > 0) {
+      //clears the previous code errors while the user is typing a new code
+      setCodeError(false)
       setInvalidCode(false)
-      const {mutate} = deleteAccountQuery
-      const formData = { mail, code, tokenId }
-      mutate(formData)
-      setLoader(true)
+      setExpiredCode(false)
+      setServerError("")
     }
+  }, [code])
+
+  const handleValidateCode = () => {
+    if (code.length !== 6) return
+
+    const {mutate} = validateCodeQuery
+
+    setCodeError(false)
+    setInvalidCode(false)
+    setExpiredCode(false)
+    setServerError("")
+    const formData = { mail, code }
+    mutate(formData)
+    setValidatingCode(true)
+  }
+
+  const handleDeleteAccount = () => {
+    if (!validatedTokenId) return
+
+    Alert.alert(
+      '',
+      translateFn("deleteAccountConfirm"),
+      [
+        {
+          text: translateFn("cancel"),
+          style: 'cancel'
+        },
+        {
+          text: 'OK',
+          onPress: () => {
+            setServerError("")
+            const {mutate} = deleteAccountQuery
+            const formData = { mail, code, tokenId: validatedTokenId }
+            mutate(formData)
+            setLoader(true)
+          }
+        }
+      ]
+    )
   }
 
   return (
@@ -186,22 +277,33 @@ export default function DeleteAccount() {
 
               <Text style={styles.text}>{mail}</Text>
 
-              <Text style={styles.textValidation}>{translateFn("validationText")}</Text>
-              <View style={{minWidth: 180, gap: 4}}>
-                <TextInput
-                  style={[styles.input, styles.vfyCode]}
-                  keyboardType='numeric'
-                  onChangeText={setCode}
-                  value={code}
-                  />
-                {error && (code === "" || code.length !== 6 || invalidCode) && <Text style={styles.error}>{translateFn("invalidCode")}</Text>}
-              </View>
+              {!validatedTokenId ?
+                <>
+                  <Text style={styles.textValidation}>{translateFn("validationText")}</Text>
+                  <View style={{minWidth: 180, gap: 4}}>
+                    <CodeInput
+                      value={code}
+                      onChange={setCode}
+                      error={codeError}
+                      loading={validatingCode}
+                      success={codeSuccess}
+                    />
+                    {codeError && <Text style={styles.error}>{translateFn(expiredCode ? "expiredCode" : "invalidCode")}</Text>}
+                    {serverError !== "" && <Text style={styles.error}>{translateFn(serverError)}</Text>}
+                    {codeSuccess && <Text style={styles.success}>{translateFn("correctCode")}</Text>}
+                  </View>
+                </>
+                :
+                <>
+                  {serverError !== "" && <Text style={styles.error}>{translateFn(serverError)}</Text>}
 
-              <TouchableOpacity activeOpacity={0.9} onPress={() => handleDeleteAccount()}>
-              <ButtonSmall color={theme.colors.grisMasClaro} buttonStyles={styles.button}>
-                <Text style={styles.textButton}>{translateFn("deleteAccount")}</Text>
-              </ButtonSmall>
-            </TouchableOpacity>
+                  <TouchableOpacity activeOpacity={0.9} onPress={() => handleDeleteAccount()}>
+                    <ButtonSmall color={theme.colors.grisMasClaro} buttonStyles={styles.button}>
+                      <Text style={styles.textButton}>{translateFn("deleteAccount")}</Text>
+                    </ButtonSmall>
+                  </TouchableOpacity>
+                </>
+              }
             </>
           }
         </>
@@ -271,13 +373,9 @@ const styles = StyleSheet.create({
     marginVertical: -2,
     marginLeft: 4
   },
-  vfyCode: {
-    fontSize: 24,
-    fontWeight: "600",
-    textAlign: "center",
-    letterSpacing: 4,
-    minWidth: 180,
-    color: theme.colors.negro
+  success: {
+    fontSize: theme.fontSizes.F18,
+    color: theme.colors.verdeBoton
   },
   eye: {
     position: "absolute",

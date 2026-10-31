@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
   contentContainer: {
     alignItems: "center",
     justifyContent: "center",
-    marginTop: -50,
+    marginTop: Platform.OS === 'ios' ? 0 : -50,
     gap: 12
   },
   arrow: {

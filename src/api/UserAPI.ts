@@ -14,14 +14,15 @@ export async function createValidationToken(formData: {mail: string, lenguage: s
   }
 }
 
-export async function createUser(formData: {mail: string, password: string, userName: string, tokenId: string}) {
+export async function createUser(formData: {mail: string, password: string, userName: string, tokenId: string, code: string}) {
   try {
     const {data} = await api.post("/users", formData)
     AsyncStorage.setItem("userToken", data)
   } catch (error) {
     if(isAxiosError(error) && error.response) {
-      throw new Error(error.response.data.error)
+      throw new Error(error.response.status.toString())
     }
+    throw new Error("network")
   }
 }
 
@@ -133,5 +134,6 @@ export async function deletePassword(formData: {mail: string, code: string, toke
     if(isAxiosError(error) && error.response) {
       throw new Error(error.response.status.toString())
     }
+    throw new Error("network")
   }
 }

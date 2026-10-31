@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Text, View, StyleSheet, ScrollView, Platform, TouchableOpacity } from 'react-native'
 import { TextInput } from 'react-native-gesture-handler'
 import { useMutation } from '@tanstack/react-query'
@@ -16,6 +16,7 @@ import { translate } from '@/utils'
 import { createUser, createValidationToken } from '@/api/UserAPI'
 
 import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
+import CodeInput from '@/components/Atoms/CodeInput'
 import TransparentButton from '@/components/Atoms/Buttons/ButtonTransparent'
 import Spinner from '@/components/Atoms/Spinner'
 
@@ -43,9 +44,22 @@ export default function CreateAccount() {
   const [error, setError] = useState(false)
   const [repeatedMail, setRepeatedMail] = useState(false)
   const [tokenId, setTokenId] = useState("")
-  const [token, setToken] = useState("")
-  const [inputToken, setInputToken] = useState("")
+  const [code, setCode] = useState("")
   const [creatingLoader, setCreatingLoader] = useState(false)
+  const [codeError, setCodeError] = useState(false)
+  const [codeSuccess, setCodeSuccess] = useState(false)
+  const redirectTimeout = useRef<ReturnType<typeof setTimeout>>(undefined)
+  const [invalidCode, setInvalidCode] = useState(false)
+  const [expiredCode, setExpiredCode] = useState(false)
+  //translation key of the generic error (network, too many requests, unexpected)
+  const [serverError, setServerError] = useState("")
+
+  //sets the generic error message according to the error received from the api
+  function handleServerError(message: string) {
+    if (message === "network") setServerError("connectionError")
+    else if (message === "429") setServerError("tooManyRequests")
+    else setServerError("unexpectedError")
+  }
 
   //query to send validation token by mail
   const { mutate, isPending } = useMutation({
@@ -56,7 +70,6 @@ export default function CreateAccount() {
       }
     },
     onSuccess: (data) => {
-      setToken(data.code)
       setTokenId(data.tokenid)
     }
   })
@@ -65,23 +78,34 @@ export default function CreateAccount() {
   const createUserQuery = useMutation({
     mutationFn: createUser,
     onError: (error) => {
-      console.log(error)
+      if (error.message.toString() === "410") {
+        setExpiredCode(true)
+        setCodeError(true)
+      } else if (error.message.toString() === "401") {
+        setInvalidCode(true)
+        setCodeError(true)
+      } else {
+        handleServerError(error.message.toString())
+      }
       setCreatingLoader(false)
-      setTokenId("")
-      setToken("")
     },
     onSuccess: () => {
-      const userInfo = { userName, mail, lastBackUp: null, premium: false }
-      setUserInfo(userInfo)
-      setLenguage(lenguage as "es" | "en" | "pt")
-      if (type === "2") {
-        navigation.goBack()
-      } else {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: "Calendar" }]
-        })
-      }
+      //shows the code as correct for 2s before redirecting
+      setCreatingLoader(false)
+      setCodeSuccess(true)
+      redirectTimeout.current = setTimeout(() => {
+        const userInfo = { userName, mail, lastBackUp: null, premium: false }
+        setUserInfo(userInfo)
+        setLenguage(lenguage as "es" | "en" | "pt")
+        if (type === "2") {
+          navigation.goBack()
+        } else {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "Calendar" }]
+          })
+        }
+      }, 2000)
     }
   })
 
@@ -97,14 +121,33 @@ export default function CreateAccount() {
     }
   }
 
+  useEffect(() => () => clearTimeout(redirectTimeout.current), [])
+
   useEffect(() => {
-    if (inputToken && inputToken === token) {
-      const { mutate } = createUserQuery
-      const formData = { userName, password, mail, tokenId }
-      mutate(formData)
-      setCreatingLoader(true)
+    if (code.length === 6) {
+      handleCreateUser()
+    } else if (code.length > 0) {
+      //clears the previous code errors while the user is typing a new code
+      setCodeError(false)
+      setInvalidCode(false)
+      setExpiredCode(false)
+      setServerError("")
     }
-  }, [inputToken])
+  }, [code])
+
+  const handleCreateUser = () => {
+    if (code.length !== 6) return
+
+    const { mutate } = createUserQuery
+
+    setCodeError(false)
+    setInvalidCode(false)
+    setExpiredCode(false)
+    setServerError("")
+    const formData = { userName, password, mail, tokenId, code }
+    mutate(formData)
+    setCreatingLoader(true)
+  }
 
   return (
     <ScrollView
@@ -192,22 +235,20 @@ export default function CreateAccount() {
           }
         </> :
         <>
-          {!creatingLoader ?
-            <>
-              <Text style={styles.title}>{translateFn("validationCode")}</Text>
-              <Text style={styles.textValidation}>{translateFn("validationText")}</Text>
-              <TextInput
-                style={[styles.input, styles.vfyCode]}
-                keyboardType='numeric'
-                onChangeText={setInputToken}
-                value={inputToken}
-              />
-            </>
-            : <>
-              <Spinner style={{ marginTop: 60 }} size={50} borderWidth={10} />
-              <Text>{translateFn("creatingAccount")}</Text>
-            </>
-          }
+          <Text style={styles.title}>{translateFn("validationCode")}</Text>
+          <Text style={styles.textValidation}>{translateFn("validationText")}</Text>
+          <View style={{ minWidth: 180, gap: 4 }}>
+            <CodeInput
+              value={code}
+              onChange={setCode}
+              error={codeError}
+              loading={creatingLoader}
+              success={codeSuccess}
+            />
+            {codeError && <Text style={styles.error}>{translateFn(expiredCode ? "expiredCode" : "invalidCode")}</Text>}
+            {serverError !== "" && <Text style={styles.error}>{translateFn(serverError)}</Text>}
+          </View>
+          {creatingLoader && <Text>{translateFn("creatingAccount")}</Text>}
         </>
       }
     </ScrollView>
@@ -265,14 +306,6 @@ const styles = StyleSheet.create({
   passwordInput: {
     backgroundColor: theme.colors.blanco,
     color: theme.colors.negro,
-  },
-  vfyCode: {
-    fontSize: 24,
-    fontWeight: "600",
-    textAlign: "center",
-    letterSpacing: 4,
-    minWidth: 180,
-    color: theme.colors.negro
   },
   lowerText: {
     marginLeft: 4,
