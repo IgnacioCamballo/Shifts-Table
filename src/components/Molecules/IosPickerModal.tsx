@@ -67,7 +67,7 @@ export default function IosPickerModal({
       <Modal
         visible={open}
         transparent
-        animationType='slide'
+        animationType='fade'
         onRequestClose={() => setOpen(false)}
       >
         <TouchableOpacity

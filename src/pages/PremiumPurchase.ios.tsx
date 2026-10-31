@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { View, Text, Alert, ImageBackground, StyleSheet, TouchableOpacity, Linking } from 'react-native'
 import { useIAP, ErrorCode, finishTransaction } from 'expo-iap'
 import Icon from 'react-native-vector-icons/Ionicons'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
@@ -20,10 +19,6 @@ export default function PremiumPurchase() {
   const { userInfo, setUserInfo, lenguage } = useCalendar()
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
   const [isPurchasing, setIsPurchasing] = useState(false)
-
-  //gets variable heigth for the screen without statusbar
-  const insets = useSafeAreaInsets()
-  const noFooterNoHeaderHeight = theme.heigth.screenHeight - insets.top - Math.max(insets.bottom, theme.heigth.bottomSystemBar) - theme.heigth.noFooterNoHeader
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text: string) {
@@ -82,7 +77,7 @@ export default function PremiumPurchase() {
   return (
     <ImageBackground
       source={require("@/../assets/purchaseBg.jpg")}
-      style={[styles.background, { height: noFooterNoHeaderHeight }]}
+      style={styles.background}
     >
         <Text style={styles.preTitle}>Mejora tu cuenta a</Text>
 
@@ -126,7 +121,10 @@ export default function PremiumPurchase() {
 
 const styles = StyleSheet.create({
   background: {
+    flex: 1,
     padding: 52,
+    //footer is absolute, so the margin makes the image end where the footer starts
+    marginBottom: theme.heigth.footer,
     justifyContent: "center"
   },
   preTitle: {

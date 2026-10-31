@@ -31,6 +31,7 @@ const theme = {
     },
     heigth: {
         publicidad: 80,
+        footer: 76,
         screenHeight: Dimensions.get("screen").height,
         bottomSystemBar: Platform.OS === 'android' ? Math.max(Dimensions.get("screen").height - Dimensions.get("window").height - (StatusBar.currentHeight || 0), 0) : 0,
         daysContainer: Platform.OS === 'ios' ? 234 : 255,

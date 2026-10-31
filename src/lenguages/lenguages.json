@@ -180,6 +180,11 @@
     {"lenguage": "en", "text": "Employer and starting hour are obligatory"},
     {"lenguage": "pt", "text": "Empregador e horário de início são obrigatórios"}
   ],
+  "allFieldsRequiredAlert": [
+    {"lenguage": "es", "text": "Todos los campos son obligatorios"},
+    {"lenguage": "en", "text": "All fields are obligatory"},
+    {"lenguage": "pt", "text": "Todos os campos são obrigatórios"}
+  ],
   "repetedShiftAlert": [
     {"lenguage": "es", "text": "El turno ya existe para este empleador"},
     {"lenguage": "en", "text": "Shift already exist for this employer"},

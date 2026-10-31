@@ -175,7 +175,7 @@ export default function ConfigSettings() {
           <View style={styles.pickerContainerIos}>
             <IosPickerModal
               value={lenguage}
-              onValueChange={value => setLenguage(String(value))}
+              onValueChange={value => setLenguage(String(value) as "es" | "en" | "pt")}
               items={[
                 { label: 'English', value: 'en' },
                 { label: 'Español', value: 'es' },

@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { StyleSheet, Text, View, Platform, ScrollView } from 'react-native'
 import Constants from "expo-constants"
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
@@ -21,10 +20,6 @@ export default function Config() {
   const { companysInfo, lenguage, configInfo, userInfo } = useCalendar()
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
 
-  //gets variable heigth for the screen without statusbar
-  const insets = useSafeAreaInsets()
-  const noFooterNoHeaderHeight = theme.heigth.screenHeight - insets.top - Math.max(insets.bottom, theme.heigth.bottomSystemBar) - theme.heigth.noFooterNoHeader
-
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text: string) {
     return translate({ text, lenguage })
@@ -33,7 +28,11 @@ export default function Config() {
   const [employersOpen, setEmployersOpen] = useState(false)
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} style={{maxHeight: noFooterNoHeaderHeight, backgroundColor: '#ffffff'}}>
+    //footer is absolute, so the margin makes the scroll end where the footer starts
+    <ScrollView 
+      showsVerticalScrollIndicator={false} 
+      style={{flex: 1, marginBottom: theme.heigth.footer, backgroundColor: '#ffffff'}}
+    >
       <View style={styles.p8}>
 
         <ConfigDefaultTimes />

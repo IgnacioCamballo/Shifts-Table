@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Alert, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Alert, Animated, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { useMutation } from '@tanstack/react-query'
 import { isEmail } from 'validator'
 import IconArrow from 'react-native-vector-icons/AntDesign'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import useCalendar from '@/hooks/useCalendar'
+import useKeyboardBottomSpace from '@/hooks/useKeyboardBottomSpace'
 import theme from '@/theme/theme'
 import { translate } from '@/utils'
 import { createDeleteToken, deletePassword, validateCode } from '@/api/UserAPI'
@@ -23,9 +23,8 @@ export default function DeleteAccount() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
   const { lenguage, setShifts, setCompanysInfo, setUserInfo, setConfigInfo, setLastBackup } = useCalendar()
 
-  //gets variable heigth for the screen without statusbar
-  const insets = useSafeAreaInsets()
-  const noFooterNoHeaderHeight = theme.heigth.screenHeight - insets.top - Math.max(insets.bottom, theme.heigth.bottomSystemBar) - theme.heigth.noFooterNoHeader  
+  //bottom space follows the keyboard, the footer is absolute so its height is the minimum space kept
+  const { ref: bottomSpaceRef, style: bottomSpaceStyle } = useKeyboardBottomSpace(theme.heigth.footer)
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text: string) {
@@ -226,10 +225,12 @@ export default function DeleteAccount() {
   }
 
   return (
-    <ScrollView 
-      showsVerticalScrollIndicator={false} 
-      contentContainerStyle={[styles.contentContainer, {height: noFooterNoHeaderHeight}]} 
-      style={[styles.container, {maxHeight: noFooterNoHeaderHeight}]}
+    <Animated.View ref={bottomSpaceRef} style={[styles.keyboardAvoiding, bottomSpaceStyle]}>
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled"
+      contentContainerStyle={styles.contentContainer}
+      style={styles.container}
     >
 
       {loader ?
@@ -310,19 +311,24 @@ export default function DeleteAccount() {
 
       }
     </ScrollView>
+    </Animated.View>
   )
 }
 
 const styles = StyleSheet.create({
+  keyboardAvoiding: {
+    flex: 1,
+    backgroundColor: theme.colors.blanco
+  },
   container: {
+    flex: 1,
     position: "relative",
-    backgroundColor: theme.colors.blanco,
-    paddingTop: Platform.OS === "ios" ? 60 : 0,
+    backgroundColor: theme.colors.blanco
   },
   contentContainer: {
+    flexGrow: 1,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: -60,
     gap: 12
   },
   arrow: {

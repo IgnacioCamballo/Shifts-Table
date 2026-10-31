@@ -34,6 +34,7 @@ export default function EditEmployer() {
   const [defColor, setDefColor] = useState(color)
 
   const [repeatedName, setRepeatedName] = useState(false)
+  const [attempted, setAttempted] = useState(false)
   const [changeWageInShifts, setChangeWageInShifts] = useState(false)
   const [modal, setModal] = useState(false)
   const [tempColor, setTempColor] = useState(color)
@@ -41,6 +42,12 @@ export default function EditEmployer() {
   const dismissKeyboard = () => {
     Keyboard.dismiss()
   }
+
+  //Fields marked as missing once the user tried to save, each one clears as soon as it is filled
+  const nameMissing = attempted && inputName.trim() === ""
+  const shortMissing = attempted && shortName.trim() === ""
+  const salaryMissing = attempted && isNaN(parseFloat(salary))
+  const anyMissing = nameMissing || shortMissing || salaryMissing
 
   // Function to format salary
   function formatSalary(wage: number) {
@@ -114,6 +121,11 @@ export default function EditEmployer() {
 
   //saves the edited emplyer info
   const handleSaveEmployer = () => {
+    if (inputName.trim() === "" || shortName.trim() === "" || isNaN(parseFloat(salary))) {
+      setAttempted(true)
+      return
+    }
+
     const employerIndex = companysInfo.findIndex(emp => emp.key === key)
 
     if (changeWageInShifts) {
@@ -160,7 +172,7 @@ export default function EditEmployer() {
         </View>
 
         <View style={styles.empleador}>
-          <View style={styles.line}>
+          <View style={[styles.line, nameMissing && styles.lineMissing]}>
             <Text style={styles.textLine}>{translateFn("name")}:</Text>
 
             <TextInput
@@ -173,7 +185,7 @@ export default function EditEmployer() {
             />
           </View>
 
-          <View style={styles.line}>
+          <View style={[styles.line, shortMissing && styles.lineMissing]}>
             <Text style={styles.textLine}>{translateFn("shortName")}:</Text>
 
             <TextInput
@@ -186,7 +198,7 @@ export default function EditEmployer() {
             />
           </View>
 
-          <View style={styles.line}>
+          <View style={[styles.line, salaryMissing && styles.lineMissing]}>
             <Text style={styles.textLine}>{translateFn("hourlyWage")}:</Text>
 
             <View style={styles.row}>
@@ -256,7 +268,7 @@ export default function EditEmployer() {
 
         <Button
           onPress={() => handleSaveEmployer()}
-          block={inputName === "" || !salary || repeatedName ? true : false}
+          block={repeatedName}
           color={configInfo.buttonsColor}
         >
           <Text style={styles.textoBoton}>{translateFn("saveChanges")}</Text>
@@ -264,6 +276,10 @@ export default function EditEmployer() {
 
         {repeatedName &&
           <Text style={styles.textAlert}>{translateFn("repeatedNameAlert")}</Text>
+        }
+
+        {anyMissing &&
+          <Text style={styles.textAlert}>{translateFn("allFieldsRequiredAlert")}</Text>
         }
       </View>
     </TouchableWithoutFeedback>
@@ -300,6 +316,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderBottomWidth: 1,
     borderColor: theme.colors.grisClaro
+  },
+  lineMissing: {
+    borderBottomWidth: 2,
+    borderColor: theme.colors.rojoBin
   },
   textLine: {
     fontSize: theme.fontSizes.F20,
@@ -369,9 +389,7 @@ const styles = StyleSheet.create({
   textAlert: {
     fontSize: theme.fontSizes.F18,
     fontWeight: "500",
-    textTransform: "uppercase",
     color: theme.colors.rojoBin,
-    backgroundColor: theme.colors.rojoClaro,
     margin: 32,
     height: 40,
     textAlign: "center",

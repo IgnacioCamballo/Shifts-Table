@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import { Alert, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Alert, Animated, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { useMutation } from '@tanstack/react-query'
 import { isEmail } from 'validator'
 import IconArrow from 'react-native-vector-icons/AntDesign'
 import Icon from 'react-native-vector-icons/Feather'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
+import useKeyboardBottomSpace from '@/hooks/useKeyboardBottomSpace'
 import theme from '@/theme/theme'
 import { RootStackParamList } from '@/types'
 import { translate } from '@/utils'
@@ -23,9 +23,8 @@ export default function PassRecover() {
   const params = navigation.getState().routes[navigation.getState().index].params as { lg: string }
   const lenguage = params.lg
 
-  //gets variable heigth for the screen without statusbar
-  const insets = useSafeAreaInsets()
-  const noFooterNoHeaderHeight = theme.heigth.screenHeight - insets.top - Math.max(insets.bottom, theme.heigth.bottomSystemBar) - theme.heigth.noFooterNoHeader  
+  //bottom space follows the keyboard, the footer is absolute so its height is the minimum space kept
+  const { ref: bottomSpaceRef, style: bottomSpaceStyle } = useKeyboardBottomSpace(theme.heigth.footer)
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text: string) {
@@ -186,10 +185,12 @@ export default function PassRecover() {
   }
 
   return (
-    <ScrollView 
-      showsVerticalScrollIndicator={false} 
-      contentContainerStyle={[styles.contentContainer, {height: noFooterNoHeaderHeight}]} 
-      style={[styles.container, {maxHeight: noFooterNoHeaderHeight}]}
+    <Animated.View ref={bottomSpaceRef} style={[styles.keyboardAvoiding, bottomSpaceStyle]}>
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled"
+      contentContainerStyle={styles.contentContainer}
+      style={styles.container}
     >
 
       {loader ?
@@ -316,18 +317,24 @@ export default function PassRecover() {
 
       }
     </ScrollView>
+    </Animated.View>
   )
 }
 
 const styles = StyleSheet.create({
+  keyboardAvoiding: {
+    flex: 1,
+    backgroundColor: "white"
+  },
   container: {
+    flex: 1,
     position: "relative",
     backgroundColor: "white"
   },
   contentContainer: {
+    flexGrow: 1,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: Platform.OS === 'ios' ? 0 : -50,
     gap: 12
   },
   arrow: {

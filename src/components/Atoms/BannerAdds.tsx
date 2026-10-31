@@ -6,7 +6,7 @@ import theme from '@/theme/theme'
 export const BannerAdds = () => {
   return (
     <BannerAd
-      size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+      size={BannerAdSize.LARGE_ANCHORED_ADAPTIVE_BANNER}
       unitId={theme.banners[Platform.OS === 'ios' ? 'ios' : 'android'].banner}
       requestOptions={{
         requestNonPersonalizedAdsOnly: true

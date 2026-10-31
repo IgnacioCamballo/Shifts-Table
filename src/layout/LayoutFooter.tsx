@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.grisClaro
   },
   container: {
-    height: 76,
+    height: theme.heigth.footer,
     flexDirection: "row",
     justifyContent: "space-around",
     paddingVertical: 10

@@ -4,15 +4,10 @@ import { Text, StyleSheet, ImageBackground } from 'react-native'
 import useCalendar from '@/hooks/useCalendar'
 import { translate } from '@/utils'
 import theme from '@/theme/theme'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 export default function PremiumPurchaseSuccess() {
   const { lenguage } = useCalendar()
 
-  //gets variable heigth for the screen without statusbar
-  const insets = useSafeAreaInsets()
-  const noFooterNoHeaderHeight = theme.heigth.screenHeight - insets.top - Math.max(insets.bottom, theme.heigth.bottomSystemBar) - theme.heigth.noFooterNoHeader
-  
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text: string) {
     return translate({ text, lenguage })
@@ -21,7 +16,7 @@ export default function PremiumPurchaseSuccess() {
   return (
     <ImageBackground
       source={require("@/../assets/congratsBg.webp")}
-      style={[styles.background, {height: noFooterNoHeaderHeight}]}
+      style={styles.background}
     >
       <Text style={styles.text1}>{translateFn("congrats")}</Text>
       <Text style={styles.text2}>{translateFn("purchaseSuccess")}</Text>
@@ -32,7 +27,10 @@ export default function PremiumPurchaseSuccess() {
 
 const styles = StyleSheet.create({
   background: {
+    flex: 1,
     padding: 52,
+    //footer is absolute, so the margin makes the image end where the footer starts
+    marginBottom: theme.heigth.footer,
     justifyContent: "center",
     alignItems: "center"
   },

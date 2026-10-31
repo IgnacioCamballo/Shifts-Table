@@ -1,14 +1,14 @@
 import React, { useState } from 'react'
-import { Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, View, Platform } from 'react-native'
+import { Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, View, Platform, Animated } from 'react-native'
 import { useMutation } from '@tanstack/react-query'
 import Icon from 'react-native-vector-icons/Feather'
 import IconArrow from 'react-native-vector-icons/AntDesign'
 import { isEmail } from 'validator'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import useCalendar from '@/hooks/useCalendar'
+import useKeyboardBottomSpace from '@/hooks/useKeyboardBottomSpace'
 import theme from '@/theme/theme'
 import { translate } from '@/utils'
 import { logIn } from '@/api/UserAPI'
@@ -25,9 +25,8 @@ export default function Login() {
   const lenguage = params.lg
   const type = params.type
 
-  //gets variable heigth for the screen without statusbar
-  const insets = useSafeAreaInsets()
-  const noFooterNoHeaderHeight = theme.heigth.screenHeight - insets.top - Math.max(insets.bottom, theme.heigth.bottomSystemBar) - theme.heigth.noFooterNoHeader
+  //bottom space follows the keyboard, the footer is absolute so its height is the minimum space kept
+  const { ref: bottomSpaceRef, style: bottomSpaceStyle } = useKeyboardBottomSpace(theme.heigth.footer)
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text: string) {
@@ -121,10 +120,12 @@ export default function Login() {
   }
   
   return (
-    <ScrollView 
-      showsVerticalScrollIndicator={false} 
-      contentContainerStyle={[styles.contentContainer, {height: noFooterNoHeaderHeight}]} 
-      style={[styles.container, {maxHeight: noFooterNoHeaderHeight}]}
+    <Animated.View ref={bottomSpaceRef} style={[styles.keyboardAvoiding, bottomSpaceStyle]}>
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled"
+      contentContainerStyle={styles.contentContainer}
+      style={styles.container}
     >
       <TransparentButton onPress={() => navigation.goBack()} style={styles.arrow}>
         <IconArrow
@@ -191,18 +192,24 @@ export default function Login() {
         </>
       }
     </ScrollView>
+    </Animated.View>
   )
 }
 
 const styles = StyleSheet.create({
+  keyboardAvoiding: {
+    flex: 1,
+    backgroundColor: theme.colors.blanco
+  },
   container: {
+    flex: 1,
     position: "relative",
     backgroundColor: theme.colors.blanco
   },
   contentContainer: {
+    flexGrow: 1,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: Platform.OS === 'ios' ? 0 : -50,
     gap: 12
   },
   arrow: {
