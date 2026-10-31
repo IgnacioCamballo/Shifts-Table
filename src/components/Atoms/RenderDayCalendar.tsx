@@ -3,7 +3,6 @@ import { TouchableOpacity, View, Text, StyleSheet } from "react-native"
 import { Dimensions } from "react-native"
 import Icon from 'react-native-vector-icons/AntDesign';
 import Icon2 from 'react-native-vector-icons/FontAwesome';
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import useCalendar from "@/hooks/useCalendar"
 import { DayProps } from "@/types"
@@ -13,19 +12,17 @@ type RenderDayCalendarProps = {
   isAnimationShell: boolean,
   item : DayProps,
   currentDay: Date,
+  //height of each day cell, the calendar measures its space and divides it between the 6 rows
+  cellHeight: number,
   onPress: (layout: { x: number, y: number, width: number, height: number }, key: string) => void
 }
 
 let screenWidth = Dimensions.get("window").width
 const containerWidth = (screenWidth - 22)/7
 
-export default function RenderDayCalendar({item, currentDay, onPress, isAnimationShell}: RenderDayCalendarProps) {
-  const {shifts, companysInfo, userInfo} = useCalendar()
+export default function RenderDayCalendar({item, currentDay, onPress, isAnimationShell, cellHeight}: RenderDayCalendarProps) {
+  const {shifts, companysInfo} = useCalendar()
   const dayRef = useRef<View>(null)
-
-  //gets variable heigth for the screen without statusbar
-  const insets = useSafeAreaInsets()
-  const dayContainerHeight = (theme.heigth.screenHeight - insets.top - Math.max(insets.bottom, theme.heigth.bottomSystemBar) - (userInfo.premium ? theme.heigth.daysContainerPremium : theme.heigth.daysContainer)) / 6
 
   const {day, key, isCurrentDay, shadowed} = item
 
@@ -48,7 +45,7 @@ export default function RenderDayCalendar({item, currentDay, onPress, isAnimatio
       <View 
         style={[
           shadowed ? styles.dayContainerEmpty : styles.dayContainer, 
-          {height: isAnimationShell ? "100%" : dayContainerHeight, width: isAnimationShell ? "100%" : containerWidth}
+          {height: isAnimationShell ? "100%" : cellHeight, width: isAnimationShell ? "100%" : containerWidth}
         ]}
       >
         {shadowed === true ? <View></View> : colorShifts.map(shiftColor => 

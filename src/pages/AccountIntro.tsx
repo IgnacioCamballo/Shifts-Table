@@ -1,6 +1,5 @@
 import React from 'react'
-import { Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Platform } from 'react-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
@@ -14,11 +13,6 @@ export default function AccountIntro() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
   const params = navigation.getState().routes[navigation.getState().index].params as {lg: string}
   const lenguage = params.lg
-  
-  //gets variable heigth for the screen without statusbar
-  const insets = useSafeAreaInsets()
-  const noFooterNoHeaderHeight = theme.heigth.screenHeight - insets.top - Math.max(insets.bottom, theme.heigth.bottomSystemBar) - theme.heigth.noFooterNoHeader
-  
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text: string) {
@@ -37,7 +31,7 @@ export default function AccountIntro() {
           {
             text: translateFn("continue"),
             onPress: () => {  
-              setLenguage(lenguage)
+              setLenguage(lenguage as "es" | "en" | "pt")
               setShifts([])
               setUserInfo({
                 userName: "",
@@ -68,7 +62,8 @@ export default function AccountIntro() {
   return (
     <ScrollView 
       showsVerticalScrollIndicator={false} 
-      contentContainerStyle={[styles.contentContainer, {height: noFooterNoHeaderHeight}]} 
+      contentContainerStyle={styles.contentContainer}
+      style={styles.container}
     >
       <Text style={styles.firstTitle}>{translateFn("titleAccountIntro")}</Text>
 
@@ -92,13 +87,17 @@ export default function AccountIntro() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    //footer is absolute, so the margin makes the screen end where the footer starts
+    marginBottom: theme.heigth.footer
+  },
   contentContainer: {
+    flexGrow: 1,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: Platform.OS === 'ios' ? -40 : -120,
     gap: 12,
-    backgroundColor: theme.colors.blanco,
-    flex: 1
+    backgroundColor: theme.colors.blanco
   },
   button: {
     minWidth: "60%",

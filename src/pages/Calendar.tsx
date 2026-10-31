@@ -14,6 +14,8 @@ import RenderDayCalendar from '@/components/Atoms/RenderDayCalendar';
 import { BannerAdds } from '@/components/Atoms/BannerAdds';
 
 let screenWidth = Dimensions.get("window").width
+const DAYS_ROWS = 6
+const DAYS_CONTAINER_MARGIN_TOP = 5
 
 export default function Calendar() {
   const {lenguage, addsInitialized, userInfo, animateReturnToCalendar, setAnimateReturnToCalendar} = useCalendar()
@@ -21,6 +23,10 @@ export default function Calendar() {
 
   const [currentDay, setCurrentDay] = useState(new Date());
   const [monthdays, setMonthDays] = useState<DayProps[]>([])
+  //space left for the days grid, measured, so the cells fill it whatever the device and the banner are
+  const [gridHeight, setGridHeight] = useState(0)
+  const cellHeight = Math.floor((gridHeight - DAYS_CONTAINER_MARGIN_TOP * 2) / DAYS_ROWS)
+  const showBanner = addsInitialized && !userInfo.premium
 
   const [daySelectedInfo, setDaySelectedInfo] = useState<{ index: number, color: string }| null>(null)
   const animationParams = useRef({ x: 0, y: 0, width: 0, height: 0 }).current
@@ -209,8 +215,8 @@ export default function Calendar() {
     .runOnJS(true)
 
   return (
-    <View style={styles.container}>
-      <SwiftArrows 
+    <View style={[styles.container, !showBanner && styles.containerNoBanner]}>
+      <SwiftArrows
         leftAction={prevMonth} 
         text={`${firstLetterUpper(currentDay.toLocaleDateString(lenguage, { month: 'long' }))}`}
         rightAction={nextMonth} 
@@ -225,26 +231,28 @@ export default function Calendar() {
       </View>
       
       <GestureDetector gesture={panGesture}>
-        <Animated.ScrollView 
-          style={[animatedStyles]}
-          >
+        <Animated.View
+          style={[styles.grid, animatedStyles]}
+          onLayout={event => setGridHeight(event.nativeEvent.layout.height)}
+        >
           <View style={styles.daysContainer}>
-            {monthdays.map(monthDay => 
-              <RenderDayCalendar 
+            {gridHeight > 0 && monthdays.map(monthDay =>
+              <RenderDayCalendar
                 isAnimationShell={false}
-                currentDay={currentDay} 
-                item={monthDay} 
-                onPress={handleDayPress} 
+                currentDay={currentDay}
+                item={monthDay}
+                cellHeight={cellHeight}
+                onPress={handleDayPress}
                 key={monthDay.key}
               />
             )}
           </View>
-        </Animated.ScrollView>
+        </Animated.View>
       </GestureDetector>
 
-      {addsInitialized && !userInfo.premium && (
+      {showBanner && (
         <View style={styles.banner}>
-        <BannerAdds />
+          <BannerAdds />
         </View>
       )}
 
@@ -264,8 +272,9 @@ export default function Calendar() {
             <RenderDayCalendar 
               isAnimationShell={true}
               currentDay={currentDay} 
-              item={monthdays[daySelectedInfo.index]} 
-              onPress={handleDayPress} 
+              item={monthdays[daySelectedInfo.index]}
+              cellHeight={cellHeight}
+              onPress={handleDayPress}
               key={daySelectedInfo.index}
             />
           </ReactAnimated.View>
@@ -279,7 +288,17 @@ const styles = StyleSheet.create({
    container: {
     flex: 1,
     padding: 10,
+    //the banner goes right above the footer, so there is no space below it
+    paddingBottom: 0,
+    //footer is absolute, so the margin makes the calendar end where the footer starts
+    marginBottom: theme.heigth.footer,
     backgroundColor: '#ffffff'
+  },
+  containerNoBanner: {
+    paddingBottom: 10
+  },
+  grid: {
+    flex: 1
   },
   textDayContainer: {
     height: 20,
@@ -299,7 +318,7 @@ const styles = StyleSheet.create({
   },
   daysContainer: {
     flex: 1,
-    marginTop: 5,
+    marginBlock: DAYS_CONTAINER_MARGIN_TOP,
     width: screenWidth - 20,
     flexDirection: "row", 
     flexWrap: "wrap"
@@ -332,11 +351,8 @@ const styles = StyleSheet.create({
     fontWeight: "400"
   },
   banner:{
-    height: 70, 
-    position: 'absolute',
-    justifyContent: "center", 
-    alignContent: "center", 
-    bottom: 80
+    //the ad is as wide as the screen, so it cancels the horizontal padding of the container
+    marginHorizontal: -10
   },
   shell: {
     position: "absolute",

@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { StyleSheet, Text, TextInput, TouchableOpacity, View, ScrollView, Animated, Dimensions, Platform } from 'react-native'
 import { Picker } from '@react-native-picker/picker'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import useCalendar from '@/hooks/useCalendar'
+import useKeyboardBottomSpace from '@/hooks/useKeyboardBottomSpace'
 import { RootStackParamList, ShiftProps } from '@/types'
 import theme from '@/theme/theme'
 import { firstLetterUpper, formattedMinutes, formattedMinutesNumber, textDay, translate } from '@/utils'
@@ -26,15 +26,40 @@ type ShiftFormProps = {
 }
 
 let screenWidth = Dimensions.get("window").width
+//space kept between the focused input and the edge of the visible form
+const INPUT_VISIBLE_MARGIN = 32
+//the form shrinks while the keyboard animates, so the input is checked after it has settled
+const KEYBOARD_SETTLE_DELAY = 350
 
 export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmit }: ShiftFormProps) {
   const { configInfo, companysInfo, shifts, lenguage } = useCalendar()
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
 
-  //gets variable heigth for the screen without statusbar
-  const insets = useSafeAreaInsets()
-  const newEditHeight = theme.heigth.screenHeight - insets.top - Math.max(insets.bottom, theme.heigth.bottomSystemBar) - theme.heigth.shiftNewEditScrollView
+  //bottom space follows the keyboard, the footer is absolute so its height is the minimum space kept
+  const { ref: bottomSpaceRef, style: bottomSpaceStyle } = useKeyboardBottomSpace(theme.heigth.footer)
 
+  //with the keyboard open the form is small and has several inputs, so the focused one is scrolled into view
+  const scrollRef = useRef<ScrollView>(null)
+  const scrollY = useRef(0)
+  const wageInputRef = useRef<TextInput>(null)
+  const salaryInputRef = useRef<TextInput>(null)
+  const noteInputRef = useRef<TextInput>(null)
+
+  const scrollInputIntoView = (input: TextInput | null) => {
+    setTimeout(() => {
+      scrollRef.current?.getNativeScrollRef()?.measureInWindow((_x, viewportY, _width, viewportHeight) => {
+        input?.measureInWindow((_inputX, inputY, _inputWidth, inputHeight) => {
+          const hiddenBelow = inputY + inputHeight + INPUT_VISIBLE_MARGIN - (viewportY + viewportHeight)
+          const hiddenAbove = viewportY - (inputY - INPUT_VISIBLE_MARGIN)
+          if (hiddenBelow > 0) {
+            scrollRef.current?.scrollTo({ y: scrollY.current + hiddenBelow, animated: true })
+          } else if (hiddenAbove > 0) {
+            scrollRef.current?.scrollTo({ y: Math.max(scrollY.current - hiddenAbove, 0), animated: true })
+          }
+        })
+      })
+    }, KEYBOARD_SETTLE_DELAY)
+  }
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text: string) {
@@ -262,7 +287,7 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
   }
 
   return (
-    <View style={styles.container}>
+    <Animated.View ref={bottomSpaceRef} style={[styles.container, bottomSpaceStyle]}>
       <TouchableOpacity
         onPress={() => navigation.goBack()}
         activeOpacity={0.9}
@@ -277,7 +302,14 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
         <Text style={styles.textoConf}>{isCreate ? translateFn("newShift") : translateFn("editShifts")} {firstLetterUpper(pressedDate.toLocaleDateString(lenguage, { month: 'short' }))} / {pressedDate.toLocaleDateString(lenguage, { day: "numeric" })}</Text>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: newEditHeight }}>
+      <ScrollView
+        ref={scrollRef}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        onScroll={event => { scrollY.current = event.nativeEvent.contentOffset.y }}
+        scrollEventThrottle={16}
+        style={styles.scrollView}
+      >
         <View style={styles.empleador}>
           <View style={styles.line}>
             <Text style={styles.textLine}>{translateFn("employer")}:</Text>
@@ -414,6 +446,8 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
                     style={[styles.textLine, styles.inputBox]}
                     inputMode='numeric'
                     keyboardType='numeric'
+                    ref={wageInputRef}
+                    onFocus={() => scrollInputIntoView(wageInputRef.current)}
                     onChangeText={setWageInput}
                     value={wageInput}
                     placeholder="0"
@@ -433,6 +467,8 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
                     style={[styles.textLine, styles.inputBox]}
                     inputMode='numeric'
                     keyboardType='numeric'
+                    ref={salaryInputRef}
+                    onFocus={() => scrollInputIntoView(salaryInputRef.current)}
                     onChangeText={setSalaryInput}
                     value={salaryInput}
                     placeholder="0"
@@ -449,6 +485,8 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
           </DropDownAutoHeight>
 
           <TextInput
+            ref={noteInputRef}
+            onFocus={() => scrollInputIntoView(noteInputRef.current)}
             value={noteForm}
             onChangeText={setNoteForm}
             style={styles.textInput}
@@ -487,7 +525,7 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
 
         <View style={{ height: 20 }} />
       </ScrollView>
-    </View>
+    </Animated.View>
   )
 }
 
@@ -498,7 +536,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: theme.colors.blanco
   },
+  scrollView: {
+    flex: 1
+  },
   textoConf: {
+    marginTop: 32,
+    paddingBottom: 24,
     alignSelf: "center",
     color: theme.colors.grisOscuro,
     fontWeight: '800',
@@ -512,7 +555,7 @@ const styles = StyleSheet.create({
   },
   empleador: {
     borderTopWidth: 2,
-    marginTop: 24,
+    marginTop: 0,
     marginBottom: 24
   },
   line: {

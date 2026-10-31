@@ -20,6 +20,7 @@ export default function Totals() {
   const currentMonth = params.month ? new Date(params.month) : new Date()
 
   const { shifts, lenguage, addsInitialized, companysInfo, configInfo, userInfo } = useCalendar()
+  const showBanner = !userInfo.premium && addsInitialized
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text: string) {
@@ -116,7 +117,7 @@ export default function Totals() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, !showBanner && styles.containerNoBanner]}>
       <SwiftArrows
         leftAction={prevMonth}
         text={`${firstLetterUpper(currentDay.toLocaleDateString(lenguage, { month: 'long' }))} / ${currentDay.toLocaleDateString(lenguage, { year: '2-digit' })}`}
@@ -199,7 +200,7 @@ export default function Totals() {
         <Text style={styles.textLine}>${salary - salaryPaid === 0 ? "0" : (salary - salaryPaid).toFixed(2)}</Text>
       </View>
 
-      {!userInfo.premium && addsInitialized && (
+      {showBanner && (
         <View style={styles.banner}>
           <BannerAdds />
         </View>
@@ -212,7 +213,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
+    //the banner goes right above the footer, so there is no space below it
+    paddingBottom: 0,
+    //footer is absolute, so the margin makes the screen end where the footer starts
+    marginBottom: theme.heigth.footer,
     backgroundColor: '#ffffff'
+  },
+  containerNoBanner: {
+    paddingBottom: 10
   },
   line: {
     paddingHorizontal: 14,
@@ -282,10 +290,8 @@ const styles = StyleSheet.create({
     color: theme.colors.negro
   },
   banner: {
-    height: 70,
-    position: 'absolute',
-    justifyContent: "center",
-    alignContent: "center",
-    bottom: 80
+    //pushes the ad to the bottom, and as it is as wide as the screen it cancels the horizontal padding of the container
+    marginTop: "auto",
+    marginHorizontal: -10
   }
 })

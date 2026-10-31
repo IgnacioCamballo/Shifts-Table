@@ -1,7 +1,6 @@
 import React from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import Icon from 'react-native-vector-icons/AntDesign'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
@@ -15,10 +14,6 @@ import TransparentButton from '@/components/Atoms/Buttons/ButtonTransparent'
 export default function PrePurchaseLogin() {
   const { lenguage } = useCalendar()
 
-  //gets variable heigth for the screen without statusbar
-  const insets = useSafeAreaInsets()
-  const noFooterNoHeaderHeight = theme.heigth.screenHeight - insets.top - Math.max(insets.bottom, theme.heigth.bottomSystemBar) - theme.heigth.noFooterNoHeader
-
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
@@ -27,7 +22,7 @@ export default function PrePurchaseLogin() {
   }
 
   return (
-    <View style={[styles.container, {height: noFooterNoHeaderHeight}]}>
+    <View style={styles.container}>
       <TransparentButton onPress={() => navigation.reset({index: 0, routes: [{ name: "Calendar" }]})} style={styles.link}>
         <Icon 
           name="double-left" 
@@ -53,9 +48,11 @@ export default function PrePurchaseLogin() {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    //footer is absolute, so the margin makes the screen end where the footer starts
+    marginBottom: theme.heigth.footer,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: -60,
     gap: 12
   },
   button: {
@@ -78,7 +75,8 @@ const styles = StyleSheet.create({
   },
   link: {
     position: "absolute",
-    top: 80,
+    //80 minus the 60 that the container was shifted up before, so the link stays where it was
+    top: 20,
     left: 20
   },
   textLine: {

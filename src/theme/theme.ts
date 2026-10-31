@@ -1,4 +1,4 @@
-import { Dimensions, Platform, StatusBar } from "react-native"
+import { Dimensions } from "react-native"
 import { es } from "zod/v4/locales"
 
 const theme = {
@@ -32,16 +32,9 @@ const theme = {
     heigth: {
         publicidad: 80,
         footer: 76,
-        screenHeight: Dimensions.get("screen").height,
-        bottomSystemBar: Platform.OS === 'android' ? Math.max(Dimensions.get("screen").height - Dimensions.get("window").height - (StatusBar.currentHeight || 0), 0) : 0,
-        daysContainer: Platform.OS === 'ios' ? 234 : 255,
-        daysContainerPremium: Platform.OS === 'ios' ? 170 : 185,
-        shiftScrollView: 300,
-        shiftScrollViewPremium: Platform.OS === 'ios' ? 200 : 210,
-        monthDetailScrollView: Platform.OS === 'ios' ? 340 : 380,
-        monthDetailScrollViewPremium: Platform.OS === 'ios' ? 280 : 310,
-        shiftNewEditScrollView: 230,
-        noFooterNoHeader: Platform.OS === 'ios' ? 80 : 80
+        //space kept for the banner ad, it grows if the ad is taller (the adaptive banner height depends on the device)
+        bannerReserved: 70,
+        screenHeight: Dimensions.get("screen").height
     },
     banners: {
       ios: {

@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { Text, View, StyleSheet, TouchableOpacity } from 'react-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
@@ -9,10 +8,6 @@ import { RootStackParamList } from '@/types'
 
 export default function SelectLenguage() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
-
-  //gets variable heigth for the screen without statusbar
-  const insets = useSafeAreaInsets()
-  const noFooterNoHeaderHeight = theme.heigth.screenHeight - insets.top - Math.max(insets.bottom, theme.heigth.bottomSystemBar) - theme.heigth.noFooterNoHeader
 
   const [lenguageSelected, setLenguageSelected] = useState("")
   const [error, setError] = useState(false)
@@ -26,7 +21,7 @@ export default function SelectLenguage() {
   }
   
   return (
-    <View style={[styles.container, {height: noFooterNoHeaderHeight}]}>
+    <View style={styles.container}>
       <Text style={styles.title}>Select Lenguage</Text>
 
       <TouchableOpacity activeOpacity={0.9} style={[styles.button, lenguageSelected === "en" && styles.selected]} onPress={() => {setError(false), setLenguageSelected("en")}}>
@@ -57,6 +52,9 @@ export default function SelectLenguage() {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    //footer is absolute, so the margin makes the screen end where the footer starts
+    marginBottom: theme.heigth.footer,
     alignItems: "center",
     justifyContent: "center",
     gap: 12,

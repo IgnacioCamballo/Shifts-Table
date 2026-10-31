@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from 'react'
 import { Animated, Image, StyleSheet, View } from 'react-native'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
@@ -28,10 +27,6 @@ export default function LoadingPage() {
   const logoTranslateY = useRef(new Animated.Value(-theme.heigth.screenHeight * 0.35)).current
   const logoRotate = useRef(new Animated.Value(-45)).current
   const logoOpacity = useRef(new Animated.Value(0)).current
-
-  //gets variable heigth for the screen without statusbar
-  const insets = useSafeAreaInsets()
-  const noFooterNoHeaderHeight = theme.heigth.screenHeight - insets.top - Math.max(insets.bottom, theme.heigth.bottomSystemBar) - theme.heigth.noFooterNoHeader
 
   //gets UserInfo when login in
   const getUserInfoQuery = useQuery({
@@ -223,6 +218,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "white",
     flex: 1,
+    //footer is absolute, so the margin centers the logo between the header and the footer
+    marginBottom: theme.heigth.footer
   },
   logoWrapper: {
     alignItems: 'center',

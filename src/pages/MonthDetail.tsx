@@ -5,7 +5,6 @@ import * as Sharing from "expo-sharing"
 import * as FileSystem from "expo-file-system";
 import { Picker } from '@react-native-picker/picker'
 import IconMenu from 'react-native-vector-icons/Feather'
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -19,8 +18,6 @@ import SwiftArrows from '@/components/Molecules/SwiftArrows'
 import IosPickerModal from '@/components/Molecules/IosPickerModal'
 import { BannerAdds } from '@/components/Atoms/BannerAdds';
 
-let screenWidth = Dimensions.get("window").width
-
 export default function MonthDetail() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
   const params = navigation.getState().routes[navigation.getState().index].params as { month: string, employer: number }
@@ -28,12 +25,7 @@ export default function MonthDetail() {
   const employerParam = params.employer ? params.employer : 0
 
   const { shifts, lenguage, addsInitialized, companysInfo, userInfo } = useCalendar()
-
-  //gets variable heigth for the screen without statusbar
-  const insets = useSafeAreaInsets()
-  const monthDetailHeight = theme.heigth.screenHeight - insets.top - Math.max(insets.bottom, theme.heigth.bottomSystemBar) - (userInfo.premium ? theme.heigth.monthDetailScrollViewPremium : theme.heigth.monthDetailScrollView)
-  const noFooterNoHeaderHeight = theme.heigth.screenHeight - insets.top - Math.max(insets.bottom, theme.heigth.bottomSystemBar) - theme.heigth.noFooterNoHeader
-
+  const showBanner = !userInfo.premium && addsInitialized
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text: string) {
@@ -178,7 +170,7 @@ export default function MonthDetail() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, !showBanner && styles.containerNoBanner]}>
       <IconMenu
         style={styles.absolute}
         name="menu"
@@ -269,7 +261,7 @@ export default function MonthDetail() {
         <Text style={styles.tableTop}>{translateFn("total")}</Text>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} style={{ height: monthDetailHeight }}>
+      <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
         {monthlyShiftsFilteredPayment.map(shift => (
           <View key={shift.key} style={styles.line}>
             <View style={[styles.flexRow, { gap: 2, width: 60 }]}>
@@ -308,14 +300,14 @@ export default function MonthDetail() {
         <Text style={styles.TotalHours}>{translateFn("totalHours")}: {findWorkedHours()}</Text>
       </View>
 
-      {!userInfo.premium && addsInitialized && (
+      {showBanner && (
         <View style={styles.banner}>
           <BannerAdds />
         </View>
       )}
 
       {modal &&
-        <TouchableOpacity activeOpacity={1} style={[styles.modalContainer, { height: noFooterNoHeaderHeight }]} onPress={() => setModal(false)}>
+        <TouchableOpacity activeOpacity={1} style={styles.modalContainer} onPress={() => setModal(false)}>
           <View style={styles.modal}>
             <Text
               style={styles.modalText}
@@ -354,9 +346,20 @@ export default function MonthDetail() {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     position: "relative",
     padding: 10,
+    //the banner goes right above the footer, so there is no space below it
+    paddingBottom: 0,
+    //footer is absolute, so the margin makes the screen end where the footer starts
+    marginBottom: theme.heigth.footer,
     backgroundColor: theme.colors.blanco,
+  },
+  containerNoBanner: {
+    paddingBottom: 10
+  },
+  scrollView: {
+    flex: 1
   },
   absolute: {
     position: "absolute",
@@ -489,17 +492,15 @@ const styles = StyleSheet.create({
     left: 12
   },
   banner: {
-    height: 70,
-    position: 'absolute',
-    justifyContent: "center",
-    alignContent: "center",
-    bottom: -66
+    //as the ad is as wide as the screen, it cancels the horizontal padding of the container
+    marginHorizontal: -10
   },
   modalContainer: {
     position: "absolute",
     top: 0,
     left: 0,
-    width: screenWidth,
+    right: 0,
+    bottom: 0,
     backgroundColor: "transparent"
   },
   modal: {
