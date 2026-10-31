@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View, Modal, Platform, Alert, Keyboard } from 'react-native'
+import { StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View, Modal, Platform, Alert, Keyboard, Animated, ScrollView } from 'react-native'
 import ColorPicker, { HueSlider, Panel1, Preview, ColorFormatsObject } from 'reanimated-color-picker'
 import Constants from "expo-constants"
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import useCalendar from '@/hooks/useCalendar'
+import useKeyboardBottomSpace from '@/hooks/useKeyboardBottomSpace'
 import { EmployerProps, RootStackParamList } from '@/types'
 import theme from '@/theme/theme'
 import { translate } from '@/utils'
@@ -15,6 +16,9 @@ import Button from '@/components/Atoms/Buttons/Button'
 
 export default function EditEmployer() {
   const { companysInfo, setCompanysInfo, lenguage, shifts, setShifts, configInfo } = useCalendar()
+
+  //bottom space follows the keyboard, the footer is absolute so its height is the minimum space kept
+  const { ref: bottomSpaceRef, style: bottomSpaceStyle } = useKeyboardBottomSpace(theme.heigth.footer)
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text: string) {
@@ -156,7 +160,7 @@ export default function EditEmployer() {
   return (
     // TouchableWithoutFeedback is used to dismiss the keyboard when tapping outside of the input fields
     <TouchableWithoutFeedback onPress={dismissKeyboard} accessible={false}>
-      <View style={styles.container}>
+      <Animated.View ref={bottomSpaceRef} style={[styles.container, bottomSpaceStyle]}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           activeOpacity={0.7}
@@ -167,6 +171,12 @@ export default function EditEmployer() {
           </ButtonSmall>
         </TouchableOpacity>
 
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={styles.contentContainer}
+          style={styles.scrollView}
+        >
         <View>
           <Text style={styles.textoConf}>{translateFn("editEmployer")}</Text>
         </View>
@@ -281,15 +291,24 @@ export default function EditEmployer() {
         {anyMissing &&
           <Text style={styles.textAlert}>{translateFn("allFieldsRequiredAlert")}</Text>
         }
-      </View>
+        </ScrollView>
+      </Animated.View>
     </TouchableWithoutFeedback>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 8,
-    marginTop: 100
+    flex: 1,
+    padding: 8
+  },
+  scrollView: {
+    flex: 1
+  },
+  contentContainer: {
+    flexGrow: 1,
+    //the form starts 100px below the header
+    paddingTop: 100
   },
   textoConf: {
     alignSelf: "center",
@@ -299,7 +318,8 @@ const styles = StyleSheet.create({
   },
   botonCerrar: {
     position: "absolute",
-    top: -80,
+    top: 20,
+    zIndex: 1,
     right: 20,
     width: "auto"
   },
