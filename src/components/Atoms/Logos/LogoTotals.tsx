@@ -13,11 +13,11 @@ type LogoTotalsProps = {
 
 export default function LogoTotals({routeName}: LogoTotalsProps) {
   const navigation = useNavigation()
-  const {lenguage} = useCalendar()
+  const {lenguage, guardPurchase} = useCalendar()
 
   const handlePress = () => {
     if(routeName === "Totals") return
-    navigation.reset({index: 0, routes: [{ name: 'Totals' as never, params: { month: new Date().toString() } }]})
+    guardPurchase(() => navigation.reset({index: 0, routes: [{ name: 'Totals' as never, params: { month: new Date().toString() } }]}))
   }
 
   return (

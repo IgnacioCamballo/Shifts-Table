@@ -13,11 +13,11 @@ type LogoCalendarProps = {
 
 export default function LogoCalendar({routeName}: LogoCalendarProps) {
   const navigation = useNavigation()
-  const {lenguage} = useCalendar()
+  const {lenguage, guardPurchase} = useCalendar()
 
   const handlePress = () => {
     if(routeName === "Calendar") return
-    navigation.reset({index: 0, routes: [{ name: 'Calendar' as never }]})
+    guardPurchase(() => navigation.reset({index: 0, routes: [{ name: 'Calendar' as never }]}))
   }
   
   return (

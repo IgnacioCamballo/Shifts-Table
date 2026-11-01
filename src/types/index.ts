@@ -109,6 +109,13 @@ export type CalendarContextProps = {
     addsInitialized: boolean,
     animateReturnToCalendar: boolean,
     selectedDate: Date | null,
+    isPurchasing: boolean,
+    //ref mirrors isPurchasing so listeners and navigation right after setIsPurchasing(false) read the current value
+    isPurchasingRef: React.MutableRefObject<boolean>,
+    setIsPurchasing: (value: boolean) => void,
+    //runs the action, or shows the "payment in progress" message if a purchase is waiting for its response
+    guardPurchase: (action: () => void) => void,
+    showPurchaseInProgress: () => void,
     setUserInfo: React.Dispatch<React.SetStateAction<UserInfo>>,
     setConfigInfo: React.Dispatch<React.SetStateAction<ConfigInfo>>,
     setCompanysInfo: React.Dispatch<React.SetStateAction<EmployerProps[]>>,

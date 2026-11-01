@@ -13,11 +13,11 @@ type LogoConfigProps = {
 
 export default function LogoConfig({routeName}: LogoConfigProps) {
   const navigation = useNavigation()
-  const {lenguage} = useCalendar()
+  const {lenguage, guardPurchase} = useCalendar()
 
   const handlePress = () => {
     if(routeName === "Config") return
-    navigation.reset({index: 0, routes: [{ name: 'Config' as never }]})
+    guardPurchase(() => navigation.reset({index: 0, routes: [{ name: 'Config' as never }]}))
   }
 
   return (

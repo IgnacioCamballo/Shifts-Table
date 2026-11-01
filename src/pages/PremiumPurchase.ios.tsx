@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { View, Text, Alert, ImageBackground, StyleSheet, TouchableOpacity, Linking } from 'react-native'
+import React, { useEffect, useRef } from 'react'
+import { View, Text, Alert, ImageBackground, StyleSheet, TouchableOpacity, Linking, ActivityIndicator } from 'react-native'
 import { useIAP, ErrorCode, finishTransaction } from 'expo-iap'
 import Icon from 'react-native-vector-icons/Ionicons'
 import { useNavigation } from '@react-navigation/native'
@@ -10,15 +10,44 @@ import { RootStackParamList } from '@/types'
 import { translate } from '@/utils'
 import theme from '@/theme/theme'
 import { IosPaymentConfirmation } from '@/api/PaymentsAPI'
+import { IOS_PREMIUM_SKU } from '@/hooks/useRecoverPurchases'
 
-const IOS_PREMIUM_SKU = 'com.kanatzu.shiftstable.premium.yearly'
 const PRIVACY_POLICY_URL = 'https://kanatzu.dev/shifts-table/politicas-de-privacidad'
+//Apple gives no way to cancel a purchase, so after this time we only stop waiting; it may still complete later
+const PURCHASE_TIMEOUT_MS = 60000
 const EULA_URL = 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/'
 
 export default function PremiumPurchase() {
-  const { userInfo, setUserInfo, lenguage } = useCalendar()
+  const { userInfo, setUserInfo, lenguage, isPurchasing, isPurchasingRef, setIsPurchasing, showPurchaseInProgress } = useCalendar()
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
-  const [isPurchasing, setIsPurchasing] = useState(false)
+
+  const purchaseTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const releasePurchase = () => {
+    if (purchaseTimeoutRef.current) clearTimeout(purchaseTimeoutRef.current)
+    purchaseTimeoutRef.current = null
+    setIsPurchasing(false)
+  }
+
+  useEffect(() => {
+    return () => {
+      if (purchaseTimeoutRef.current) clearTimeout(purchaseTimeoutRef.current)
+    }
+  }, [])
+
+  //covers the system back button and the iOS swipe back; the footer is guarded in its own buttons
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', (event) => {
+      if (!isPurchasingRef.current) return
+      event.preventDefault()
+      showPurchaseInProgress()
+    })
+    return unsubscribe
+  }, [navigation])
+
+  useEffect(() => {
+    navigation.setOptions({ gestureEnabled: !isPurchasing })
+  }, [navigation, isPurchasing])
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text: string) {
@@ -42,27 +71,34 @@ export default function PremiumPurchase() {
         })
 
         await finishTransaction({ purchase, isConsumable: false })
+        //released before navigating, otherwise beforeRemove would block the replace
+        releasePurchase()
         savePaymentSuccess()
       } catch (error) {
         console.log(error)
         Alert.alert("Error", `${translateFn("errorStartingPayment")}`)
       } finally {
-        setIsPurchasing(false)
+        releasePurchase()
       }
     },
     onPurchaseError: (error) => {
       if (error.code === ErrorCode.UserCancelled) {
-        setIsPurchasing(false)
+        releasePurchase()
         return
       }
       console.log(error)
-      setIsPurchasing(false)
+      releasePurchase()
       Alert.alert("Error", `${translateFn("errorStartingPayment")}`)
     }
   })
 
   const handlePurchase = async () => {
+    if (isPurchasingRef.current) return
     setIsPurchasing(true)
+    purchaseTimeoutRef.current = setTimeout(() => {
+      releasePurchase()
+      Alert.alert("", translateFn("purchaseNotConfirmed"))
+    }, PURCHASE_TIMEOUT_MS)
     try {
       await requestPurchase({
         request: { apple: { sku: IOS_PREMIUM_SKU } },
@@ -70,7 +106,7 @@ export default function PremiumPurchase() {
       })
     } catch (error) {
       console.log(error)
-      setIsPurchasing(false)
+      releasePurchase()
     }
   }
 
@@ -109,7 +145,9 @@ export default function PremiumPurchase() {
           </View>
         </View>
         <TouchableOpacity activeOpacity={0.9} onPress={handlePurchase} disabled={isPurchasing} style={styles.button}>
-          <Text style={styles.buttonText}>€ 2,99/año</Text>
+          {isPurchasing
+            ? <ActivityIndicator color="white" />
+            : <Text style={styles.buttonText}>€ 2,99/año</Text>}
         </TouchableOpacity>
         <View style={styles.linksCont}>
           <Text style={styles.linkText} onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}>{translateFn("privacyPolicies")}</Text>

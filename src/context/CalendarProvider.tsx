@@ -1,4 +1,4 @@
-import React, { useState, createContext, useEffect } from "react"
+import React, { useState, useRef, createContext, useEffect } from "react"
 import { Alert, Linking, Modal, Platform, StyleSheet, Text, View } from "react-native";
 import { MobileAds } from 'react-native-google-mobile-ads';
 import AsyncStorage from "@react-native-async-storage/async-storage"
@@ -11,6 +11,7 @@ import { CalendarContextProps, ConfigInfo, EmployerProps, ShiftProps, UserInfo, 
 import theme from "@/theme/theme";
 import { getUserInfo, saveUserInfo } from "@/api/UserInfoAPI";
 import { translate } from "@/utils";
+import useRecoverPurchases from "@/hooks/useRecoverPurchases";
 
 interface props {
   children: React.ReactNode
@@ -58,6 +59,32 @@ const CalendarProvider = ({ children, routeName }: props) => {
   const [animateReturnToCalendar, setAnimateReturnToCalendar] = useState(false)
   //day being viewed in Shifts, so the calendar shell can follow it and return to the right day
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  //true while a purchase waits for its response, the user can't leave the purchase screen meanwhile
+  const [isPurchasing, setIsPurchasingState] = useState(false)
+  const isPurchasingRef = useRef(false)
+
+  const setIsPurchasing = (value: boolean) => {
+    isPurchasingRef.current = value
+    setIsPurchasingState(value)
+  }
+
+  useRecoverPurchases({
+    enabled: !!userInfo.mail && !userInfo.premium,
+    isPurchasingRef,
+    onRecovered: () => setUserInfo(previous => ({ ...previous, premium: true }))
+  })
+
+  const showPurchaseInProgress = () => {
+    Alert.alert("", translateFn("purchaseInProgress"))
+  }
+
+  const guardPurchase = (action: () => void) => {
+    if (isPurchasingRef.current) {
+      showPurchaseInProgress()
+      return
+    }
+    action()
+  }
 
   //Syncs premium status with the server, in case the user has renewed or lost premium status on another device
   //Called in loadingPage when there is storagedData in device
@@ -160,6 +187,11 @@ const CalendarProvider = ({ children, routeName }: props) => {
         addsInitialized,
         animateReturnToCalendar,
         selectedDate,
+        isPurchasing,
+        isPurchasingRef,
+        setIsPurchasing,
+        guardPurchase,
+        showPurchaseInProgress,
         setLastBackup,
         setUserInfo,
         setConfigInfo,

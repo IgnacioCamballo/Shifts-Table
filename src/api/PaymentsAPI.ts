@@ -29,11 +29,15 @@ export async function IosPaymentConfirmation(payload: IosPaymentConfirmationPayl
   }
 }
 
+//nothing is charged until the payment sheet is confirmed, so giving up on this request is safe
+const PAYMENT_INTENT_TIMEOUT_MS = 30000
+
 export async function createPaymentIntent(amount: number) {
   const token = await AsyncStorage.getItem("userToken")
 
   try {
     const {data} = await api.post("/payments/payment-intent", {amount}, {
+      timeout: PAYMENT_INTENT_TIMEOUT_MS,
       headers: {
         Authorization: `Bearer ${token}`
       }

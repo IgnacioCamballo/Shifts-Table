@@ -1,6 +1,6 @@
-import React from 'react'
-import { View, Text, Alert, ImageBackground, StyleSheet, TouchableOpacity } from 'react-native'
-import { LinkDisplay, StripeProvider, useStripe } from '@stripe/stripe-react-native'
+import React, { useEffect } from 'react'
+import { View, Text, Alert, ImageBackground, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { LinkDisplay, PaymentSheetError, StripeProvider, useStripe } from '@stripe/stripe-react-native'
 import { useMutation } from '@tanstack/react-query'
 import Icon from 'react-native-vector-icons/Ionicons'
 import { useNavigation } from '@react-navigation/native'
@@ -13,8 +13,22 @@ import theme from '@/theme/theme'
 import { createPaymentIntent } from '@/api/PaymentsAPI'
 
 export default function PremiumPurchase() {
-  const { userInfo, setUserInfo, lenguage } = useCalendar()
+  const { userInfo, setUserInfo, lenguage, isPurchasing, isPurchasingRef, setIsPurchasing, showPurchaseInProgress } = useCalendar()
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
+
+  //covers the system back button and the iOS swipe back; the footer is guarded in its own buttons
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', (event) => {
+      if (!isPurchasingRef.current) return
+      event.preventDefault()
+      showPurchaseInProgress()
+    })
+    return unsubscribe
+  }, [navigation])
+
+  useEffect(() => {
+    navigation.setOptions({ gestureEnabled: !isPurchasing })
+  }, [navigation, isPurchasing])
 
   const { initPaymentSheet, presentPaymentSheet } = useStripe()
   //test STRIPE_KEY
@@ -27,10 +41,11 @@ export default function PremiumPurchase() {
     return translate({ text, lenguage })
   }
 
-  const { mutate, isPending } = useMutation({
+  const { mutate } = useMutation({
     mutationFn: createPaymentIntent,
     onError: (error) => {
       console.log(error)
+      setIsPurchasing(false)
       Alert.alert("Error", `${translateFn("errorStartingPayment")}`)
     },
     onSuccess: (data) => {
@@ -38,7 +53,25 @@ export default function PremiumPurchase() {
     }
   })
 
+  const handlePurchase = () => {
+    if (isPurchasingRef.current) return
+    setIsPurchasing(true)
+    mutate(299)
+  }
+
+  //isPurchasing stays true from the button press until the payment sheet gives its response
   const initializePayment = async (data: any) => {
+    try {
+      await runPaymentSheet(data)
+    } catch (error) {
+      console.log(error)
+      Alert.alert("Error", `${translateFn("errorStartingPayment")}`)
+    } finally {
+      setIsPurchasing(false)
+    }
+  }
+
+  const runPaymentSheet = async (data: any) => {
     const initPayment = await initPaymentSheet({
       merchantDisplayName: "Shifts-Table",
       paymentIntentClientSecret: data.paymentIntent,
@@ -61,9 +94,12 @@ export default function PremiumPurchase() {
     const paymentResponse = await presentPaymentSheet()
 
     if (paymentResponse.error) {
+      if (paymentResponse.error.code === PaymentSheetError.Canceled) return
       Alert.alert(`Error code: ${paymentResponse.error.code}`, paymentResponse.error.message)
       return
     }
+    //released before navigating, otherwise beforeRemove would block the replace
+    setIsPurchasing(false)
     savePaymentSuccess()
   }
 
@@ -110,8 +146,10 @@ export default function PremiumPurchase() {
             <Text style={styles.benefitText}>como PDF o imagen</Text>
           </View>
         </View>
-        <TouchableOpacity activeOpacity={0.9} onPress={() => mutate(299)} style={styles.button}>
-          <Text style={styles.buttonText}>€ 2,99/año</Text>
+        <TouchableOpacity activeOpacity={0.9} onPress={handlePurchase} disabled={isPurchasing} style={styles.button}>
+          {isPurchasing
+            ? <ActivityIndicator color="white" />
+            : <Text style={styles.buttonText}>€ 2,99/año</Text>}
         </TouchableOpacity>
       </ImageBackground>
     </StripeProvider>
