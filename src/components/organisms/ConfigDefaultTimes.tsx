@@ -7,58 +7,81 @@ import Icon from 'react-native-vector-icons/AntDesign'
 import useCalendar from '@/hooks/useCalendar'
 import theme from '@/theme/theme'
 import { formattedMinutes, translate } from '@/utils'
+import { MAX_DEFAULT_TIMES, sortedUniqueTimes } from '@/utils/datesCompare'
 
 import DropDownAutoHeight from '@/components/Molecules/DropDownAutoHeight'
+
+type TimeKey = "entry" | "exit" | "configBreakEntry" | "configBreakExit"
+
+const TIME_FIELDS: { key: TimeKey, title: string }[] = [
+  { key: "entry", title: "entryHour" },
+  { key: "exit", title: "exitHour" },
+  { key: "configBreakEntry", title: "breakStart" },
+  { key: "configBreakExit", title: "breakEnd" },
+]
+
+//the dropdowns animate up to a max height, so it is calculated from the rows each one can show
+const ROW_HEIGHT = 44
+const TITLE_HEIGHT = 48
 
 export default function ConfigDefaultTimes() {
   const { lenguage, configInfo, setConfigInfo } = useCalendar()
 
   const [hoursOpen, setHoursOpen] = useState(false)
-  const [timeType, setTimeType] = useState("")
+  const [openFields, setOpenFields] = useState<Record<TimeKey, boolean>>({
+    entry: false,
+    exit: false,
+    configBreakEntry: false,
+    configBreakExit: false
+  })
+  const [timeType, setTimeType] = useState<TimeKey | null>(null)
+  //position of the time being edited, null when a new time is being added
+  const [editingIndex, setEditingIndex] = useState<number | null>(null)
   const [date, setDate] = useState(new Date())
   const [modalOpen, setModalOpen] = useState(false)
-  const [showDelete, setShowDelete] = useState(false)
-
-  let config = { ...configInfo }
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text: string) {
     return translate({ text, lenguage })
   }
 
-  //called when pressing on default entry, exit or break. Sets data to open de correct modal and edit the correct info
-  const selectedTime = () => {
-    switch (timeType) {
-      case "entrada":
-        setDate(config.entry ? config.entry : new Date())
-        setShowDelete(config.entry ? true : false)
-        break
-      case "salida":
-        setDate(config.exit ? config.exit : new Date())
-        setShowDelete(config.exit ? true : false)
-        break
-      case "descansoEntrada":
-        setDate(config.configBreakEntry ? config.configBreakEntry : new Date())
-        setShowDelete(config.configBreakEntry ? true : false)
-        break
-      case "descansoSalida":
-        setDate(config.configBreakExit ? config.configBreakExit : new Date())
-        setShowDelete(config.configBreakExit ? true : false)
-    }
+  //builds the setter a dropdown needs for the open state of one field
+  const setFieldOpen = (key: TimeKey): React.Dispatch<React.SetStateAction<boolean>> => (value) => {
+    setOpenFields(previous => ({ ...previous, [key]: typeof value === "function" ? value(previous[key]) : value }))
   }
 
-  //sets the modal title
-  const modalTitle = () => {
-    switch (timeType) {
-      case "entrada": return translateFn("entryHour")
-      case "salida": return translateFn("exitHour")
-      case "descansoEntrada": return translateFn("breakStart")
-      case "descansoSalida": return translateFn("breakEnd")
-    }
+  const formattedTime = (time: Date) => `${time.getHours()}:${formattedMinutes(time)}`
+
+  //max height of the main dropdown: every field title plus the rows of the fields that are open
+  const hoursMaxHeight = TIME_FIELDS.reduce((total, field) => (
+    total + TITLE_HEIGHT + (openFields[field.key] ? ((configInfo[field.key]?.length ?? 0) + 1) * ROW_HEIGHT : 0)
+  ), 0)
+
+  //opens the modal to add a new time (index null) or to edit the one in that position
+  const openModal = (key: TimeKey, index: number | null) => {
+    setTimeType(key)
+    setEditingIndex(index)
+    setDate(index !== null && configInfo[key] ? configInfo[key][index] : new Date())
+    setModalOpen(true)
   }
 
-  //alert called when deleting default entry, exit or break
-  const showAlert = () => {
+  //saves the list of one field, it is stored as null when it has no times left
+  const saveTimes = (key: TimeKey, times: Date[]) => {
+    setConfigInfo({ ...configInfo, [key]: times.length > 0 ? sortedUniqueTimes(times) : null })
+  }
+
+  //adds the new time or replaces the edited one, the list is always kept sorted
+  const saveModalTime = () => {
+    if (timeType) {
+      const current = configInfo[timeType] ?? []
+      saveTimes(timeType, editingIndex === null ? [...current, date] : current.map((time, index) => index === editingIndex ? date : time))
+    }
+    setModalOpen(false)
+    setTimeType(null)
+  }
+
+  //alert called when deleting a default time
+  const showAlert = (key: TimeKey, index: number) => {
     Alert.alert(
       '',
       translateFn("defaultDeleteAlert"),
@@ -69,7 +92,7 @@ export default function ConfigDefaultTimes() {
         },
         {
           text: 'OK',
-          onPress: () => { setModalOpen(false), changeConfigInfo(null) },
+          onPress: () => saveTimes(key, (configInfo[key] ?? []).filter((_, position) => position !== index)),
           style: 'cancel'
         },
       ],
@@ -79,18 +102,7 @@ export default function ConfigDefaultTimes() {
     )
   }
 
-  //takes the new default time when changing default entry, exit or break. and sets the new data
-  const changeConfigInfo = (newDate: Date | null) => {
-    const configDateChanged = { ...configInfo,
-      entry: timeType === "entrada" ? newDate : config.entry || null,
-      exit: timeType === "salida" ? newDate : config.exit || null,
-      configBreakEntry: timeType === "descansoEntrada" ? newDate : config.configBreakEntry || null,
-      configBreakExit: timeType === "descansoSalida" ? newDate : config.configBreakExit || null,
-    }
-
-    setConfigInfo(configDateChanged)
-    setTimeType("")
-  }
+  const modalTitle = () => translateFn(TIME_FIELDS.find(field => field.key === timeType)?.title ?? "entryHour")
 
   return (
     <View style={styles.configGeneral}>
@@ -98,60 +110,72 @@ export default function ConfigDefaultTimes() {
         duration={300}
         isOpen={hoursOpen}
         setIsOpen={setHoursOpen}
-        maxHeight={200}
+        maxHeight={hoursMaxHeight}
         title={translateFn("defaultHours")!}
         titleStyle={styles.textoConf}
         titleContainerStyle={styles.tituloConf}
         arrowColor={configInfo.baseColor}
       >
-        <TouchableOpacity
-          activeOpacity={0.8}
-          style={styles.line}
-          onPress={() => { setTimeType("entrada"), setModalOpen(true) }}
-        >
-          <Text style={styles.textLine}>{translateFn("entryHour")}:</Text>
-          <View >
-            <Text style={styles.textLine}>{config.entry ? `${config.entry.getHours()}:${formattedMinutes(config.entry)}` : "-"}</Text>
-          </View>
-        </TouchableOpacity>
+        <View>
+          {TIME_FIELDS.map(field => {
+            const times = configInfo[field.key] ?? []
+            const isFull = times.length >= MAX_DEFAULT_TIMES
 
-        <TouchableOpacity
-          activeOpacity={0.8}
-          style={styles.line}
-          onPress={() => { setTimeType("salida"), setModalOpen(true) }}
-        >
-          <Text style={styles.textLine}>{translateFn("exitHour")}:</Text>
-          <View >
-            <Text style={styles.textLine}>{config.exit ? `${config.exit.getHours()}:${formattedMinutes(config.exit)}` : "-"}</Text>
-          </View>
-        </TouchableOpacity>
+            return (
+              <DropDownAutoHeight
+                key={field.key}
+                duration={250}
+                isOpen={openFields[field.key]}
+                setIsOpen={setFieldOpen(field.key)}
+                maxHeight={(times.length + 1) * ROW_HEIGHT}
+                title={translateFn(field.title)!}
+                textRight={`${times.length}`}
+                textRightStyle={styles.countPill}
+                titleContainerStyle={styles.fieldTitle}
+                arrowColor={configInfo.baseColor}
+              >
+                <View>
+                  {times.map((time, index) => (
+                    <View key={`${time.getHours()}:${time.getMinutes()}`} style={styles.timeRow}>
+                      <TouchableOpacity
+                        activeOpacity={0.8}
+                        style={styles.timeButton}
+                        accessibilityRole="button"
+                        onPress={() => openModal(field.key, index)}
+                      >
+                        <Text style={styles.textLine}>{formattedTime(time)}</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        activeOpacity={0.7}
+                        style={styles.deleteButton}
+                        accessibilityRole="button"
+                        accessibilityLabel={`${translateFn("deleteTime")} ${formattedTime(time)}`}
+                        onPress={() => showAlert(field.key, index)}
+                      >
+                        <Icon name='delete' color={theme.colors.rojoBin} size={20} />
+                      </TouchableOpacity>
+                    </View>
+                  ))}
 
-        <TouchableOpacity
-          activeOpacity={0.8}
-          style={styles.line}
-          onPress={() => { setTimeType("descansoEntrada"), setModalOpen(true) }}
-        >
-          <Text style={styles.textLine}>{translateFn("breakStart")}:</Text>
-          <View >
-            <Text style={styles.textLine}>{config.configBreakEntry ? `${config.configBreakEntry.getHours()}:${formattedMinutes(config.configBreakEntry)}` : "-"}</Text>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          activeOpacity={0.8}
-          style={styles.line}
-          onPress={() => { setTimeType("descansoSalida"), setModalOpen(true) }}
-        >
-          <Text style={styles.textLine}>{translateFn("breakEnd")}:</Text>
-          <View >
-            <Text style={styles.textLine}>{config.configBreakExit ? `${config.configBreakExit.getHours()}:${formattedMinutes(config.configBreakExit)}` : "-"}</Text>
-          </View>
-        </TouchableOpacity>
+                  <TouchableOpacity
+                    activeOpacity={0.8}
+                    disabled={isFull}
+                    style={[styles.timeRow, styles.addRow, isFull && styles.addRowDisabled]}
+                    accessibilityRole="button"
+                    accessibilityState={{ disabled: isFull }}
+                    onPress={() => openModal(field.key, null)}
+                  >
+                    <Text style={[styles.textLine, styles.addText]}>+ {translateFn("addTime")}</Text>
+                  </TouchableOpacity>
+                </View>
+              </DropDownAutoHeight>
+            )
+          })}
+        </View>
       </DropDownAutoHeight>
 
       <Modal
         visible={modalOpen}
-        onShow={selectedTime}
         transparent={true}
         animationType="fade"
       >
@@ -159,13 +183,6 @@ export default function ConfigDefaultTimes() {
           <View style={styles.modal}>
             <View style={styles.modalTitleContainer}>
               <Text style={styles.modalTitle}>{modalTitle()}</Text>
-              {showDelete && <Icon
-                style={styles.delete}
-                name='delete'
-                color={theme.colors.rojoBin}
-                size={20}
-                onPress={() => { showAlert() }}
-              />}
             </View>
 
             <DatePicker
@@ -175,14 +192,14 @@ export default function ConfigDefaultTimes() {
               date={date}
               onDateChange={setDate}
               dividerColor={theme.colors.verdeBase}
-              is24hourSource={timeType === "descanso" ? "locale" : "device"}
+              is24hourSource="device"
             />
 
             <View style={styles.modalButtons}>
-              <TouchableOpacity activeOpacity={0.7} onPress={() => { setModalOpen(false), setTimeType("") }}>
+              <TouchableOpacity activeOpacity={0.7} onPress={() => { setModalOpen(false), setTimeType(null) }}>
                 <Text style={styles.modalButton}>{translateFn("cancel")}</Text>
               </TouchableOpacity>
-              <TouchableOpacity activeOpacity={0.7} onPress={() => { setModalOpen(false), changeConfigInfo(date) }}>
+              <TouchableOpacity activeOpacity={0.7} onPress={saveModalTime}>
                 <Text style={styles.modalButton}>{translateFn("save")}</Text>
               </TouchableOpacity>
             </View>
@@ -215,27 +232,58 @@ const styles = StyleSheet.create({
     fontSize: theme.fontSizes.F20,
     marginBottom: 3
   },
-  arrow: {
-    position: "relative",
-    width: 20,
-    height: 20
+  fieldTitle: {
+    justifyContent: "flex-start",
+    height: TITLE_HEIGHT,
+    paddingVertical: 8
   },
-  line: {
-    paddingHorizontal: 15,
-    paddingVertical: 8,
+  //light blue pill with the number of saved times, as in the approved design
+  countPill: {
+    minWidth: 24,
+    paddingHorizontal: 8,
+    paddingVertical: 1,
+    overflow: "hidden",
+    borderRadius: 12,
+    backgroundColor: theme.colors.azulClaro,
+    fontSize: theme.fontSizes.F14,
+    fontWeight: "700",
+    textAlign: "center",
+    color: theme.colors.negro
+  },
+  timeRow: {
+    height: ROW_HEIGHT,
     flexDirection: "row",
-    justifyContent: 'space-between',
+    alignItems: "center",
+    paddingLeft: 44,
+    paddingRight: 8,
     borderBottomWidth: 1,
     borderColor: theme.colors.grisClaro
+  },
+  timeButton: {
+    flex: 1,
+    height: "100%",
+    justifyContent: "center"
+  },
+  deleteButton: {
+    width: 44,
+    height: 44,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  addRow: {
+    paddingRight: 15
+  },
+  addRowDisabled: {
+    opacity: 0.4
+  },
+  addText: {
+    color: theme.colors.verdeBase,
+    fontWeight: '600'
   },
   textLine: {
     fontSize: theme.fontSizes.F20,
     fontWeight: '400',
     color: theme.colors.negro
-  },
-  heightAuto: {
-    height: "auto",
-    overflow: "hidden"
   },
   modalContainer: {
     flex: 1,
@@ -260,13 +308,6 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 24,
     color: theme.colors.negro
-  },
-  delete: {
-    position: "relative",
-    top: 7
-  },
-  view: {
-    height: 180
   },
   modalButtons: {
     flexDirection: "row",

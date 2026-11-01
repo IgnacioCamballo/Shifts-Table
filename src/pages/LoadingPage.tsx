@@ -9,6 +9,7 @@ import useCalendar from '@/hooks/useCalendar'
 import { UserInfo, ConfigInfo, ShiftProps, RootStackParamList } from '@/types'
 import { getUserInfo } from '@/api/UserInfoAPI'
 import theme from '@/theme/theme'
+import { parseConfigTimes } from '@/utils/datesCompare'
 
 export default function LoadingPage() {
   const {
@@ -101,10 +102,8 @@ export default function LoadingPage() {
         const config: ConfigInfo = {
           baseColor: parsedConfigInfo.baseColor || theme.colors.verdeBase,
           buttonsColor: parsedConfigInfo.buttonsColor || theme.colors.verdeBoton,
-          entry: parsedConfigInfo.entry === null ? null : new Date(parsedConfigInfo.entry),
-          exit: parsedConfigInfo.exit === null ? null : new Date(parsedConfigInfo.exit),
-          configBreakEntry: parsedConfigInfo.configBreakEntry === null ? null : new Date(parsedConfigInfo.configBreakEntry),
-          configBreakExit: parsedConfigInfo.configBreakExit === null ? null : new Date(parsedConfigInfo.configBreakExit)
+          //accounts saved before the lists existed have a single date here, parseConfigTimes turns it into a list
+          ...parseConfigTimes(parsedConfigInfo)
         }
         setConfigInfo(config)
 
@@ -157,7 +156,7 @@ export default function LoadingPage() {
             setCompanysInfo(data.userInformation.employers)
             setLenguage(data.userInformation.lenguage)
             setShifts(data.userInformation.shifts)
-            setConfigInfo(data.userInformation.configInfo)
+            setConfigInfo({ ...data.userInformation.configInfo, ...parseConfigTimes(data.userInformation.configInfo) })
             setUserInfo({
               userName: data.userName,
               mail: data.mail,

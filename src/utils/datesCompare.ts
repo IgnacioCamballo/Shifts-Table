@@ -108,3 +108,98 @@ export function isSameDayHourMinute({day1, day2} : {day1: Date, day2: Date}) {
     d1.getMinutes() === d2.getMinutes()
   ) {return true} else {return false}
 }
+
+//max default times the user can save for each field (entry, exit, break start, break end)
+export const MAX_DEFAULT_TIMES = 6
+
+/**
+ * Minutes since midnight of a date, used to compare clock times ignoring the day.
+ * @param date date to read the clock time from
+ */
+export function minutesOfDay(date: Date) {
+  return date.getHours() * 60 + date.getMinutes()
+}
+
+/**
+ * Sorts clock times from lowest to highest, drops repeated ones and keeps at most MAX_DEFAULT_TIMES.
+ * @param times list of dates, only hours and minutes matter
+ */
+export function sortedUniqueTimes(times: Date[]) {
+  const unique = times.filter((time, index) => times.findIndex(other => minutesOfDay(other) === minutesOfDay(time)) === index)
+  return unique.sort((a, b) => minutesOfDay(a) - minutesOfDay(b)).slice(0, MAX_DEFAULT_TIMES)
+}
+
+/**
+ * Converts a stored default time into the list format. Accounts saved before the list existed
+ * keep a single date (or its ISO string), so a single value becomes a list of one.
+ * @param value null, a date, an ISO string or a list of them
+ * @returns the sorted list, or null when there is no valid time
+ */
+export function toDefaultTimes(value: unknown) {
+  if (value === null || value === undefined) return null
+
+  const list = Array.isArray(value) ? value : [value]
+  const dates = list.map(item => new Date(item as string | number | Date)).filter(date => !isNaN(date.getTime()))
+  const times = sortedUniqueTimes(dates)
+
+  return times.length > 0 ? times : null
+}
+
+/**
+ * Parses the four default time fields of a stored or received configInfo, whatever format they have.
+ * @param config configInfo as it was stored or received from the server
+ */
+export function parseConfigTimes(config: { entry?: unknown, exit?: unknown, configBreakEntry?: unknown, configBreakExit?: unknown }) {
+  return {
+    entry: toDefaultTimes(config.entry),
+    exit: toDefaultTimes(config.exit),
+    configBreakEntry: toDefaultTimes(config.configBreakEntry),
+    configBreakExit: toDefaultTimes(config.configBreakExit)
+  }
+}
+
+/**
+ * Puts the hours and minutes of `time` on the day of `day`.
+ */
+export function onDay(day: Date, time: Date) {
+  return new Date(day.getFullYear(), day.getMonth(), day.getDate(), time.getHours(), time.getMinutes())
+}
+
+/**
+ * Puts the clock time of `time` on the day of `reference`, and on the next day if that is before `reference`.
+ */
+export function afterOrSame(reference: Date, time: Date) {
+  const sameDay = onDay(reference, time)
+  return sameDay < reference ? new Date(sameDay.getFullYear(), sameDay.getMonth(), sameDay.getDate() + 1, sameDay.getHours(), sameDay.getMinutes()) : sameDay
+}
+
+/**
+ * Rearranges the times of a shift so they are consistent whatever order the user picked them in:
+ * the entry always belongs to the shift day, the exit and the break go after the entry (the next day if
+ * their clock time is earlier) and a break that ends up outside the shift is removed.
+ * @param pressedDate day the shift is being created or edited on
+ */
+export function normalizeShiftTimes({ pressedDate, entry, exit, breakEntry, breakExit }: {
+  pressedDate: Date,
+  entry: Date | null,
+  exit: Date | null,
+  breakEntry: Date | null,
+  breakExit: Date | null
+}) {
+  const normalizedEntry = entry ? onDay(pressedDate, entry) : null
+  const normalizedExit = exit && normalizedEntry ? afterOrSame(normalizedEntry, exit) : exit
+  let normalizedBreakEntry = breakEntry && normalizedEntry ? afterOrSame(normalizedEntry, breakEntry) : breakEntry
+  const breakExitReference = normalizedBreakEntry || normalizedEntry
+  let normalizedBreakExit = breakExit && breakExitReference ? afterOrSame(breakExitReference, breakExit) : breakExit
+
+  const breakOutside = normalizedExit && (
+    (normalizedBreakEntry && normalizedBreakEntry > normalizedExit) ||
+    (normalizedBreakExit && normalizedBreakExit > normalizedExit)
+  )
+  if (breakOutside) {
+    normalizedBreakEntry = null
+    normalizedBreakExit = null
+  }
+
+  return { entry: normalizedEntry, exit: normalizedExit, breakEntry: normalizedBreakEntry, breakExit: normalizedBreakExit }
+}

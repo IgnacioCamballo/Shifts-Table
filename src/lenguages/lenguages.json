@@ -370,6 +370,26 @@
     {"lenguage": "en", "text": "Select lenguage"},
     {"lenguage": "pt", "text": "Selecione o linguagem"}
   ],
+  "addTime": [
+    {"lenguage": "es", "text": "Añadir hora"},
+    {"lenguage": "en", "text": "Add time"},
+    {"lenguage": "pt", "text": "Adicionar horário"}
+  ],
+  "deleteTime": [
+    {"lenguage": "es", "text": "Eliminar horario"},
+    {"lenguage": "en", "text": "Delete time"},
+    {"lenguage": "pt", "text": "Remover horário"}
+  ],
+  "defaultTimes": [
+    {"lenguage": "es", "text": "Predefinidas"},
+    {"lenguage": "en", "text": "Default"},
+    {"lenguage": "pt", "text": "Predefinidos"}
+  ],
+  "otherTime": [
+    {"lenguage": "es", "text": "Otra hora"},
+    {"lenguage": "en", "text": "Other time"},
+    {"lenguage": "pt", "text": "Outro horário"}
+  ],
   "defaultHours": [
     {"lenguage": "es", "text": "Horas Predefinidas"},
     {"lenguage": "en", "text": "Default Hours"},

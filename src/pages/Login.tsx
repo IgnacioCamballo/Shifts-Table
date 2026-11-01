@@ -11,6 +11,7 @@ import useCalendar from '@/hooks/useCalendar'
 import useKeyboardBottomSpace from '@/hooks/useKeyboardBottomSpace'
 import theme from '@/theme/theme'
 import { translate } from '@/utils'
+import { parseConfigTimes } from '@/utils/datesCompare'
 import { logIn } from '@/api/UserAPI'
 import { RootStackParamList, ShiftProps } from '@/types'
 
@@ -86,10 +87,8 @@ export default function Login() {
       const config = {
         baseColor: parsedConfigInfo.baseColor || theme.colors.verdeBase,
         buttonsColor: parsedConfigInfo.buttonsColor || theme.colors.verdeBoton,
-        entry: parsedConfigInfo.entry === null ? null : new Date(parsedConfigInfo.entry),
-        exit: parsedConfigInfo.exit === null ? null : new Date(parsedConfigInfo.exit),
-        configBreakEntry: parsedConfigInfo.configBreakEntry === null ? null : new Date(parsedConfigInfo.configBreakEntry),
-        configBreakExit: parsedConfigInfo.configBreakExit === null ? null : new Date(parsedConfigInfo.configBreakExit)
+        //accounts saved before the lists existed have a single date here, parseConfigTimes turns it into a list
+        ...parseConfigTimes(parsedConfigInfo)
       }
       setConfigInfo(config)
 

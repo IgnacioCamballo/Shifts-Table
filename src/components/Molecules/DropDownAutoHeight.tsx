@@ -1,5 +1,5 @@
 import React, { JSX, useEffect, useRef } from 'react'
-import { Text, Animated, TouchableOpacity, StyleSheet, StyleProp, ViewStyle } from 'react-native';
+import { Text, Animated, TouchableOpacity, StyleSheet, StyleProp, ViewStyle, TextStyle } from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
 
 import theme from '@/theme/theme';
@@ -9,6 +9,7 @@ type DropDownAutoHeightProps = {
   children: JSX.Element | JSX.Element[]
   title: string
   textRight?: string
+  textRightStyle?: StyleProp<TextStyle>
   arrowColor?: string
   duration: number
   maxHeight: number
@@ -18,7 +19,7 @@ type DropDownAutoHeightProps = {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export default function DropDownAutoHeight({ isOpen, setIsOpen, children, textRight, title, arrowColor, duration, maxHeight, titleStyle, titleContainerStyle }: DropDownAutoHeightProps) {
+export default function DropDownAutoHeight({ isOpen, setIsOpen, children, textRight, textRightStyle, title, arrowColor, duration, maxHeight, titleStyle, titleContainerStyle }: DropDownAutoHeightProps) {
   const {configInfo} = useCalendar()
 
   //manage the break animations
@@ -68,7 +69,7 @@ export default function DropDownAutoHeight({ isOpen, setIsOpen, children, textRi
           />
         </Animated.View>
         <Text style={[styles.textLine, titleStyle]}>{title}</Text>
-        <Text style={styles.textRight}>{textRight}</Text>
+        <Text style={[styles.textRight, textRightStyle]}>{textRight}</Text>
       </TouchableOpacity>
       <Animated.View  style={[styles.heightAuto, heightChange]}>
         {children}
@@ -88,7 +89,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderBottomWidth: 1,
     borderColor: theme.colors.grisClaro,
-    gap: 12
+    gap: 4
   },
   textLine: {
     fontSize: theme.fontSizes.F18,

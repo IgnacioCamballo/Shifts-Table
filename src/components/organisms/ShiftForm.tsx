@@ -6,10 +6,10 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import useCalendar from '@/hooks/useCalendar'
 import useKeyboardBottomSpace from '@/hooks/useKeyboardBottomSpace'
-import { RootStackParamList, ShiftProps } from '@/types'
+import { ConfigInfo, RootStackParamList, ShiftProps } from '@/types'
 import theme from '@/theme/theme'
 import { firstLetterUpper, formattedMinutes, formattedMinutesNumber, textDay, translate } from '@/utils'
-import { GetBreakTime, getWorkedTime } from '@/utils/datesCompare'
+import { GetBreakTime, getWorkedTime, normalizeShiftTimes, onDay } from '@/utils/datesCompare'
 
 import Slider from '@/components/Atoms/Slider'
 import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
@@ -30,6 +30,37 @@ let screenWidth = Dimensions.get("window").width
 const INPUT_VISIBLE_MARGIN = 32
 //the form shrinks while the keyboard animates, so the input is checked after it has settled
 const KEYBOARD_SETTLE_DELAY = 350
+
+/**
+ * Times a shift form starts with. Default times fill a field only when it has exactly one: with
+ * several the field starts empty and the user picks one. A new shift starts only with default times,
+ * an existing shift keeps its own times and only gets a default for the ones it does not have.
+ * @param pressedDate day the shift is being created or edited on
+ */
+function getInitialTimes({ isCreate, editingShift, configInfo, pressedDate }: {
+  isCreate: boolean,
+  editingShift?: ShiftProps,
+  configInfo: ConfigInfo,
+  pressedDate: Date
+}) {
+  const onlyDefault = (times: Date[] | null) => times && times.length === 1 ? onDay(pressedDate, times[0]) : null
+
+  const existing = isCreate ? undefined : editingShift
+  const times = {
+    entry: existing?.shiftEntry || onlyDefault(configInfo.entry),
+    exit: existing?.shiftExit || onlyDefault(configInfo.exit),
+    breakEntry: existing?.shiftBreakEntry || onlyDefault(configInfo.configBreakEntry),
+    breakExit: existing?.shiftBreakExit || onlyDefault(configInfo.configBreakExit)
+  }
+
+  const filledFromDefaults = !existing ||
+    times.exit !== existing.shiftExit ||
+    times.breakEntry !== existing.shiftBreakEntry ||
+    times.breakExit !== existing.shiftBreakExit
+
+  //default exit and break are put after the entry, so they are on the next day if their clock time is earlier
+  return filledFromDefaults ? normalizeShiftTimes({ pressedDate, ...times }) : times
+}
 
 export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmit }: ShiftFormProps) {
   const { configInfo, companysInfo, shifts, lenguage } = useCalendar()
@@ -66,11 +97,6 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
     return translate({ text, lenguage })
   }
 
-  //gets a date and creates a date on the pressedDay with hour and minutes of the parameter time
-  const PutTimeOnCurrentDay = (time: Date) => {
-    return new Date(pressedDate.getFullYear(), pressedDate.getMonth(), pressedDate.getDate(), time!.getHours(), time!.getMinutes())
-  }
-
   function normalizeDecimalText(text: string) {
     const normalized = text.replace(/,/g, '.').replace(/[^\d.]/g, '')
 
@@ -93,12 +119,15 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
     return value.toFixed(2).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1')
   }
 
+  //times the form starts with, calculated once
+  const [initialTimes] = useState(() => getInitialTimes({ isCreate, editingShift, configInfo, pressedDate }))
+
   //states to manage the form data
   const [employerForm, setEmployerForm] = useState<number>(isCreate ? 0 : editingShift!.employer)
-  const [shiftEntryForm, setShiftEntryForm] = useState<Date | null>(isCreate ? (configInfo.entry ? PutTimeOnCurrentDay(configInfo.entry) : null) : editingShift?.shiftEntry || (configInfo.entry ? PutTimeOnCurrentDay(configInfo.entry) : null))
-  const [shiftExitForm, setShiftExitForm] = useState<Date | null>(isCreate ? (configInfo.exit ? PutTimeOnCurrentDay(configInfo.exit) : null) : editingShift?.shiftExit || (configInfo.exit ? PutTimeOnCurrentDay(configInfo.exit) : null))
-  const [shiftBreakEntryForm, setShiftBreakEntryForm] = useState<Date | null>(isCreate ? (configInfo.configBreakEntry ? PutTimeOnCurrentDay(configInfo.configBreakEntry) : null) : editingShift?.shiftBreakEntry || (configInfo.configBreakEntry ? PutTimeOnCurrentDay(configInfo.configBreakEntry) : null))
-  const [shiftBreakExitForm, setShiftBreakExitForm] = useState<Date | null>(isCreate ? (configInfo.configBreakExit ? PutTimeOnCurrentDay(configInfo.configBreakExit) : null) : editingShift?.shiftBreakExit || (configInfo.configBreakExit ? PutTimeOnCurrentDay(configInfo.configBreakExit) : null))
+  const [shiftEntryForm, setShiftEntryForm] = useState<Date | null>(initialTimes.entry)
+  const [shiftExitForm, setShiftExitForm] = useState<Date | null>(initialTimes.exit)
+  const [shiftBreakEntryForm, setShiftBreakEntryForm] = useState<Date | null>(initialTimes.breakEntry)
+  const [shiftBreakExitForm, setShiftBreakExitForm] = useState<Date | null>(initialTimes.breakExit)
   const [shiftBreakForm, setShiftBreakForm] = useState<Date | null>(isCreate ? null : (editingShift?.shiftBreak || null))
   const [workedHoursForm, setWorkedHoursForm] = useState<number | null>(isCreate ? null : (editingShift?.workedHours || null))
   const [workedMinutesForm, setWorkedMinutesForm] = useState<number | null>(isCreate ? null : (editingShift?.workedMinutes || null))
@@ -122,12 +151,29 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
   const [timeType, setTimeType] = useState("")
   const [modalOpen, setModalOpen] = useState(false)
 
-  //on load, if the exit (from predefined schedules) is before the entry, the shift ends the next day
+  //when the user changes a time the others are rearranged: the entry is on the shift day, the exit and the break
+  //go after it (the next day if their clock time is earlier) and a break outside the shift is removed.
+  //Skipped on load so opening an existing shift never changes its times
+  const isFirstRun = useRef(true)
   useEffect(() => {
-    if (shiftEntryForm && shiftExitForm && shiftExitForm < shiftEntryForm) {
-      setShiftExitForm(new Date(shiftExitForm.getFullYear(), shiftExitForm.getMonth(), shiftExitForm.getDate() + 1, shiftExitForm.getHours(), shiftExitForm.getMinutes()))
+    if (isFirstRun.current) {
+      isFirstRun.current = false
+      return
     }
-  }, [])
+
+    const normalized = normalizeShiftTimes({
+      pressedDate,
+      entry: shiftEntryForm,
+      exit: shiftExitForm,
+      breakEntry: shiftBreakEntryForm,
+      breakExit: shiftBreakExitForm
+    })
+
+    if (normalized.entry?.getTime() !== shiftEntryForm?.getTime()) setShiftEntryForm(normalized.entry)
+    if (normalized.exit?.getTime() !== shiftExitForm?.getTime()) setShiftExitForm(normalized.exit)
+    if (normalized.breakEntry?.getTime() !== shiftBreakEntryForm?.getTime()) setShiftBreakEntryForm(normalized.breakEntry)
+    if (normalized.breakExit?.getTime() !== shiftBreakExitForm?.getTime()) setShiftBreakExitForm(normalized.breakExit)
+  }, [shiftEntryForm, shiftExitForm, shiftBreakEntryForm, shiftBreakExitForm])
 
   useEffect(() => {
     if (employerForm > 1) {

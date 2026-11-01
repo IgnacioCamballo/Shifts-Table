@@ -22,10 +22,11 @@ export const UserDbArraySchema = z.array(UserDBSchema)
 export type ConfigInfo = {
     baseColor: string,
     buttonsColor: string,
-    entry: Date | null,
-    exit: Date | null,
-    configBreakEntry: Date | null,
-    configBreakExit: Date | null
+    //default times, up to 6 per field, always sorted from lowest to highest clock time
+    entry: Date[] | null,
+    exit: Date[] | null,
+    configBreakEntry: Date[] | null,
+    configBreakExit: Date[] | null
 }
 
 export type EmployerProps = {
