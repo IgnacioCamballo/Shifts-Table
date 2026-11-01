@@ -19,7 +19,7 @@ export default function Shifts() {
   const params = navigation.getState().routes[1].params as { date: string }
   const pressedDate = params.date
 
-  const {shifts, lenguage, addsInitialized, configInfo, userInfo, setAnimateReturnToCalendar} = useCalendar()
+  const {shifts, lenguage, addsInitialized, configInfo, userInfo, setAnimateReturnToCalendar, setSelectedDate} = useCalendar()
 
   //this way avoid of calling useCalendar in utils and translate can be used inside if functions
   function translateFn(text:string){
@@ -33,11 +33,13 @@ export default function Shifts() {
   const prevDay = () => {
     const newDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
     setDate(newDate)
+    setSelectedDate(newDate)
   };
-  
+
   const nextDay = () => {
     const newDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
     setDate(newDate)
+    setSelectedDate(newDate)
   };
 
   useEffect(() => {

@@ -108,6 +108,7 @@ export type CalendarContextProps = {
     lastBackup: Date | null | undefined,
     addsInitialized: boolean,
     animateReturnToCalendar: boolean,
+    selectedDate: Date | null,
     setUserInfo: React.Dispatch<React.SetStateAction<UserInfo>>,
     setConfigInfo: React.Dispatch<React.SetStateAction<ConfigInfo>>,
     setCompanysInfo: React.Dispatch<React.SetStateAction<EmployerProps[]>>,
@@ -116,6 +117,7 @@ export type CalendarContextProps = {
     setLastShiftCreated: React.Dispatch<React.SetStateAction<Date>>,
     setLastBackup: React.Dispatch<React.SetStateAction<Date | null | undefined>>,
     setAnimateReturnToCalendar: React.Dispatch<React.SetStateAction<boolean>>,
+    setSelectedDate: React.Dispatch<React.SetStateAction<Date | null>>,
     syncPremiumStatus: (lg: "es" | "en" | "pt") => Promise<void>
 }
 

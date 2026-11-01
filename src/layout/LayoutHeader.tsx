@@ -59,7 +59,7 @@ export default function LayoutHeader() {
 
 const styles = StyleSheet.create({
   container: {
-    height: Platform.OS === "ios" ? 88 : 68,
+    height: 88,
     paddingTop: Platform.OS === "ios" ? 52 : 32,
     paddingBottom: 10,
     alignItems: "center",
@@ -68,12 +68,14 @@ const styles = StyleSheet.create({
   text: {
     color: theme.colors.negro,
     fontSize: theme.fontSizes.F20,
-    fontWeight: "bold"
+    fontWeight: "bold",
+    top: Platform.OS === "ios" ? 0 : 16
+
   },
    link: {
     position: "absolute",
     left: 12,
-    top: Platform.OS === "ios" ? 52 : 32
+    top: 52
   },
   textLine: {
     color: theme.colors.negro,

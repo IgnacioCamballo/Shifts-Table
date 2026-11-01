@@ -56,6 +56,8 @@ const CalendarProvider = ({ children, routeName }: props) => {
   const [showUpdateAlert, setShowUpdateAlert] = useState(false)
   const [modalMessage, setModalMessage] = useState("")
   const [animateReturnToCalendar, setAnimateReturnToCalendar] = useState(false)
+  //day being viewed in Shifts, so the calendar shell can follow it and return to the right day
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
 
   //Syncs premium status with the server, in case the user has renewed or lost premium status on another device
   //Called in loadingPage when there is storagedData in device
@@ -157,6 +159,7 @@ const CalendarProvider = ({ children, routeName }: props) => {
         lastBackup,
         addsInitialized,
         animateReturnToCalendar,
+        selectedDate,
         setLastBackup,
         setUserInfo,
         setConfigInfo,
@@ -166,6 +169,7 @@ const CalendarProvider = ({ children, routeName }: props) => {
         setLastShiftCreated,
         syncPremiumStatus,
         setAnimateReturnToCalendar,
+        setSelectedDate,
       }}
     >
       <Modal

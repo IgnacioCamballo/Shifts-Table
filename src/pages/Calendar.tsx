@@ -16,15 +16,19 @@ import { BannerAdds } from '@/components/Atoms/BannerAdds';
 let screenWidth = Dimensions.get("window").width
 const DAYS_ROWS = 6
 const DAYS_CONTAINER_MARGIN_TOP = 5
+//same width RenderDayCalendar gives each day cell
+const DAY_CELL_WIDTH = (screenWidth - 22) / 7
 
 export default function Calendar() {
-  const {lenguage, addsInitialized, userInfo, animateReturnToCalendar, setAnimateReturnToCalendar} = useCalendar()
+  const {lenguage, addsInitialized, userInfo, animateReturnToCalendar, setAnimateReturnToCalendar, selectedDate} = useCalendar()
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
 
   const [currentDay, setCurrentDay] = useState(new Date());
   const [monthdays, setMonthDays] = useState<DayProps[]>([])
   //space left for the days grid, measured, so the cells fill it whatever the device and the banner are
   const [gridHeight, setGridHeight] = useState(0)
+  //position of the grid inside the container, needed to know where a day cell is without measuring it
+  const gridOffset = useRef({ x: 0, y: 0 }).current
   const cellHeight = Math.floor((gridHeight - DAYS_CONTAINER_MARGIN_TOP * 2) / DAYS_ROWS)
   const showBanner = addsInitialized && !userInfo.premium
 
@@ -158,9 +162,28 @@ export default function Calendar() {
     }
   }
 
-  useEffect(() => { 
+  useEffect(() => {
     handleReturnToCalendarAnimation()
   }, [animateReturnToCalendar])
+
+  //when the day changes inside shifts, moves the shell (hidden under shifts) to that day so the return
+  //animation shrinks into the right cell
+  useEffect(() => {
+    if (!selectedDate || !daySelectedInfo) return
+
+    const firstDayOfMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1).getDay()
+    const emptyCellsBefore = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1
+    const index = emptyCellsBefore + selectedDate.getDate() - 1
+
+    animationParams.x = gridOffset.x + (index % 7) * DAY_CELL_WIDTH
+    animationParams.y = gridOffset.y + DAYS_CONTAINER_MARGIN_TOP + Math.floor(index / 7) * cellHeight
+    animationParams.width = DAY_CELL_WIDTH
+    animationParams.height = cellHeight
+
+    setCurrentDay(new Date(selectedDate.getFullYear(), selectedDate.getMonth()))
+    //the day is always in the month shown, so it is never shadowed
+    setDaySelectedInfo({ index, color: theme.colors.blanco })
+  }, [selectedDate])
 
 
   //change to previous month with animation
@@ -233,7 +256,11 @@ export default function Calendar() {
       <GestureDetector gesture={panGesture}>
         <Animated.View
           style={[styles.grid, animatedStyles]}
-          onLayout={event => setGridHeight(event.nativeEvent.layout.height)}
+          onLayout={event => {
+            gridOffset.x = event.nativeEvent.layout.x
+            gridOffset.y = event.nativeEvent.layout.y
+            setGridHeight(event.nativeEvent.layout.height)
+          }}
         >
           <View style={styles.daysContainer}>
             {gridHeight > 0 && monthdays.map(monthDay =>
