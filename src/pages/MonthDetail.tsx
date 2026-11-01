@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { Text, TouchableOpacity, View, StyleSheet, ScrollView, Dimensions, Platform } from 'react-native'
+import { Text, TouchableOpacity, View, StyleSheet, ScrollView, Platform } from 'react-native'
 import { captureRef } from 'react-native-view-shot'
 import * as Sharing from "expo-sharing"
-import * as FileSystem from "expo-file-system";
+import { File, Paths } from "expo-file-system";
 import { Picker } from '@react-native-picker/picker'
 import IconMenu from 'react-native-vector-icons/Feather'
 import { useNavigation } from '@react-navigation/native';
@@ -153,14 +153,12 @@ export default function MonthDetail() {
       //rename the file
       const rawName = `${userInfo.userName}-${firstLetterUpper(currentDay.toLocaleDateString(lenguage, { month: 'long' }))}-${currentDay.toLocaleDateString(lenguage, { year: 'numeric' })}-Shifts-Table.png`;
       const safeName = rawName.replace(/[^a-z0-9._-]/gi, "_");
-      const newUri = `${FileSystem.cacheDirectory}${safeName}`;
-      await FileSystem.copyAsync({
-        from: fromUri,
-        to: newUri,
-      });
+      const destination = new File(Paths.cache, safeName);
+      if (destination.exists) destination.delete();
+      new File(fromUri).copy(destination);
       //If posible shares the Img
       if (await Sharing.isAvailableAsync()) {
-        await Sharing.shareAsync(newUri);
+        await Sharing.shareAsync(destination.uri);
       } else {
         alert(translateFn("noShareAlert"));
       }
@@ -171,6 +169,32 @@ export default function MonthDetail() {
 
   return (
     <View style={[styles.container, !showBanner && styles.containerNoBanner]}>
+      {/* this view is used for creating an image. It is drawn inside the screen (views outside of it are not
+          rendered in the new architecture) but hidden under the white cover below */}
+      <View collapsable={false} ref={exportImgRef} style={{ backgroundColor: "#fff", padding: 20, position: "absolute", top: 0, left: 0, height: "auto", width: 600 }}>
+        <View style={styles.tableTopContainer}>
+          <Text style={styles.tableTop}>{translateFn("days")}</Text>
+          <Text style={[styles.tableTop, { width: 180, textAlign: "center" }]}>{translateFn("hours")}</Text>
+          <Text style={styles.tableTop}>{translateFn("break")}</Text>
+          <Text style={styles.tableTop}>{translateFn("total")}</Text>
+        </View>
+
+        {monthlyShiftsFilteredPayment.map(shift => (
+          <View key={shift.key} style={styles.line}>
+            <View style={[styles.flexRow, { gap: 2, width: 60 }]}>
+              <Text style={styles.textLine}>{textDay(shift.shiftEntry, lenguage)}/</Text>
+              <Text style={styles.textLine}>{shift.shiftEntry.getDate()}</Text>
+            </View>
+            <Text style={[styles.textLine, { width: 180, textAlign: "center" }]}>{entryExitHours(shift.shiftEntry, shift.shiftExit)}</Text>
+            <Text style={styles.textLine}>{shift.shiftBreak ? `${shift.shiftBreak!.getHours()}:${shift.shiftBreak!.getMinutes()}` : 0}</Text>
+            <Text style={[styles.textLine, { width: 70, textAlign: "right" }]}>{calculateHours(shift.shiftEntry, shift.shiftExit, shift.shiftBreak)}</Text>
+          </View>
+        ))}
+
+        <Text style={styles.TotalHours}>{translateFn("totalHours")}: {findWorkedHours()}</Text>
+      </View>
+      <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: theme.colors.blanco }]} />
+
       <IconMenu
         style={styles.absolute}
         name="menu"
@@ -276,30 +300,6 @@ export default function MonthDetail() {
 
       <Text style={styles.breakMessage}>{translateFn("breakMessage")}</Text>
 
-      {/* this view is used for creating an image, rendered outside of the screen */}
-      <View ref={exportImgRef} style={{ backgroundColor: "#fff", padding: 20, position: "absolute", left: Dimensions.get("screen").width * 2, height: "auto", width: 600 }}>
-        <View style={styles.tableTopContainer}>
-          <Text style={styles.tableTop}>{translateFn("days")}</Text>
-          <Text style={[styles.tableTop, { width: 180, textAlign: "center" }]}>{translateFn("hours")}</Text>
-          <Text style={styles.tableTop}>{translateFn("break")}</Text>
-          <Text style={styles.tableTop}>{translateFn("total")}</Text>
-        </View>
-
-        {monthlyShiftsFilteredPayment.map(shift => (
-          <View key={shift.key} style={styles.line}>
-            <View style={[styles.flexRow, { gap: 2, width: 60 }]}>
-              <Text style={styles.textLine}>{textDay(shift.shiftEntry, lenguage)}/</Text>
-              <Text style={styles.textLine}>{shift.shiftEntry.getDate()}</Text>
-            </View>
-            <Text style={[styles.textLine, { width: 180, textAlign: "center" }]}>{entryExitHours(shift.shiftEntry, shift.shiftExit)}</Text>
-            <Text style={styles.textLine}>{shift.shiftBreak ? `${shift.shiftBreak!.getHours()}:${shift.shiftBreak!.getMinutes()}` : 0}</Text>
-            <Text style={[styles.textLine, { width: 70, textAlign: "right" }]}>{calculateHours(shift.shiftEntry, shift.shiftExit, shift.shiftBreak)}</Text>
-          </View>
-        ))}
-
-        <Text style={styles.TotalHours}>{translateFn("totalHours")}: {findWorkedHours()}</Text>
-      </View>
-
       {showBanner && (
         <View style={styles.banner}>
           <BannerAdds />
@@ -322,7 +322,7 @@ export default function MonthDetail() {
               onPress={() => exportPDF(
                 monthlyShiftsFilteredPayment,
                 lenguage,
-                `${FileSystem.cacheDirectory}${userInfo.userName}-${firstLetterUpper(currentDay.toLocaleDateString(lenguage, { month: 'long' }))}-${currentDay.toLocaleDateString(lenguage, { year: 'numeric' })}-Shifts-Table.pdf`
+                `${userInfo.userName}-${firstLetterUpper(currentDay.toLocaleDateString(lenguage, { month: 'long' }))}-${currentDay.toLocaleDateString(lenguage, { year: 'numeric' })}-Shifts-Table.pdf`
               )}
             >
               {translateFn("exportPdf")}

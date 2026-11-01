@@ -1,6 +1,6 @@
 import * as Print from "expo-print"
 import * as Sharing from "expo-sharing"
-import * as FileSystem from "expo-file-system";
+import { File, Paths } from "expo-file-system";
 
 import { firstLetterUpper, formattedMinutes, formattedMinutesNumber, translate } from "@/utils";
 import { ShiftProps } from "@/types"
@@ -78,26 +78,31 @@ export function createTable(shiftsList: ShiftProps[], lenguage: string) {
   return htmlContent
 }
 
-export async function exportPDF(shiftsList: ShiftProps[], lenguage: string, newUri: string) {
+export async function exportPDF(shiftsList: ShiftProps[], lenguage: string, fileName: string) {
   function translateFn(text: string) {
     return translate({ text, lenguage })
   }
-  
-  const htmlContent = createTable(shiftsList, lenguage)
 
-  // Creates the PDF
-  const { uri } = await Print.printToFileAsync({ html: htmlContent });
+  try {
+    const htmlContent = createTable(shiftsList, lenguage)
 
-  await FileSystem.moveAsync({
-    from: uri,
-    to: newUri,
-  });
+    // Creates the PDF
+    const { uri } = await Print.printToFileAsync({ html: htmlContent });
 
-  // If posible shares the PDF
-  if (await Sharing.isAvailableAsync()) {
-    await Sharing.shareAsync(newUri);
-  } else {
-    alert(translateFn("noShareAlert"));
+    // Renames the file (moves it to the cache folder with a safe name)
+    const safeName = fileName.replace(/[^a-z0-9._-]/gi, "_");
+    const destination = new File(Paths.cache, safeName);
+    if (destination.exists) destination.delete();
+    new File(uri).move(destination);
+
+    // If posible shares the PDF
+    if (await Sharing.isAvailableAsync()) {
+      await Sharing.shareAsync(destination.uri);
+    } else {
+      alert(translateFn("noShareAlert"));
+    }
+  } catch (error) {
+    console.error("Error exporting the PDF:", error)
   }
 }
 
