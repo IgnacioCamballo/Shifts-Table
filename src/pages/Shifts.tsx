@@ -81,6 +81,7 @@ export default function Shifts() {
         <View style={styles.shifts}>
           {shifts.length === 0 ? <View></View> :
             shifts.filter(shift => shift.shiftEntry.getFullYear() === date.getFullYear() && shift.shiftEntry.getMonth() === date.getMonth() && shift.shiftEntry.getDate() === date.getDate())
+            .sort((a, b) => a.shiftEntry.getTime() - b.shiftEntry.getTime())
             .map(
               (mapedShift: ShiftProps) => <Shift shift={mapedShift} key={mapedShift.key}/>
             )
