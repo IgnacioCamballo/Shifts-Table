@@ -5,16 +5,12 @@ const LOCAL_API_BASE_URL = Platform.OS === "android"
   ? "http://10.0.2.2:4004/api"
   : "http://localhost:4004/api"
 
-const api = axios.create({
-  // URL para request desde mismo pc
-  // baseURL: "http://localhost:4004/api"
-  
-  // URL para request desde emulador en mismo pc
-  baseURL: LOCAL_API_BASE_URL
+// URL para producion, directo a mi servidor
+const PRODUCTION_API_BASE_URL = "https://shifts-table-server.kanatzu.dev/api"
 
-  // URL para request directo al servidor de render
-  // baseURL: "https://shifts-table-backend.onrender.com/api"
-  //baseURL: "https://shifts-table-server.kanatzu.dev/api"
+const api = axios.create({
+  // __DEV__ es true con expo start (servidor local) y false en los builds de EAS
+  baseURL: __DEV__ ? LOCAL_API_BASE_URL : PRODUCTION_API_BASE_URL
 })
 
 export default api
