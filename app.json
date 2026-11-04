@@ -3,7 +3,7 @@
     "name": "shifts-table",
     "slug": "shifts-table",
     "owner": "ignaciocamballo",
-    "version": "3.2.1",
+    "version": "3.2.2",
     "orientation": "portrait",
     "icon": "./assets/icono.png",
     "userInterfaceStyle": "light",
