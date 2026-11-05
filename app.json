@@ -7,10 +7,6 @@
     "orientation": "portrait",
     "icon": "./assets/icono.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": false,
-    "splash": {
-      "backgroundColor": "#ffffff"
-    },
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.kanatzu.shiftstable",
@@ -38,6 +34,14 @@
     "plugins": [
       "expo-asset",
       "expo-iap",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#ffffff",
+          "image": "./assets/splash-vacio.png",
+          "imageWidth": 1
+        }
+      ],
       [
         "expo-build-properties",
         {
