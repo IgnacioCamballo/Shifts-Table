@@ -11,6 +11,7 @@ import { CalendarContextProps, ConfigInfo, EmployerProps, ShiftProps, UserInfo, 
 import theme from "@/theme/theme";
 import { getUserInfo, saveUserInfo } from "@/api/UserInfoAPI";
 import { translate } from "@/utils";
+import { CURRENT_TIME_FORMAT, configForSaving, shiftsForSaving } from "@/utils/savedTimes";
 import useRecoverPurchases from "@/hooks/useRecoverPurchases";
 
 interface props {
@@ -162,7 +163,18 @@ const CalendarProvider = ({ children, routeName }: props) => {
 
   useEffect(() => {
     //saves any change in the phone storage
-    const userData = { userInfo, configInfo, companysInfo, shifts, lenguage, lastUpdate: Date.now(), lastShiftCreated, lastBackup }
+    //times are saved as written (clock time), timeFormat tells the next reading how to understand them
+    const userData = {
+      timeFormat: CURRENT_TIME_FORMAT,
+      userInfo,
+      configInfo: configForSaving(configInfo),
+      companysInfo,
+      shifts: shiftsForSaving(shifts),
+      lenguage,
+      lastUpdate: Date.now(),
+      lastShiftCreated,
+      lastBackup
+    }
     AsyncStorage.setItem("userData", JSON.stringify(userData))
 
     //If User is premium saves in db

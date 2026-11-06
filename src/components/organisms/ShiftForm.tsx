@@ -222,7 +222,7 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
     if (shiftBreakEntryForm && shiftBreakExitForm) {
       const { breakHours, breakMinutes } = GetBreakTime({ breakEntry: shiftBreakEntryForm, breakExit: shiftBreakExitForm })
 
-      const breakData = breakHours < 0 ? null : new Date(pressedDate.getFullYear(), pressedDate.getMonth(), pressedDate.getDay(), breakHours, breakMinutes)
+      const breakData = breakHours < 0 ? null : new Date(pressedDate.getFullYear(), pressedDate.getMonth(), pressedDate.getDate(), breakHours, breakMinutes)
       setShiftBreakForm(breakData)
     } else {
       setShiftBreakForm(null)

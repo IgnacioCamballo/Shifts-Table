@@ -12,8 +12,9 @@ import useKeyboardBottomSpace from '@/hooks/useKeyboardBottomSpace'
 import theme from '@/theme/theme'
 import { translate } from '@/utils'
 import { parseConfigTimes } from '@/utils/datesCompare'
+import { shiftsFromSaved } from '@/utils/savedTimes'
 import { logIn } from '@/api/UserAPI'
-import { RootStackParamList, ShiftProps } from '@/types'
+import { RootStackParamList } from '@/types'
 
 import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
 import TransparentButton from '@/components/Atoms/Buttons/ButtonTransparent'
@@ -58,37 +59,15 @@ export default function Login() {
       setUserInfo(userInfo),
       setCompanysInfo(data.userInfo.employers)
       setLenguage(data.userInfo.lenguage)
-      //Sets storaged Shifts
-      const parsedShifts = data.userInfo.shifts
-      const maped = parsedShifts.map((shift: ShiftProps) => {
-        const item = {
-          key: shift.key,
-          employer: shift.employer,
-          short: shift.short,
-          shiftEntry: new Date(shift.shiftEntry),
-          shiftExit: shift.shiftExit ? new Date(shift.shiftExit) : null,
-          shiftBreak: shift.shiftBreak ? new Date(shift.shiftBreak) : null,
-          shiftBreakEntry: shift.shiftBreakEntry ? new Date(shift.shiftBreakEntry) : null,
-          shiftBreakExit: shift.shiftBreakExit ? new Date(shift.shiftBreakExit) : null,
-          workedHours: shift.workedHours,
-          workedMinutes: shift.workedMinutes,
-          isHourlyRate: shift.isHourlyRate === false ? false : true,
-          wage: shift.wage || data.userInfo.employers.find((company: { key: number }) => company.key === shift.employer)?.wage || 0,
-          paid: shift.paid,
-          salary: shift.salary,
-          note: shift.note,
-          color: shift.color
-        }
-        return (item)
-      })
-      setShifts(maped)
+      //Sets shifts, read with the format the server saved them with
+      setShifts(shiftsFromSaved(data.userInfo.shifts, data.userInfo.employers, data.userInfo.timeFormat))
       //Sets configInfo
       const parsedConfigInfo = data.userInfo.configInfo
       const config = {
         baseColor: parsedConfigInfo.baseColor || theme.colors.verdeBase,
         buttonsColor: parsedConfigInfo.buttonsColor || theme.colors.verdeBoton,
         //accounts saved before the lists existed have a single date here, parseConfigTimes turns it into a list
-        ...parseConfigTimes(parsedConfigInfo)
+        ...parseConfigTimes(parsedConfigInfo, data.userInfo.timeFormat)
       }
       setConfigInfo(config)
 

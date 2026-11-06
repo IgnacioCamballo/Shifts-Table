@@ -1,4 +1,6 @@
 
+import { dateFromSavedData } from '@/utils/savedTimes'
+
 export function GetBreakTime({ breakEntry, breakExit }: {
   breakEntry: Date,
   breakExit: Date
@@ -135,11 +137,11 @@ export function sortedUniqueTimes(times: Date[]) {
  * @param value null, a date, an ISO string or a list of them
  * @returns the sorted list, or null when there is no valid time
  */
-export function toDefaultTimes(value: unknown) {
+export function toDefaultTimes(value: unknown, timeFormat?: number) {
   if (value === null || value === undefined) return null
 
   const list = Array.isArray(value) ? value : [value]
-  const dates = list.map(item => new Date(item as string | number | Date)).filter(date => !isNaN(date.getTime()))
+  const dates = list.map(item => dateFromSavedData(item as string | Date, timeFormat)).filter(date => !isNaN(date.getTime()))
   const times = sortedUniqueTimes(dates)
 
   return times.length > 0 ? times : null
@@ -149,12 +151,12 @@ export function toDefaultTimes(value: unknown) {
  * Parses the four default time fields of a stored or received configInfo, whatever format they have.
  * @param config configInfo as it was stored or received from the server
  */
-export function parseConfigTimes(config: { entry?: unknown, exit?: unknown, configBreakEntry?: unknown, configBreakExit?: unknown }) {
+export function parseConfigTimes(config: { entry?: unknown, exit?: unknown, configBreakEntry?: unknown, configBreakExit?: unknown }, timeFormat?: number) {
   return {
-    entry: toDefaultTimes(config.entry),
-    exit: toDefaultTimes(config.exit),
-    configBreakEntry: toDefaultTimes(config.configBreakEntry),
-    configBreakExit: toDefaultTimes(config.configBreakExit)
+    entry: toDefaultTimes(config.entry, timeFormat),
+    exit: toDefaultTimes(config.exit, timeFormat),
+    configBreakEntry: toDefaultTimes(config.configBreakEntry, timeFormat),
+    configBreakExit: toDefaultTimes(config.configBreakExit, timeFormat)
   }
 }
 

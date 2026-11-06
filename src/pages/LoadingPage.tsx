@@ -6,10 +6,11 @@ import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import useCalendar from '@/hooks/useCalendar'
-import { UserInfo, ConfigInfo, ShiftProps, RootStackParamList } from '@/types'
+import { UserInfo, ConfigInfo, RootStackParamList } from '@/types'
 import { getUserInfo } from '@/api/UserInfoAPI'
 import theme from '@/theme/theme'
 import { parseConfigTimes } from '@/utils/datesCompare'
+import { shiftsFromSaved } from '@/utils/savedTimes'
 
 export default function LoadingPage() {
   const {
@@ -103,34 +104,12 @@ export default function LoadingPage() {
           baseColor: parsedConfigInfo.baseColor || theme.colors.verdeBase,
           buttonsColor: parsedConfigInfo.buttonsColor || theme.colors.verdeBoton,
           //accounts saved before the lists existed have a single date here, parseConfigTimes turns it into a list
-          ...parseConfigTimes(parsedConfigInfo)
+          ...parseConfigTimes(parsedConfigInfo, parsed.timeFormat)
         }
         setConfigInfo(config)
 
         //Sets storaged Shifts
-        const parsedShifts: ShiftProps[] = parsed.shifts
-        const maped = parsedShifts.map(shift => {
-          const item = {
-            key: shift.key,
-            employer: shift.employer,
-            short: shift.short,
-            shiftEntry: new Date(shift.shiftEntry),
-            shiftExit: shift.shiftExit ? new Date(shift.shiftExit) : null,
-            shiftBreak: shift.shiftBreak ? new Date(shift.shiftBreak) : null,
-            shiftBreakEntry: shift.shiftBreakEntry ? new Date(shift.shiftBreakEntry) : null,
-            shiftBreakExit: shift.shiftBreakExit ? new Date(shift.shiftBreakExit) : null,
-            workedHours: shift.workedHours,
-            workedMinutes: shift.workedMinutes,
-            isHourlyRate: shift.isHourlyRate === false ? false : true,
-            wage: shift.wage || parsed.companysInfo.find((company: { key: number }) => company.key === shift.employer)?.wage || 0,
-            paid: shift.paid,
-            salary: shift.salary,
-            note: shift.note,
-            color: shift.color
-          }
-          return (item)
-        })
-        setShifts(maped)
+        setShifts(shiftsFromSaved(parsed.shifts, parsed.companysInfo, parsed.timeFormat))
 
         if(token) {
           syncPremiumStatus(parsed.lenguage)
@@ -155,8 +134,10 @@ export default function LoadingPage() {
             const data = result.data
             setCompanysInfo(data.userInformation.employers)
             setLenguage(data.userInformation.lenguage)
-            setShifts(data.userInformation.shifts)
-            setConfigInfo({ ...data.userInformation.configInfo, ...parseConfigTimes(data.userInformation.configInfo) })
+            //the server sends the shifts as text, they are turned into dates reading them with the format they were saved with
+            const serverTimeFormat = data.userInformation.timeFormat
+            setShifts(shiftsFromSaved(data.userInformation.shifts, data.userInformation.employers, serverTimeFormat))
+            setConfigInfo({ ...data.userInformation.configInfo, ...parseConfigTimes(data.userInformation.configInfo, serverTimeFormat) })
             setUserInfo({
               userName: data.userName,
               mail: data.mail,
