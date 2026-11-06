@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import {Animated as ReactAnimated, View, Text, StyleSheet, Dimensions, Platform} from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { Easing, useAnimatedStyle, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
+import Animated, { Easing, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -18,13 +18,57 @@ const DAYS_ROWS = 6
 const DAYS_CONTAINER_MARGIN_TOP = 5
 //same width RenderDayCalendar gives each day cell
 const DAY_CELL_WIDTH = (screenWidth - 22) / 7
+//the container has 10 of padding at each side, the carousel cancels it so months slide edge to edge
+const GRID_BLEED = 10
+const MONTH_SLIDE_DURATION = 250
+
+//creates the array with the month days to build the grid, filling past month last days and next month
+//first days as necesary
+const buildMonthDays = (month: Date): DayProps[] => {
+  const today = new Date()
+  const daysInMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
+  const firstDayOfMonth = new Date(month.getFullYear(), month.getMonth(), 1).getDay();
+  const emptyCellsBefore = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1;
+  const isCurrentMonth = month.getFullYear() === today.getFullYear() && month.getMonth() === today.getMonth();
+
+  const days: DayProps[] = [];
+
+  for (let i = 1; i <= emptyCellsBefore; i++) {
+    days.push({
+      key: `-${i}`,
+      day: new Date(month.getFullYear(), month.getMonth(), 0 - (emptyCellsBefore - i)).getDate(),
+      isCurrentDay: false,
+      shadowed: true
+    });
+  }
+
+  for (let i = 1; i <= daysInMonth; i++) {
+    days.push({
+      key: `${i}`,
+      day: i,
+      isCurrentDay: i === today.getDate() && isCurrentMonth,
+      shadowed: false
+    });
+  }
+
+  for (let i = 1; i <= (42 - emptyCellsBefore - daysInMonth); i++) {
+    days.push({
+      key: `${daysInMonth + i}`,
+      day: new Date(month.getFullYear(), month.getMonth(), daysInMonth + i).getDate(),
+      isCurrentDay: false,
+      shadowed: true
+    });
+  }
+  return days
+}
+
+const monthNumber = (date: Date) => date.getFullYear() * 12 + date.getMonth()
 
 export default function Calendar() {
   const {lenguage, addsInitialized, userInfo, animateReturnToCalendar, setAnimateReturnToCalendar, selectedDate} = useCalendar()
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
 
   const [currentDay, setCurrentDay] = useState(new Date());
-  const [monthdays, setMonthDays] = useState<DayProps[]>([])
   //space left for the days grid, measured, so the cells fill it whatever the device and the banner are
   const [gridHeight, setGridHeight] = useState(0)
   //position of the grid inside the container, needed to know where a day cell is without measuring it
@@ -37,48 +81,20 @@ export default function Calendar() {
   const changeToShiftsAnimationValue = useRef(new ReactAnimated.Value(0)).current
 
   const translationX = useSharedValue(0)
-  const prevTranslationX = useSharedValue(0)
-  
-  //creates the array with the month days to build the grid, filling past month last days and next month
-  //first days as necesary
-  let currentDate = new Date()
-  useEffect(() => {
-    const daysInMonth = new Date(currentDay.getFullYear(), currentDay.getMonth() + 1, 0).getDate();
-    const firstDayOfMonth = new Date(currentDay.getFullYear(), currentDay.getMonth(), 1).getDay();
-    const emptyCellsBefore = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1;
-    const isCurrentMonth = (currentDay.getFullYear(), currentDay.getMonth()) === (currentDate.getFullYear(), currentDate.getMonth());
-    
-    const days: DayProps[] = [];
 
-    for (let i = 1; i <= emptyCellsBefore; i++) {
-      days.push({ 
-        key: `-${i}`, 
-        day: new Date(currentDay.getFullYear(), currentDay.getMonth(), 0 - (emptyCellsBefore - i)).getDate(), 
-        isCurrentDay: false,
-        shadowed: true
-      });
-    }
+  //the month shown plus the previous and next one, all mounted so they slide together
+  const months = useMemo(() => [-1, 0, 1].map(offset => {
+    const date = new Date(currentDay.getFullYear(), currentDay.getMonth() + offset)
+    return { date, days: buildMonthDays(date) }
+  }), [currentDay])
+  //days of the month shown, used by the press and the animation shell
+  const monthdays = months[1].days
 
-    for (let i = 1; i <= daysInMonth; i++) {
-      const isCurrentDay = i === currentDate.getDate() && isCurrentMonth;
-      days.push({
-        key: `${i}`,
-        day: i,
-        isCurrentDay,
-        shadowed: false
-      });
-    }
-
-    for (let i = 1; i <= (42 - emptyCellsBefore - daysInMonth); i++) {
-      days.push({ 
-        key: `${daysInMonth + i}`, 
-        day: new Date(currentDay.getFullYear(), currentDay.getMonth(), daysInMonth + i).getDate(), 
-        isCurrentDay: false,
-        shadowed: true
-      });
-    }
-    setMonthDays(days);
-  }, [currentDay])
+  //every month lives at a fixed horizontal position (its distance to the first month shown times the screen width),
+  //so changing month is only moving the carousel to that position, no content has to jump back
+  const baseMonth = useRef(monthNumber(currentDay)).current
+  const restX = -(monthNumber(currentDay) - baseMonth) * screenWidth
+  const isSliding = useRef(false)
 
   const animateTransitionStyle = {
     backgroundColor: changeToShiftsAnimationValue.interpolate({
@@ -186,53 +202,51 @@ export default function Calendar() {
   }, [selectedDate])
 
 
-  //change to previous month with animation
-  const prevMonth = () => {
-    const newDate = new Date(currentDay.getFullYear(), currentDay.getMonth() - 1);
-    setTimeout(() => {
-      setCurrentDay(newDate)
-    }, 100);
+  //the carousel is already at the new month position when the slide ends, this only updates the month shown
+  const commitMonth = (direction: 1 | -1) => {
+    setCurrentDay(new Date(currentDay.getFullYear(), currentDay.getMonth() + direction))
+  }
 
-    translationX.value = withSequence(
-      withTiming(screenWidth, {duration: 200, easing: Easing.in(Easing.quad)}),
-      withTiming(-screenWidth, {duration: 0}),
-      withTiming(0, {duration: 200, easing: Easing.out(Easing.quad)}),
-    ) 
-  };
+  //slides to the previous (-1) or next (1) month, continuing from wherever the carousel is (finger or rest)
+  const slideToMonth = (direction: 1 | -1) => {
+    if (isSliding.current) return
+    isSliding.current = true
+    translationX.value = withTiming(
+      restX - direction * screenWidth,
+      { duration: MONTH_SLIDE_DURATION, easing: Easing.out(Easing.cubic) },
+      finished => {
+        if (finished) runOnJS(commitMonth)(direction)
+      }
+    )
+  }
 
-  //change to next month with animation
-  const nextMonth = () => {
-    const newDate = new Date(currentDay.getFullYear(), currentDay.getMonth() + 1);
-    setTimeout(() => {
-      setCurrentDay(newDate)
-    }, 100);
-    
-    translationX.value = withSequence(
-      withTiming(-screenWidth, {duration: 200, easing: Easing.in(Easing.quad)}),
-      withTiming(screenWidth, {duration: 0}),
-      withTiming(0, {duration: 200, easing: Easing.out(Easing.quad)}),
-    ) 
-  };
+  const prevMonth = () => slideToMonth(-1)
+  const nextMonth = () => slideToMonth(1)
+
+  //when the month changes by any means (slide end, or jumping from shifts) the carousel rests at that month
+  useLayoutEffect(() => {
+    translationX.value = restX
+    isSliding.current = false
+  }, [currentDay])
 
   const animatedStyles = useAnimatedStyle(() => ({
     transform: [{ translateX: translationX.value }],
   }));
 
-  //reads screen to change month with swipe
+  //reads screen to change month with swipe, the three months follow the finger
   const panGesture = Gesture.Pan()
-    .onStart(() => {
-      prevTranslationX.value = translationX.value
-    })
     .onUpdate(event => {
-      translationX.value = prevTranslationX.value + event.translationX
+      if (isSliding.current) return
+      translationX.value = restX + event.translationX
     })
-    .onFinalize(() => {
-      if(translationX.value < -80){
+    .onFinalize(event => {
+      if (isSliding.current) return
+      if (event.translationX < -80) {
         nextMonth()
-      } else if (translationX.value > 80) {
+      } else if (event.translationX > 80) {
         prevMonth()
       } else {
-        translationX.value = 0
+        translationX.value = withTiming(restX, { duration: 150 })
       }
     })
     .runOnJS(true)
@@ -254,27 +268,38 @@ export default function Calendar() {
       </View>
       
       <GestureDetector gesture={panGesture}>
-        <Animated.View
-          style={[styles.grid, animatedStyles]}
+        <View
+          style={styles.grid}
           onLayout={event => {
-            gridOffset.x = event.nativeEvent.layout.x
+            //the grid is wider than the days area (it cancels the container padding)
+            gridOffset.x = event.nativeEvent.layout.x + GRID_BLEED
             gridOffset.y = event.nativeEvent.layout.y
             setGridHeight(event.nativeEvent.layout.height)
           }}
         >
-          <View style={styles.daysContainer}>
-            {gridHeight > 0 && monthdays.map(monthDay =>
-              <RenderDayCalendar
-                isAnimationShell={false}
-                currentDay={currentDay}
-                item={monthDay}
-                cellHeight={cellHeight}
-                onPress={handleDayPress}
-                key={monthDay.key}
-              />
+          <Animated.View style={[styles.carousel, animatedStyles]}>
+            {months.map((month, index) =>
+              <View
+                key={monthNumber(month.date)}
+                style={[styles.monthPanel, { left: (monthNumber(month.date) - baseMonth) * screenWidth }]}
+              >
+                <View style={styles.daysContainer}>
+                  {gridHeight > 0 && month.days.map(monthDay =>
+                    <RenderDayCalendar
+                      isAnimationShell={false}
+                      currentDay={month.date}
+                      item={monthDay}
+                      cellHeight={cellHeight}
+                      //only the month shown can be pressed, the neighbours wait offscreen
+                      onPress={index === 1 ? handleDayPress : () => {}}
+                      key={monthDay.key}
+                    />
+                  )}
+                </View>
+              </View>
             )}
-          </View>
-        </Animated.View>
+          </Animated.View>
+        </View>
       </GestureDetector>
 
       {showBanner && (
@@ -325,7 +350,19 @@ const styles = StyleSheet.create({
     paddingBottom: 10
   },
   grid: {
+    flex: 1,
+    marginHorizontal: -GRID_BLEED,
+    overflow: "hidden"
+  },
+  carousel: {
     flex: 1
+  },
+  monthPanel: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    width: screenWidth,
+    paddingHorizontal: GRID_BLEED
   },
   textDayContainer: {
     height: 20,
