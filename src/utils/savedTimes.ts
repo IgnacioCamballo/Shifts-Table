@@ -47,7 +47,9 @@ export function shiftsForSaving(shifts: ShiftProps[]): ShiftProps[] {
     shiftExit: shift.shiftExit ? clockTimeForSaving(shift.shiftExit) : null,
     shiftBreak: shift.shiftBreak ? clockTimeForSaving(shift.shiftBreak) : null,
     shiftBreakEntry: shift.shiftBreakEntry ? clockTimeForSaving(shift.shiftBreakEntry) : null,
-    shiftBreakExit: shift.shiftBreakExit ? clockTimeForSaving(shift.shiftBreakExit) : null
+    shiftBreakExit: shift.shiftBreakExit ? clockTimeForSaving(shift.shiftBreakExit) : null,
+    overtimeEntry: shift.overtimeEntry ? clockTimeForSaving(shift.overtimeEntry) : null,
+    overtimeExit: shift.overtimeExit ? clockTimeForSaving(shift.overtimeExit) : null
   }))
 }
 
@@ -67,6 +69,12 @@ export function shiftsFromSaved(savedShifts: ShiftProps[], employers: EmployerPr
     shiftBreak: shift.shiftBreak ? dateFromSavedData(shift.shiftBreak, timeFormat) : null,
     shiftBreakEntry: shift.shiftBreakEntry ? dateFromSavedData(shift.shiftBreakEntry, timeFormat) : null,
     shiftBreakExit: shift.shiftBreakExit ? dateFromSavedData(shift.shiftBreakExit, timeFormat) : null,
+    overtimeEntry: shift.overtimeEntry ? dateFromSavedData(shift.overtimeEntry, timeFormat) : null,
+    overtimeExit: shift.overtimeExit ? dateFromSavedData(shift.overtimeExit, timeFormat) : null,
+    overtimeHours: shift.overtimeHours ?? null,
+    overtimeMinutes: shift.overtimeMinutes ?? null,
+    overtimeRateType: shift.overtimeRateType,
+    overtimeRate: shift.overtimeRate,
     workedHours: shift.workedHours,
     workedMinutes: shift.workedMinutes,
     isHourlyRate: shift.isHourlyRate === false ? false : true,

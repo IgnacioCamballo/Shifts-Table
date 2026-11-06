@@ -20,6 +20,10 @@ type modalDatePickerPorps = {
     setEntryBreak: React.Dispatch<React.SetStateAction<Date | null>>,
     exitBreak: Date | null,
     setExitBreak: React.Dispatch<React.SetStateAction<Date | null>>,
+    entryOvertime: Date | null,
+    setEntryOvertime: React.Dispatch<React.SetStateAction<Date | null>>,
+    exitOvertime: Date | null,
+    setExitOvertime: React.Dispatch<React.SetStateAction<Date | null>>,
     modalOpen: boolean,
     setModalOpen: React.Dispatch<React.SetStateAction<boolean>>,
     pressedDate: Date
@@ -41,6 +45,8 @@ export default function ModalDatePicker(modalDatePickerPorps: modalDatePickerPor
     exit, setExit,
     entryBreak, setEntryBreak,
     exitBreak, setExitBreak,
+    entryOvertime, setEntryOvertime,
+    exitOvertime, setExitOvertime,
     modalOpen, setModalOpen,
     pressedDate
   } = modalDatePickerPorps
@@ -74,6 +80,8 @@ export default function ModalDatePicker(modalDatePickerPorps: modalDatePickerPor
       case "salida": return exit
       case "descansoEntrada": return entryBreak
       case "descansoSalida": return exitBreak
+      case "extraEntrada": return entryOvertime
+      case "extraSalida": return exitOvertime
       default: return null
     }
   }
@@ -104,6 +112,14 @@ export default function ModalDatePicker(modalDatePickerPorps: modalDatePickerPor
         setDate(exitBreak || (entryBreak || pressedDate))
         setShowDelete(exitBreak ? true : false)
         break
+      case "extraEntrada":
+        setDate(entryOvertime || exit || entry || pressedDate)
+        setShowDelete(entryOvertime ? true : false)
+        break
+      case "extraSalida":
+        setDate(exitOvertime || entryOvertime || exit || entry || pressedDate)
+        setShowDelete(exitOvertime ? true : false)
+        break
       default:
         setDate(pressedDate)
         setShowDelete(false)
@@ -124,6 +140,8 @@ export default function ModalDatePicker(modalDatePickerPorps: modalDatePickerPor
       case "salida": return translateFn("exitHour")
       case "descansoEntrada": return translateFn("breakStart")
       case "descansoSalida": return translateFn("breakEnd")
+      case "extraEntrada": return translateFn("overtimeStart")
+      case "extraSalida": return translateFn("overtimeEnd")
       default: return translateFn("entryHour")
     }
   }
@@ -164,6 +182,12 @@ export default function ModalDatePicker(modalDatePickerPorps: modalDatePickerPor
     }
     if (timeType === "descansoSalida") {
       setExitBreak(newDate)
+    }
+    if (timeType === "extraEntrada") {
+      setEntryOvertime(newDate)
+    }
+    if (timeType === "extraSalida") {
+      setExitOvertime(newDate)
     }
     setTimeType("")
   }

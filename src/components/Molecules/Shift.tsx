@@ -7,6 +7,7 @@ import useCalendar from '@/hooks/useCalendar'
 import theme from '@/theme/theme'
 import { RootStackParamList, ShiftProps } from '@/types'
 import { firstLetterUpper, formattedMinutes, formattedMinutesNumber, textDay, translate } from '@/utils'
+import { getTotalHours } from '@/utils/overtime'
 
 import Slider from '@/components/Atoms/Slider'
 import EditDeletButtons from '@/components/Molecules/EditDeletButtons'
@@ -20,7 +21,15 @@ export default function Shift({shift}: {shift: ShiftProps}) {
     return translate({text, lenguage})
   }
 
-  const {key, employer, paid, shiftEntry, shiftExit, shiftBreak, workedHours, workedMinutes, salary, note} = shift
+  const {key, employer, paid, shiftEntry, shiftExit, shiftBreak, workedHours, workedMinutes, overtimeHours, overtimeMinutes, salary, note} = shift
+
+  const hasOvertime = !!(overtimeHours || overtimeMinutes)
+  const totalHours = getTotalHours({
+    workedHours,
+    workedMinutes,
+    overtimeHours: overtimeHours ?? null,
+    overtimeMinutes: overtimeMinutes ?? null
+  })
 
   const showAlert = () => {
     Alert.alert(
@@ -91,7 +100,22 @@ export default function Shift({shift}: {shift: ShiftProps}) {
         <Text style={styles.textLine}>{translateFn("workedHours")}:</Text>
         <Text style={styles.textLine}>{workedHours !== null && workedMinutes !== null ? `${workedHours}:${formattedMinutesNumber(workedMinutes!)}` : "-"}</Text>
       </View>
-      
+
+      {/* overtime and the total hours are only shown when the shift has overtime */}
+      {hasOvertime &&
+        <>
+          <View style={styles.line}>
+            <Text style={styles.textLine}>{translateFn("overtime")}:</Text>
+            <Text style={styles.textLine}>{`${overtimeHours ?? 0}:${formattedMinutesNumber(overtimeMinutes ?? 0)}`}</Text>
+          </View>
+
+          <View style={styles.line}>
+            <Text style={styles.textLine}>{translateFn("totalHours")}:</Text>
+            <Text style={styles.textLine}>{totalHours ? `${totalHours.totalHours}:${formattedMinutesNumber(totalHours.totalMinutes)}` : "-"}</Text>
+          </View>
+        </>
+      }
+
       <View style={styles.line}>
         <Text style={styles.textLine}>{translateFn("shiftSalary")}:</Text>
         <Text style={styles.textLine}>{salary && `$ ${Math.floor(salary! * 100)/ 100}`}</Text>

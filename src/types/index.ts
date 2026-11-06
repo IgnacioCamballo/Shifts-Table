@@ -29,12 +29,18 @@ export type ConfigInfo = {
     configBreakExit: Date[] | null
 }
 
+//how an overtime hour is paid: a fixed amount per hour, or a percentage of the hourly wage (150 = 1.5 times the wage)
+export type OvertimeRateType = "amount" | "percent"
+
 export type EmployerProps = {
     key: number,
     name: string,
     short: string,
     wage: number,
     color: string,
+    //overtime pay the shifts of this employer start with, each shift can change it. Both are missing when not set
+    overtimeRateType?: OvertimeRateType,
+    overtimeRate?: number,
 }
 
 export type ShiftProps = {
@@ -46,6 +52,13 @@ export type ShiftProps = {
     shiftBreak: Date | null,
     shiftBreakEntry: Date | null,
     shiftBreakExit: Date | null,
+    //overtime is its own time range, it is added to the worked hours and is not part of them
+    overtimeEntry?: Date | null,
+    overtimeExit?: Date | null,
+    overtimeHours?: number | null,
+    overtimeMinutes?: number | null,
+    overtimeRateType?: OvertimeRateType,
+    overtimeRate?: number,
     workedHours: number | null,
     workedMinutes: number | null,
     isHourlyRate?: boolean,

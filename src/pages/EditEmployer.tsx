@@ -7,12 +7,14 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import useCalendar from '@/hooks/useCalendar'
 import useKeyboardBottomSpace from '@/hooks/useKeyboardBottomSpace'
-import { EmployerProps, RootStackParamList } from '@/types'
+import { EmployerProps, OvertimeRateType, RootStackParamList } from '@/types'
 import theme from '@/theme/theme'
-import { translate } from '@/utils'
+import { normalizeDecimalText, translate } from '@/utils'
+import { DEFAULT_OVERTIME_RATE, DEFAULT_OVERTIME_RATE_TYPE, calculateShiftSalary } from '@/utils/overtime'
 
 import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
 import Button from '@/components/Atoms/Buttons/Button'
+import OvertimeRateTypePicker from '@/components/Molecules/OvertimeRateTypePicker'
 
 export default function EditEmployer() {
   const { companysInfo, setCompanysInfo, lenguage, shifts, setShifts, configInfo } = useCalendar()
@@ -35,6 +37,9 @@ export default function EditEmployer() {
   const [shortName, setShortName] = useState(short)
   const [salary, setSalary] = useState(formatSalary(wage))
   const [previousSalary, setPreviousSalary] = useState(formatSalary(wage))
+  //overtime pay the shifts of this employer start with, it is optional: empty means the employer has none
+  const [overtimeRateType, setOvertimeRateType] = useState<OvertimeRateType>(employer!.overtimeRateType ?? DEFAULT_OVERTIME_RATE_TYPE)
+  const [overtimeRate, setOvertimeRate] = useState(employer!.overtimeRate !== undefined ? formatSalary(employer!.overtimeRate) : "")
   const [defColor, setDefColor] = useState(color)
 
   const [repeatedName, setRepeatedName] = useState(false)
@@ -136,7 +141,16 @@ export default function EditEmployer() {
       const copyShifts = [...shifts]
       copyShifts.forEach(shift => {
         if (shift.employer === key && shift.workedHours && shift.isHourlyRate) {
-          shift.salary = (shift.workedHours + shift.workedMinutes! / 60) * parseFloat(salary)
+          //the overtime of the shift is paid with the new wage too when its pay is a percentage of the wage
+          shift.salary = calculateShiftSalary({
+            workedHours: shift.workedHours,
+            workedMinutes: shift.workedMinutes,
+            wage: parseFloat(salary),
+            overtimeHours: shift.overtimeHours ?? null,
+            overtimeMinutes: shift.overtimeMinutes ?? null,
+            overtimeRateType: shift.overtimeRateType ?? DEFAULT_OVERTIME_RATE_TYPE,
+            overtimeRate: shift.overtimeRate ?? DEFAULT_OVERTIME_RATE
+          }).totalSalary
           shift.wage = parseFloat(salary)
         }
         return shift
@@ -144,12 +158,14 @@ export default function EditEmployer() {
       setShifts(copyShifts)
     }
 
+    const overtimeValue = parseFloat(overtimeRate)
     const newEmployer: EmployerProps = {
       key: key,
       name: inputName,
       short: shortName,
       wage: parseFloat(salary),
-      color: defColor
+      color: defColor,
+      ...(isNaN(overtimeValue) ? {} : { overtimeRateType, overtimeRate: overtimeValue })
     }
     const updatedCompanys = [...companysInfo]
     updatedCompanys.splice(employerIndex, 1, newEmployer)
@@ -221,6 +237,24 @@ export default function EditEmployer() {
                 onBlur={wageChangedAlert}
                 onChangeText={setSalary}
                 value={salary}
+                placeholder="0"
+                placeholderTextColor={theme.colors.grisMedio}
+              />
+            </View>
+          </View>
+
+          <View style={styles.line}>
+            <Text style={styles.textLine}>{translateFn("overtimeWage")}:</Text>
+
+            <View style={[styles.row, { gap: 8, alignItems: 'center' }]}>
+              <OvertimeRateTypePicker value={overtimeRateType} onChange={setOvertimeRateType} />
+
+              <TextInput
+                style={styles.textLine}
+                inputMode='numeric'
+                keyboardType='numeric'
+                onChangeText={text => setOvertimeRate(normalizeDecimalText(text))}
+                value={overtimeRate}
                 placeholder="0"
                 placeholderTextColor={theme.colors.grisMedio}
               />
@@ -300,7 +334,8 @@ export default function EditEmployer() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 8
+    padding: 8,
+    backgroundColor: "white"
   },
   scrollView: {
     flex: 1

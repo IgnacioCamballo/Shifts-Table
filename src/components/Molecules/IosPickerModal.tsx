@@ -10,6 +10,7 @@ import {
   ViewStyle
 } from 'react-native'
 import { Picker } from '@react-native-picker/picker'
+import Icon from 'react-native-vector-icons/AntDesign'
 
 import theme from '@/theme/theme'
 
@@ -27,6 +28,7 @@ type IosPickerModalProps = {
   inputStyle?: StyleProp<TextStyle>
   modalTitle?: string
   closeOnValues?: (string | number)[] //values that close the modal as soon as they are selected
+  arrowColor?: string //when given, a small arrow is drawn on the right of the selector (leave room with paddingRight in inputStyle)
 }
 
 export default function IosPickerModal({
@@ -36,7 +38,8 @@ export default function IosPickerModal({
   placeholderLabel,
   inputStyle,
   modalTitle,
-  closeOnValues
+  closeOnValues,
+  arrowColor
 }: IosPickerModalProps) {
   const [open, setOpen] = useState(false)
 
@@ -62,6 +65,11 @@ export default function IosPickerModal({
         <Text style={[styles.inputText, inputStyle]} numberOfLines={1}>
           {selectedLabel}
         </Text>
+        {arrowColor &&
+          <View style={styles.arrowContainer} pointerEvents="none">
+            <Icon name="caret-down" size={16} color={arrowColor} />
+          </View>
+        }
       </TouchableOpacity>
 
       <Modal
@@ -106,6 +114,17 @@ export default function IosPickerModal({
 const styles = StyleSheet.create({
   touchable: {
     justifyContent: 'center'
+  },
+  //the arrow floats over the right end of the selector and lets the touches through
+  arrowContainer: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    paddingRight: 6
   },
   inputText: {
     fontSize: theme.fontSizes.F20,

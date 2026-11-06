@@ -178,15 +178,18 @@ export function afterOrSame(reference: Date, time: Date) {
 /**
  * Rearranges the times of a shift so they are consistent whatever order the user picked them in:
  * the entry always belongs to the shift day, the exit and the break go after the entry (the next day if
- * their clock time is earlier) and a break that ends up outside the shift is removed.
+ * their clock time is earlier) and a break that ends up outside the shift is removed. The overtime goes after
+ * the exit (or after the entry when there is no exit), and its end after its start.
  * @param pressedDate day the shift is being created or edited on
  */
-export function normalizeShiftTimes({ pressedDate, entry, exit, breakEntry, breakExit }: {
+export function normalizeShiftTimes({ pressedDate, entry, exit, breakEntry, breakExit, overtimeEntry = null, overtimeExit = null }: {
   pressedDate: Date,
   entry: Date | null,
   exit: Date | null,
   breakEntry: Date | null,
-  breakExit: Date | null
+  breakExit: Date | null,
+  overtimeEntry?: Date | null,
+  overtimeExit?: Date | null
 }) {
   const normalizedEntry = entry ? onDay(pressedDate, entry) : null
   const normalizedExit = exit && normalizedEntry ? afterOrSame(normalizedEntry, exit) : exit
@@ -203,5 +206,17 @@ export function normalizeShiftTimes({ pressedDate, entry, exit, breakEntry, brea
     normalizedBreakExit = null
   }
 
-  return { entry: normalizedEntry, exit: normalizedExit, breakEntry: normalizedBreakEntry, breakExit: normalizedBreakExit }
+  const overtimeEntryReference = normalizedExit || normalizedEntry
+  const normalizedOvertimeEntry = overtimeEntry && overtimeEntryReference ? afterOrSame(overtimeEntryReference, overtimeEntry) : overtimeEntry
+  const overtimeExitReference = normalizedOvertimeEntry || overtimeEntryReference
+  const normalizedOvertimeExit = overtimeExit && overtimeExitReference ? afterOrSame(overtimeExitReference, overtimeExit) : overtimeExit
+
+  return {
+    entry: normalizedEntry,
+    exit: normalizedExit,
+    breakEntry: normalizedBreakEntry,
+    breakExit: normalizedBreakExit,
+    overtimeEntry: normalizedOvertimeEntry,
+    overtimeExit: normalizedOvertimeExit
+  }
 }

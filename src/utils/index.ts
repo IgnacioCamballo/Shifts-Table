@@ -19,6 +19,21 @@ export function formattedMinutes(date: Date) {
   return formatted
 }
 
+/**
+ * Cleans the text of a number input: commas become dots, anything that is not a digit or a dot is removed
+ * and only two decimals are kept.
+ */
+export function normalizeDecimalText(text: string) {
+  const normalized = text.replace(/,/g, '.').replace(/[^\d.]/g, '')
+  if (normalized === '') return ''
+
+  const [integerPart, ...decimalParts] = normalized.split('.')
+  const fixedIntegerPart = integerPart === '' ? '0' : integerPart
+  if (decimalParts.length === 0) return normalized.endsWith('.') ? `${fixedIntegerPart}.` : fixedIntegerPart
+
+  return `${fixedIntegerPart}.${decimalParts.join('').slice(0, 2)}`
+}
+
 //if you give minutes returns a string with two digits
 export function formattedMinutesNumber(minutes: number | null) {
   const formatted = minutes ? minutes.toString().padStart(2, '0') : "00"

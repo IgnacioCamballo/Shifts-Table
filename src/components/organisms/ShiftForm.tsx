@@ -6,10 +6,11 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import useCalendar from '@/hooks/useCalendar'
 import useKeyboardBottomSpace from '@/hooks/useKeyboardBottomSpace'
-import { ConfigInfo, RootStackParamList, ShiftProps } from '@/types'
+import { ConfigInfo, OvertimeRateType, RootStackParamList, ShiftProps } from '@/types'
 import theme from '@/theme/theme'
 import { firstLetterUpper, formattedMinutes, formattedMinutesNumber, textDay, translate } from '@/utils'
 import { GetBreakTime, getWorkedTime, normalizeShiftTimes, onDay } from '@/utils/datesCompare'
+import { DEFAULT_OVERTIME_RATE, DEFAULT_OVERTIME_RATE_TYPE, calculateShiftSalary, getOvertimeTime, getTotalHours } from '@/utils/overtime'
 
 import Slider from '@/components/Atoms/Slider'
 import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
@@ -17,6 +18,7 @@ import Button from '@/components/Atoms/Buttons/Button'
 import DropDownAutoHeight from '@/components/Molecules/DropDownAutoHeight'
 import IosPickerModal from '@/components/Molecules/IosPickerModal'
 import ModalDatePicker from '@/components/Molecules/ModalDatePicker'
+import OvertimeRateTypePicker from '@/components/Molecules/OvertimeRateTypePicker'
 
 type ShiftFormProps = {
   isCreate: boolean,
@@ -50,7 +52,10 @@ function getInitialTimes({ isCreate, editingShift, configInfo, pressedDate }: {
     entry: existing?.shiftEntry || onlyDefault(configInfo.entry),
     exit: existing?.shiftExit || onlyDefault(configInfo.exit),
     breakEntry: existing?.shiftBreakEntry || onlyDefault(configInfo.configBreakEntry),
-    breakExit: existing?.shiftBreakExit || onlyDefault(configInfo.configBreakExit)
+    breakExit: existing?.shiftBreakExit || onlyDefault(configInfo.configBreakExit),
+    //overtime has no default times, a new shift starts without it
+    overtimeEntry: existing?.overtimeEntry || null,
+    overtimeExit: existing?.overtimeExit || null
   }
 
   const filledFromDefaults = !existing ||
@@ -74,6 +79,7 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
   const scrollY = useRef(0)
   const wageInputRef = useRef<TextInput>(null)
   const salaryInputRef = useRef<TextInput>(null)
+  const overtimeRateInputRef = useRef<TextInput>(null)
   const noteInputRef = useRef<TextInput>(null)
 
   const scrollInputIntoView = (input: TextInput | null) => {
@@ -128,6 +134,12 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
   const [shiftExitForm, setShiftExitForm] = useState<Date | null>(initialTimes.exit)
   const [shiftBreakEntryForm, setShiftBreakEntryForm] = useState<Date | null>(initialTimes.breakEntry)
   const [shiftBreakExitForm, setShiftBreakExitForm] = useState<Date | null>(initialTimes.breakExit)
+  const [overtimeEntryForm, setOvertimeEntryForm] = useState<Date | null>(initialTimes.overtimeEntry)
+  const [overtimeExitForm, setOvertimeExitForm] = useState<Date | null>(initialTimes.overtimeExit)
+  //how the overtime is paid in this shift, it starts as the employer's and the user can change it here
+  const [overtimeRateTypeForm, setOvertimeRateTypeForm] = useState<OvertimeRateType>(editingShift?.overtimeRateType ?? DEFAULT_OVERTIME_RATE_TYPE)
+  const [overtimeRateForm, setOvertimeRateForm] = useState(editingShift?.overtimeRate ?? DEFAULT_OVERTIME_RATE)
+  const [overtimeRateInput, setOvertimeRateInput] = useState(formatDecimalText(editingShift?.overtimeRate ?? DEFAULT_OVERTIME_RATE))
   const [shiftBreakForm, setShiftBreakForm] = useState<Date | null>(isCreate ? null : (editingShift?.shiftBreak || null))
   const [workedHoursForm, setWorkedHoursForm] = useState<number | null>(isCreate ? null : (editingShift?.workedHours || null))
   const [workedMinutesForm, setWorkedMinutesForm] = useState<number | null>(isCreate ? null : (editingShift?.workedMinutes || null))
@@ -139,6 +151,26 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
   const [paidForm, setPaidForm] = useState(editingShift?.paid || false)
   const [noteForm, setNoteForm] = useState(editingShift?.note || "")
 
+  //overtime time and the parts of the salary, calculated from the form data on every render
+  const overtimeTime = getOvertimeTime({ overtimeEntry: overtimeEntryForm, overtimeExit: overtimeExitForm })
+  const overtimeHoursForm = overtimeTime?.overtimeHours ?? null
+  const overtimeMinutesForm = overtimeTime?.overtimeMinutes ?? null
+  const totalHours = getTotalHours({
+    workedHours: workedHoursForm,
+    workedMinutes: workedMinutesForm,
+    overtimeHours: overtimeHoursForm,
+    overtimeMinutes: overtimeMinutesForm
+  })
+  const salaryParts = calculateShiftSalary({
+    workedHours: workedHoursForm,
+    workedMinutes: workedMinutesForm,
+    wage: wageForm,
+    overtimeHours: overtimeHoursForm,
+    overtimeMinutes: overtimeMinutesForm,
+    overtimeRateType: overtimeRateTypeForm,
+    overtimeRate: overtimeRateForm
+  })
+
   //states to manage missing or wrong data
   const [missing, setMissing] = useState("")
   const [blockSubmit, setBlockSubmit] = useState(true)
@@ -146,6 +178,7 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
   //states for dropdowns
   const [breakOpen, setBreakOpen] = useState(false)
   const [salaryOpen, setSalaryOpen] = useState(false)
+  const [overtimeOpen, setOvertimeOpen] = useState(false)
 
   //states to manage modal datepicker
   const [timeType, setTimeType] = useState("")
@@ -166,34 +199,50 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
       entry: shiftEntryForm,
       exit: shiftExitForm,
       breakEntry: shiftBreakEntryForm,
-      breakExit: shiftBreakExitForm
+      breakExit: shiftBreakExitForm,
+      overtimeEntry: overtimeEntryForm,
+      overtimeExit: overtimeExitForm
     })
 
     if (normalized.entry?.getTime() !== shiftEntryForm?.getTime()) setShiftEntryForm(normalized.entry)
     if (normalized.exit?.getTime() !== shiftExitForm?.getTime()) setShiftExitForm(normalized.exit)
     if (normalized.breakEntry?.getTime() !== shiftBreakEntryForm?.getTime()) setShiftBreakEntryForm(normalized.breakEntry)
     if (normalized.breakExit?.getTime() !== shiftBreakExitForm?.getTime()) setShiftBreakExitForm(normalized.breakExit)
-  }, [shiftEntryForm, shiftExitForm, shiftBreakEntryForm, shiftBreakExitForm])
+    if (normalized.overtimeEntry?.getTime() !== overtimeEntryForm?.getTime()) setOvertimeEntryForm(normalized.overtimeEntry)
+    if (normalized.overtimeExit?.getTime() !== overtimeExitForm?.getTime()) setOvertimeExitForm(normalized.overtimeExit)
+  }, [shiftEntryForm, shiftExitForm, shiftBreakEntryForm, shiftBreakExitForm, overtimeEntryForm, overtimeExitForm])
 
+  //an existing shift keeps its own overtime pay when it is just opened, the first time the employer is read
+  const isFirstEmployerRun = useRef(true)
   useEffect(() => {
     if (employerForm > 1) {
       const company = companysInfo.find(company => company.key == employerForm)
       setWageForm(company?.wage || 0)
       setWageInput(formatDecimalText(company?.wage || 0))
+
+      //the overtime pay of the employer is the one the shift starts with, the user can change it in the shift
+      const keepSavedOvertimeRate = !isCreate && isFirstEmployerRun.current && editingShift?.overtimeRate !== undefined
+      if (!keepSavedOvertimeRate) {
+        const employerOvertimeRate = company?.overtimeRate ?? DEFAULT_OVERTIME_RATE
+        setOvertimeRateTypeForm(company?.overtimeRateType ?? DEFAULT_OVERTIME_RATE_TYPE)
+        setOvertimeRateForm(employerOvertimeRate)
+        setOvertimeRateInput(formatDecimalText(employerOvertimeRate))
+      }
+      isFirstEmployerRun.current = false
     } else if (employerForm === 1) { //if employerForm is 1, it means the user wants to create a new employer, so we navigate to the NewEmployer page
       navigation.navigate('NewEmployer')
       setEmployerForm(0) //reset employerForm to 0 to avoid navigating again when the user comes back from NewEmployer
     }
   }, [employerForm])
 
-  //calculates the salary if changed between hourly rate and shift salary or if worked time or wage changes
+  //calculates the salary if changed between hourly rate and shift salary or if worked time, overtime or wage changes.
+  //With a fixed shift salary the overtime is not used: the salary is what the user writes
   useEffect(() => {
     if (isHourlyRateForm) {
-      const salary = workedHoursForm !== null || undefined ? (workedHoursForm! + workedMinutesForm! / 60) * wageForm : 0
-      setSalaryForm(salary)
-      setSalaryInput(formatDecimalText(salary))
+      setSalaryForm(salaryParts.totalSalary)
+      setSalaryInput(formatDecimalText(salaryParts.totalSalary))
     }
-  }, [isHourlyRateForm, wageForm, workedHoursForm, workedMinutesForm])
+  }, [isHourlyRateForm, salaryParts.totalSalary])
 
   useEffect(() => {
     const correctedWage = normalizeDecimalText(wageInput)
@@ -205,6 +254,17 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
     const parsedWage = correctedWage === '' || correctedWage === '.' ? 0 : Number.parseFloat(correctedWage)
     setWageForm(Number.isNaN(parsedWage) ? 0 : parsedWage)
   }, [wageInput])
+
+  useEffect(() => {
+    const correctedOvertimeRate = normalizeDecimalText(overtimeRateInput)
+
+    if (correctedOvertimeRate !== overtimeRateInput) {
+      setOvertimeRateInput(correctedOvertimeRate)
+    }
+
+    const parsedOvertimeRate = correctedOvertimeRate === '' || correctedOvertimeRate === '.' ? 0 : Number.parseFloat(correctedOvertimeRate)
+    setOvertimeRateForm(Number.isNaN(parsedOvertimeRate) ? 0 : parsedOvertimeRate)
+  }, [overtimeRateInput])
 
   useEffect(() => {
     const correctedSalary = normalizeDecimalText(salaryInput)
@@ -257,6 +317,12 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
       shiftBreak: shiftBreakForm,
       shiftBreakEntry: shiftBreakEntryForm,
       shiftBreakExit: shiftBreakExitForm,
+      overtimeEntry: overtimeEntryForm,
+      overtimeExit: overtimeExitForm,
+      overtimeHours: overtimeHoursForm,
+      overtimeMinutes: overtimeMinutesForm,
+      overtimeRateType: overtimeRateTypeForm,
+      overtimeRate: overtimeRateForm,
       workedHours: workedHoursForm,
       workedMinutes: workedMinutesForm,
       paid: paidForm,
@@ -466,15 +532,54 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
           </DropDownAutoHeight>
 
           <View style={styles.line}>
-            <Text style={styles.textLine}>{translateFn("workedHours")}:</Text>
+            <Text style={styles.textLine}>{translateFn("baseHours")}:</Text>
             <Text style={styles.textLine}>{(workedHoursForm !== null || undefined) && (workedMinutesForm !== null || undefined) ? `${workedHoursForm}:${formattedMinutesNumber(workedMinutesForm!)}` : "-"}</Text>
+          </View>
+
+          <DropDownAutoHeight
+            title={translateFn("overtime")!}
+            textRight={overtimeTime ? `${overtimeTime.overtimeHours}:${formattedMinutesNumber(overtimeTime.overtimeMinutes)}` : "0"}
+            duration={300}
+            maxHeight={200}
+            arrowColor={configInfo.baseColor}
+            isOpen={overtimeOpen}
+            setIsOpen={setOvertimeOpen}
+          >
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={styles.line}
+              disabled={shiftEntryForm === null && overtimeEntryForm === null}
+              onPress={() => { setTimeType("extraEntrada"), setModalOpen(true) }}
+            >
+              <Text style={styles.textLineCenter}>{translateFn("overtimeStart")}:</Text>
+              <View >
+                <Text style={styles.textLine}>{overtimeEntryForm ? `${overtimeEntryForm.getHours()}:${formattedMinutes(overtimeEntryForm)}` : "-"}</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={styles.line}
+              disabled={overtimeEntryForm === null && overtimeExitForm === null}
+              onPress={() => { setTimeType("extraSalida"), setModalOpen(true) }}
+            >
+              <Text style={styles.textLine}>{translateFn("overtimeEnd")}:</Text>
+              <View >
+                <Text style={styles.textLine}>{overtimeExitForm ? `${overtimeExitForm.getHours()}:${formattedMinutes(overtimeExitForm)}` : "-"}</Text>
+              </View>
+            </TouchableOpacity>
+          </DropDownAutoHeight>
+
+          <View style={styles.line}>
+            <Text style={styles.textLine}>{translateFn("totalHours")}:</Text>
+            <Text style={styles.textLine}>{totalHours ? `${totalHours.totalHours}:${formattedMinutesNumber(totalHours.totalMinutes)}` : "-"}</Text>
           </View>
 
           <DropDownAutoHeight
             title={translateFn("salary")!}
             textRight={salaryForm && !salaryOpen ? `$ ${formatDecimalText(salaryForm)}` : ""}
             duration={300}
-            maxHeight={200}
+            maxHeight={340}
             arrowColor={configInfo.baseColor}
             isOpen={salaryOpen}
             setIsOpen={setSalaryOpen}
@@ -484,7 +589,8 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
               <Animated.Text onPress={() => handlePress(false)} style={[styles.textLine, styles.textPerShift, colorChange]}>{translateFn("perTurn")}</Animated.Text>
             </View>
 
-            <Animated.View style={[{ flexDirection: "row", gap: 16 }, changeX]}>
+            <Animated.View style={[{ flexDirection: "row", alignItems: "flex-start", gap: 16 }, changeX]}>
+              <View style={styles.hourlyPanel}>
               <View style={styles.line}>
                 <View style={styles.salaryLine}>
                   <Text style={styles.textLine}>{translateFn("hourlyWage")}: $ </Text>
@@ -501,7 +607,32 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
                   />
                 </View>
 
-                <Text style={styles.textLine}>{translateFn("total")}: $ {formatDecimalText(salaryForm)}</Text>
+                <Text style={styles.textLine}>{translateFn("total")}: $ {formatDecimalText(salaryParts.regularSalary)}</Text>
+              </View>
+
+              <View style={styles.line}>
+                <View style={styles.overtimeLineLeft}>
+                  <Text style={styles.textLine}>{translateFn("overtimeWage")}:</Text>
+                  <OvertimeRateTypePicker value={overtimeRateTypeForm} onChange={setOvertimeRateTypeForm} />
+                  <TextInput
+                    style={[styles.textLine, styles.inputBox]}
+                    inputMode='numeric'
+                    keyboardType='numeric'
+                    ref={overtimeRateInputRef}
+                    onFocus={() => scrollInputIntoView(overtimeRateInputRef.current)}
+                    onChangeText={setOvertimeRateInput}
+                    value={overtimeRateInput}
+                    placeholder="0"
+                    placeholderTextColor={theme.colors.grisMedio}
+                  />
+                </View>
+
+                <Text style={styles.textLine}>{translateFn("total")}: $ {formatDecimalText(salaryParts.overtimeSalary)}</Text>
+              </View>
+
+              <View style={[styles.line, styles.lineCentered]}>
+                <Text style={styles.textLineCenter}>{translateFn("total")}: $ {formatDecimalText(salaryParts.totalSalary)}</Text>
+              </View>
               </View>
 
               <View style={styles.line}>
@@ -549,6 +680,8 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
           exit={shiftExitForm} setExit={setShiftExitForm}
           entryBreak={shiftBreakEntryForm} setEntryBreak={setShiftBreakEntryForm}
           exitBreak={shiftBreakExitForm} setExitBreak={setShiftBreakExitForm}
+          entryOvertime={overtimeEntryForm} setEntryOvertime={setOvertimeEntryForm}
+          exitOvertime={overtimeExitForm} setExitOvertime={setOvertimeExitForm}
           modalOpen={modalOpen} setModalOpen={setModalOpen}
           timeType={timeType} setTimeType={setTimeType}
           pressedDate={pressedDate}
@@ -617,6 +750,20 @@ const styles = StyleSheet.create({
   salaryLine: {
     flexDirection: "row",
     alignItems: "center"
+  },
+  //the hourly lines (wage, overtime and total) are one block as wide as the dropdown
+  hourlyPanel: {
+    width: "100%"
+  },
+  overtimeLineLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    flexShrink: 1
+  },
+  lineCentered: {
+    justifyContent: "center",
+    borderBottomWidth: 0
   },
   salaryPicker: {
     justifyContent: "center",

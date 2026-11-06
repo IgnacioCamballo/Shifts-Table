@@ -7,12 +7,14 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import useCalendar from '@/hooks/useCalendar'
 import useKeyboardBottomSpace from '@/hooks/useKeyboardBottomSpace'
-import { EmployerProps, RootStackParamList } from '@/types'
+import { EmployerProps, OvertimeRateType, RootStackParamList } from '@/types'
 import theme from '@/theme/theme'
-import { translate } from '@/utils'
+import { normalizeDecimalText, translate } from '@/utils'
+import { DEFAULT_OVERTIME_RATE_TYPE } from '@/utils/overtime'
 
 import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
 import Button from '@/components/Atoms/Buttons/Button'
+import OvertimeRateTypePicker from '@/components/Molecules/OvertimeRateTypePicker'
 
 export default function NewEmployer() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
@@ -30,6 +32,9 @@ export default function NewEmployer() {
   const [inputName, setInputName] = useState("")
   const [shortName, setShortName] = useState("")
   const [salary, setSalary] = useState("")
+  //overtime pay the shifts of this employer start with, it is optional: empty means the employer has none
+  const [overtimeRateType, setOvertimeRateType] = useState<OvertimeRateType>(DEFAULT_OVERTIME_RATE_TYPE)
+  const [overtimeRate, setOvertimeRate] = useState("")
   const [defColor, setDefColor] = useState("#B4EF55")
 
   const [repeatedName, setRepeatedName] = useState(false)
@@ -96,12 +101,14 @@ export default function NewEmployer() {
       return
     }
 
+    const overtimeValue = parseFloat(overtimeRate)
     const newEmployer: EmployerProps = {
       key: new Date().getTime(),
       name: inputName,
       short: shortName,
       wage: parseFloat(salary),
-      color: defColor
+      color: defColor,
+      ...(isNaN(overtimeValue) ? {} : { overtimeRateType, overtimeRate: overtimeValue })
     }
     const updatedCompanys = [...companysInfo, newEmployer]
     setCompanysInfo(updatedCompanys)
@@ -171,6 +178,24 @@ export default function NewEmployer() {
                 keyboardType='numeric'
                 onChangeText={setSalary}
                 value={salary}
+                placeholder="0"
+                placeholderTextColor={theme.colors.grisMedio}
+              />
+            </View>
+          </View>
+
+          <View style={styles.line}>
+            <Text style={styles.textLine}>{translateFn("overtimeWage")}:</Text>
+
+            <View style={[styles.row, { gap: 8 }]}>
+              <OvertimeRateTypePicker value={overtimeRateType} onChange={setOvertimeRateType} />
+
+              <TextInput
+                style={[styles.textLine, { top: Platform.OS === 'ios' ? 0 : 2 }]}
+                inputMode='numeric'
+                keyboardType='numeric'
+                onChangeText={text => setOvertimeRate(normalizeDecimalText(text))}
+                value={overtimeRate}
                 placeholder="0"
                 placeholderTextColor={theme.colors.grisMedio}
               />
@@ -251,7 +276,8 @@ export default function NewEmployer() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 8
+    padding: 8,
+    backgroundColor: "white"
   },
   scrollView: {
     flex: 1

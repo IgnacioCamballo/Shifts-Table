@@ -335,6 +335,36 @@
     {"lenguage": "en", "text": "Break finish"},
     {"lenguage": "pt", "text": "Fim da pausa"}
   ],
+  "baseHours": [
+    {"lenguage": "es", "text": "Horas base"},
+    {"lenguage": "en", "text": "Base hours"},
+    {"lenguage": "pt", "text": "Horas base"}
+  ],
+  "totalHours": [
+    {"lenguage": "es", "text": "Total de horas"},
+    {"lenguage": "en", "text": "Total hours"},
+    {"lenguage": "pt", "text": "Total de horas"}
+  ],
+  "overtime": [
+    {"lenguage": "es", "text": "Horas extra"},
+    {"lenguage": "en", "text": "Overtime"},
+    {"lenguage": "pt", "text": "Horas extras"}
+  ],
+  "overtimeStart": [
+    {"lenguage": "es", "text": "Inicio de horas extra"},
+    {"lenguage": "en", "text": "Overtime start"},
+    {"lenguage": "pt", "text": "Início das horas extras"}
+  ],
+  "overtimeEnd": [
+    {"lenguage": "es", "text": "Fin de horas extra"},
+    {"lenguage": "en", "text": "Overtime end"},
+    {"lenguage": "pt", "text": "Fim das horas extras"}
+  ],
+  "overtimeWage": [
+    {"lenguage": "es", "text": "Hora extra"},
+    {"lenguage": "en", "text": "Overtime"},
+    {"lenguage": "pt", "text": "Hora extra"}
+  ],
   "workedHours": [
     {"lenguage": "es", "text": "Horas trabajadas"},
     {"lenguage": "en", "text": "Worked hours"},
