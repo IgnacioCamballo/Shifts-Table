@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import {Animated as ReactAnimated, View, Text, StyleSheet, Dimensions, Platform} from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { Easing, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { Easing, runOnJS, SharedValue, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -63,6 +63,53 @@ const buildMonthDays = (month: Date): DayProps[] => {
 }
 
 const monthNumber = (date: Date) => date.getFullYear() * 12 + date.getMonth()
+
+//the months are the faces of a prism seen from its center: the screen is the face in front and the camera is
+//the center, so the prism turns around the camera
+//angle between two neighbour faces: 90 is a cube, 60 an hexagon, 45 an octagon
+const FACE_ANGLE_DEGREES = 40
+const FACE_ANGLE = FACE_ANGLE_DEGREES * Math.PI / 180
+//distance from the center to a face, the one that makes the face as wide as the screen seen from the center
+const CUBE_RADIUS = (screenWidth / 2) / Math.tan(FACE_ANGLE / 2)
+//distance from the screen to the virtual eye used for the perspective, must be more than the screen width or the
+//faces close to the corners would pass behind the eye, higher is flatter
+const CUBE_PERSPECTIVE = screenWidth * 1.5
+
+type CubeFaceProps = {
+  //how many months away from the first month shown this face is
+  offset: number
+  translationX: SharedValue<number>
+  children: React.ReactNode
+}
+
+function CubeFace({ offset, translationX, children }: CubeFaceProps) {
+  const animatedStyle = useAnimatedStyle(() => {
+    //0 when the face is in front of the screen, 1 or -1 when it is a full face away (one face angle turned)
+    const progress = offset + translationX.value / screenWidth
+    const angle = -progress * FACE_ANGLE
+    const cos = Math.cos(angle)
+    const sin = Math.sin(angle)
+    //turning around the center of the cube equals turning around the face and then moving it
+    const moveX = -CUBE_RADIUS * sin
+    const moveZ = CUBE_RADIUS * (1 - cos)
+    const p = CUBE_PERSPECTIVE
+    return {
+      //a face one face angle away is out of the view of the center, so it is hidden
+      opacity: Math.abs(progress) >= 1 ? 0 : 1,
+      //rotateY * translate * perspective multiplied by hand, as matrix3d (column by column)
+      transform: [{
+        matrix: [
+          cos, 0, -sin, sin / p,
+          0, 1, 0, 0,
+          sin, 0, cos, -cos / p,
+          moveX, 0, moveZ, 1 - moveZ / p
+        ]
+      }]
+    }
+  })
+
+  return <Animated.View style={[styles.monthPanel, animatedStyle]}>{children}</Animated.View>
+}
 
 export default function Calendar() {
   const {lenguage, addsInitialized, userInfo, animateReturnToCalendar, setAnimateReturnToCalendar, selectedDate} = useCalendar()
@@ -229,10 +276,6 @@ export default function Calendar() {
     isSliding.current = false
   }, [currentDay])
 
-  const animatedStyles = useAnimatedStyle(() => ({
-    transform: [{ translateX: translationX.value }],
-  }));
-
   //reads screen to change month with swipe, the three months follow the finger
   const panGesture = Gesture.Pan()
     .onUpdate(event => {
@@ -277,11 +320,12 @@ export default function Calendar() {
             setGridHeight(event.nativeEvent.layout.height)
           }}
         >
-          <Animated.View style={[styles.carousel, animatedStyles]}>
+          <View style={styles.carousel}>
             {months.map((month, index) =>
-              <View
+              <CubeFace
                 key={monthNumber(month.date)}
-                style={[styles.monthPanel, { left: (monthNumber(month.date) - baseMonth) * screenWidth }]}
+                offset={monthNumber(month.date) - baseMonth}
+                translationX={translationX}
               >
                 <View style={styles.daysContainer}>
                   {gridHeight > 0 && month.days.map(monthDay =>
@@ -296,9 +340,9 @@ export default function Calendar() {
                     />
                   )}
                 </View>
-              </View>
+              </CubeFace>
             )}
-          </Animated.View>
+          </View>
         </View>
       </GestureDetector>
 
