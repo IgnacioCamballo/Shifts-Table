@@ -290,6 +290,11 @@
     {"lenguage": "en", "text": "Color"},
     {"lenguage": "pt", "text": "Cor"}
   ],
+  "payment": [
+    {"lenguage": "es", "text": "Pagos"},
+    {"lenguage": "en", "text": "Payment"},
+    {"lenguage": "pt", "text": "Pagamentos"}
+  ],
   "employer": [
     {"lenguage": "es", "text": "Empleador"},
     {"lenguage": "en", "text": "Employer"},
@@ -340,10 +345,10 @@
     {"lenguage": "en", "text": "Base hours"},
     {"lenguage": "pt", "text": "Horas base"}
   ],
-  "totalHours": [
-    {"lenguage": "es", "text": "Total de horas"},
-    {"lenguage": "en", "text": "Total hours"},
-    {"lenguage": "pt", "text": "Total de horas"}
+  "multiplePaid": [
+    {"lenguage": "es", "text": "Multiples pagados"},
+    {"lenguage": "en", "text": "Multiple paid"},
+    {"lenguage": "pt", "text": "Multiples pagos"}
   ],
   "overtime": [
     {"lenguage": "es", "text": "Horas extra"},

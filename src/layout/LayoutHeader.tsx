@@ -28,6 +28,7 @@ function NombreLayout () {
   if(routeName === "NewEmployer") return translateFn("createEmployer")
   if(routeName === "EditEmployer") return translateFn("editEmployer")
   if(routeName === "Account") return translateFn("account")
+  if(routeName === "MultiplePaymentsSelect") return translateFn("payment")
 }
 
 export default function LayoutHeader() {
@@ -43,7 +44,7 @@ export default function LayoutHeader() {
   return (
     <View style={[styles.container, {backgroundColor}]}>
       <Text style={styles.text}>{NombreLayout()}</Text>
-      {(routeName === "Shifts" || routeName === "MonthDetail") && (
+      {(routeName === "Shifts" || routeName === "MonthDetail" || routeName === "MultiplePaymentsSelect") && (
         <TransparentButton onPress={() => navigation.goBack()} style={styles.link}>
           <Icon 
             name="double-left" 

@@ -13,6 +13,7 @@ import SwiftArrows from '@/components/Molecules/SwiftArrows'
 import IosPickerModal from '@/components/Molecules/IosPickerModal'
 import ButtonSmall from '@/components/Atoms/Buttons/ButtonSmall'
 import { BannerAdds } from '@/components/Atoms/BannerAdds'
+import Button from '@/components/Atoms/Buttons/Button'
 
 export default function Totals() { 
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
@@ -200,6 +201,17 @@ export default function Totals() {
         <Text style={styles.textLine}>${salary - salaryPaid === 0 ? "0" : (salary - salaryPaid).toFixed(2)}</Text>
       </View>
 
+      <View>
+        <Button 
+          onPress={() => navigation.navigate('MultiplePaymentsSelect', { month: currentDay.toDateString(), employer: employer })}
+          color={theme.colors.grisMasClaro}
+          buttonStyles={styles.button}
+
+        >
+          <Text style={{fontSize: 16}}>{translateFn("multiplePaid")}</Text>
+        </Button>
+      </View>
+
       {showBanner && (
         <View style={styles.banner}>
           <BannerAdds />
@@ -288,6 +300,20 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     lineHeight: theme.fontSizes.F20,
     color: theme.colors.negro
+  },
+  button: {
+    alignSelf: "flex-start", 
+    marginLeft: 16, 
+    marginTop: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderWidth: 1,
+    borderColor: theme.colors.grisClaro,
+    shadowOffset: { width: 2, height: 2 },
+    shadowColor: theme.colors.negro,
+    shadowOpacity: 0.6,
+    shadowRadius: 2,
+    elevation: 5,
   },
   banner: {
     //pushes the ad to the bottom, and as it is as wide as the screen it cancels the horizontal padding of the container

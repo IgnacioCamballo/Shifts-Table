@@ -1,5 +1,4 @@
 import { Dimensions } from "react-native"
-import { es } from "zod/v4/locales"
 
 const theme = {
     colors: {

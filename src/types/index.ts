@@ -99,6 +99,7 @@ export type RootStackParamList = {
 
   Totals: { month: string }
   MonthDetail: { month: string; employer: number }
+  MultiplePaymentsSelect: { month: string; employer: number }
 
   AccountIntro: { lg: string }
   SelectLenguage: undefined

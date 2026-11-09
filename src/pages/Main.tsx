@@ -22,6 +22,7 @@ import EditEmployer from '@/pages/EditEmployer'
 //Totals pages
 import Totals from '@/pages/Totals'
 import MonthDetail from '@/pages/MonthDetail'
+import MultiplePaymentsSelect from './MultiplePaymentsSelect'
 //Account pages
 import AccountIntro from '@/pages/AccountIntro'
 import SelectLenguage from '@/pages/SelectLenguage'
@@ -65,6 +66,7 @@ function RouterContent({ routeName }: { routeName: RouteName }) {
 
           <Stack.Screen name='Totals' component={Totals} options={{animation: "fade", animationDuration: 200}}/>
           <Stack.Screen name='MonthDetail' component={MonthDetail} />
+          <Stack.Screen name='MultiplePaymentsSelect' component={MultiplePaymentsSelect} />
 
           <Stack.Screen name='AccountIntro' component={AccountIntro} />
           <Stack.Screen name='SelectLenguage' component={SelectLenguage} />
