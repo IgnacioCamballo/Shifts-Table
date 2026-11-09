@@ -28,10 +28,10 @@ export default function MultiplePaymentsSelect() {
     return translate({ text, lenguage })
   }
 
-  const [currentDay, setCurrentDay] = useState(new Date(month))
-  const [employer, setEmployer] = useState(employerParam)
-  const [shownDays, setShownDays] = useState("Todos")
-  const [employersList, setEmployersList] = useState<number[]>([])
+  const [currentDay, setCurrentDay] = useState(new Date(month)) //a date that define the current month
+  const [employersList, setEmployersList] = useState<number[]>([]) //list of available eployers in this month based on the shifts of the month
+  const [employer, setEmployer] = useState(employerParam) //the employer selected for the filter
+  const [shownDays, setShownDays] = useState("Todos") //the selector for showing all paid or not paid days
 
   const monthlyShifts = shifts.filter(shift => shift.shiftEntry.getFullYear() === currentDay.getFullYear() && shift.shiftEntry.getMonth() === currentDay.getMonth() && shift.shiftExit)
   const monthlyShiftsFiltered = employer === 0 ? monthlyShifts : monthlyShifts.filter(shift => shift.employer == employer)
@@ -212,12 +212,6 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1
   },
-  absolute: {
-    position: "absolute",
-    right: 16,
-    top: 9,
-    zIndex: 20
-  },
   line: {
     paddingHorizontal: 15,
     paddingVertical: 8,
@@ -274,23 +268,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     borderRadius: 12,
   },
-  TotalHours: {
-    width: "100%",
-    textAlign: "center",
-    alignSelf: "center",
-    borderBottomWidth: 1,
-    borderColor: theme.colors.grisClaro,
-    color: theme.colors.negro,
-    paddingBottom: 2
-  },
-  breakMessage: {
-    width: "100%",
-    textAlign: "center",
-    alignSelf: "center",
-    color: theme.colors.negro,
-    marginTop: 4,
-    marginBottom: -2
-  },
   selector: {
     flexDirection: "row",
     justifyContent: "space-around",
@@ -338,43 +315,9 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.negro,
     borderRadius: 4
   },
-  link: {
-    position: "absolute",
-    top: -32,
-    left: 12
-  },
   banner: {
     //as the ad is as wide as the screen, it cancels the horizontal padding of the container
     marginHorizontal: -10
-  },
-  modalContainer: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "transparent"
-  },
-  modal: {
-    position: "absolute",
-    top: 32,
-    right: 32,
-    backgroundColor: "white",
-    borderWidth: 1,
-    borderColor: theme.colors.grisClaro,
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    gap: 16
-  },
-  modalText: {
-    textAlign: "right",
-    fontSize: theme.fontSizes.F18,
-    color: theme.colors.negro
-  },
-  modalText_s: {
-    fontSize: theme.fontSizes.F14,
-    color: theme.colors.negro,
   },
   tableTopContainer: {
     flexDirection: "row",
