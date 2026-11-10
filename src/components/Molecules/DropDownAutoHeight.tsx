@@ -37,11 +37,20 @@ export default function DropDownAutoHeight({ isOpen, setIsOpen, children, textRi
   const handlePress = () => {
     setIsOpen(prev => !prev)
   }
+  //animates the changes of the maxHeight prop (e.g. a nested dropdown closing) instead of jumping to the new value
+  const maxHeightValue = useRef(new Animated.Value(maxHeight)).current
+
+  useEffect(() => {
+    Animated.timing(maxHeightValue, {
+      toValue: maxHeight,
+      duration,
+      useNativeDriver: false,
+    }).start()
+  }, [duration, maxHeight, maxHeightValue])
+
+  //open/close progress (0 to 1) times the animated max height
   const heightChange = {
-    maxHeight: value.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0, maxHeight]
-    })
+    maxHeight: Animated.multiply(value, maxHeightValue)
   }
   const rotateArrow = {
     transform: [

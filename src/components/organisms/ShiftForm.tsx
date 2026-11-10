@@ -800,8 +800,8 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     paddingLeft: 12,
     paddingRight: 10,
-    borderTopLeftRadius: 12,
-    borderBottomLeftRadius: 12,
+    borderTopLeftRadius: 8,
+    borderBottomLeftRadius: 8,
   },
   bglblue: {
     backgroundColor: theme.colors.azulClaro,
@@ -812,8 +812,8 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     paddingLeft: 10,
     paddingRight: 12,
-    borderTopRightRadius: 12,
-    borderBottomRightRadius: 12
+    borderTopRightRadius: 8,
+    borderBottomRightRadius: 8
   },
   textLineCenter: {
     fontSize: theme.fontSizes.F18,
