@@ -291,12 +291,22 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
 
   //calculates the worked hours and checks or inconsistencies
   useEffect(() => {
-    if (shiftEntryForm && shiftExitForm) {
+    //calculated with the days already arranged: right after picking a time the form still has it on the wrong day
+    //for one render (an exit earlier than the entry gives negative hours), and that value must never reach the salary
+    const arranged = normalizeShiftTimes({
+      pressedDate,
+      entry: shiftEntryForm,
+      exit: shiftExitForm,
+      breakEntry: shiftBreakEntryForm,
+      breakExit: shiftBreakExitForm
+    })
+
+    if (arranged.entry && arranged.exit) {
       const { workedHours, workedMinutes } = getWorkedTime({
-        entry: shiftEntryForm,
-        exit: shiftExitForm,
-        breakEntry: shiftBreakEntryForm,
-        breakExit: shiftBreakExitForm
+        entry: arranged.entry,
+        exit: arranged.exit,
+        breakEntry: arranged.breakEntry,
+        breakExit: arranged.breakExit
       })
       setWorkedHoursForm(workedHours)
       setWorkedMinutesForm(workedMinutes)
@@ -304,7 +314,7 @@ export default function ShiftForm({ isCreate, editingShift, pressedDate, onSubmi
       setWorkedHoursForm(null)
       setWorkedMinutesForm(null)
     }
-  }, [shiftEntryForm, shiftExitForm, shiftBreakForm])
+  }, [shiftEntryForm, shiftExitForm, shiftBreakEntryForm, shiftBreakExitForm, shiftBreakForm])
 
   //saves the new edited info when submiting
   const handleSubmit = () => {

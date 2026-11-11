@@ -7,7 +7,7 @@ import Constants from "expo-constants"
 import useCalendar from '@/hooks/useCalendar'
 import theme from '@/theme/theme'
 import { formattedMinutes, translate } from '@/utils'
-import { minutesOfDay } from '@/utils/datesCompare'
+import { minutesOfDay, onDay } from '@/utils/datesCompare'
 
 type modalDatePickerPorps = {
     timeType: string,
@@ -201,7 +201,8 @@ export default function ModalDatePicker(modalDatePickerPorps: modalDatePickerPor
 
   const save = () => {
     setModalOpen(false)
-    changeConfigInfo(showPresets ? presets[selectedPreset!] : date)
+    //a default time only has a clock time, it goes on the day of the shift so the form never sees its old date
+    changeConfigInfo(showPresets ? onDay(pressedDate, presets[selectedPreset!]) : date)
   }
 
   if (modalOpen) return (
